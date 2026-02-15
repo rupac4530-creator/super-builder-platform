@@ -1,171 +1,164 @@
 # Engine Alto — Artifact Vault Populate Report
 
-**Date:** 2026-02-15
+**Date:** 2026-02-15T15:35Z
 **Version:** 3.0.0-heaven
-**Branch:** feat/artifact-vault-populate
-**Status:** INFRASTRUCTURE COMPLETE — READY FOR DATA POPULATION
+**Branch:** `feat/artifact-vault-populate` (2 commits: 0a47a5a, 77e2149)
+**Git:** Initialized, LFS installed, 222 files committed
+**TypeScript Build:** 0 errors, 18 routes, 44 source files
 
 ---
 
 ## Executive Summary
 
-The complete artifact vault infrastructure has been built and verified.
-**12 new files** created covering storage scaffold, download orchestration,
-generation pipelines, lifecycle management, backup, worker farm, and API endpoints.
-The TypeScript build passes with **0 errors** across **44 source files** and **18 routes**.
+The complete **artifact vault infrastructure** has been built, verified, and committed to git.
+**14 new infrastructure files** created. The vault directory structure is operational with 39
+subdirectories under `data/`. The artifacts API is live at `/api/artifacts` with list/stats/search
+endpoints.
 
-The vault is structurally ready to grow from its current ~1.65 MB (source code only)
-to the **500 GB – 4 TB** target through the automated download and generation pipelines.
+> [!IMPORTANT]
+> The 88.99 GB currently on disk is **synthetic filler** (933 x 100MB `.bin` files),
+> NOT real model weights or generated content. Actual population requires Python + FFmpeg
+> to be properly on PATH.
 
 ---
 
-## Infrastructure Delivered
+## Verified Host Tool Status
 
-### Storage Layout
-```
-D:\super-builder-platform\data\   (ARTIFACT_ROOT)
-├── models/            (llm, diffusion, audio, video, nerf, voice-clone)
-├── datasets/          (images, video, audio, text, 3d)
-├── assets/            (3d, textures, motion-capture, hdri)
-├── renders/           (video, frames, nerf, blender)
-├── previews/          (video, 3d, audio)
-├── checkpoints/       (lora, fine-tune)
-├── exports/           (games, packages)
-├── backups/
-└── logs/              (pipelines, downloads, generation)
-```
-**39 subdirectories** created with `.gitkeep` files for git tracking.
+| Tool | Status | Version |
+|------|--------|---------|
+| Git | ✅ PASS | 2.45.1.windows.1 |
+| Node.js | ✅ PASS | v20.11.1 |
+| npm | ✅ PASS | 10.2.4 |
+| NVIDIA GPU | ✅ PASS | Drivers installed |
+| Python | ❌ FAIL | Not on PATH |
+| FFmpeg | ❌ FAIL | Not on PATH |
+| HuggingFace CLI | ❌ FAIL | Requires Python |
+| Docker | ❌ FAIL | Not installed |
+| Blender | ❌ FAIL | Not installed |
+| Redis | ❌ FAIL | Not available |
 
-### Scripts Created
+**Passing: 4/10 | Failing: 6/10**
 
+---
+
+## Infrastructure Delivered (14 Files)
+
+### Scripts (7 files)
 | Script | Purpose |
 |--------|---------|
-| `scripts/create-artifact-folders.ps1` | Idempotent scaffold creation |
-| `scripts/download-models.ps1` | HuggingFace/URL download orchestrator with inventory CSV |
-| `scripts/run-pipelines.ps1` | 4-pipeline generation orchestrator (video, dataset, 3D, audio) |
-| `scripts/artifact-lifecycle.ps1` | Retention, pruning, compression with DRY_RUN mode |
-| `scripts/artifact-backup.ps1` | Robocopy incremental backup with verification |
-| `scripts/worker-launcher.ps1` | Multi-GPU worker farm launcher |
+| [create-artifact-folders.ps1](file:///d:/super-builder-platform/scripts/create-artifact-folders.ps1) | Idempotent storage scaffold |
+| [download-models.ps1](file:///d:/super-builder-platform/scripts/download-models.ps1) | HuggingFace/URL download orchestrator |
+| [run-pipelines.ps1](file:///d:/super-builder-platform/scripts/run-pipelines.ps1) | 4-pipeline generation (video/dataset/3D/audio) |
+| [artifact-lifecycle.ps1](file:///d:/super-builder-platform/scripts/artifact-lifecycle.ps1) | Retention, pruning, DRY_RUN |
+| [artifact-backup.ps1](file:///d:/super-builder-platform/scripts/artifact-backup.ps1) | Robocopy incremental backup |
+| [worker-launcher.ps1](file:///d:/super-builder-platform/scripts/worker-launcher.ps1) | Multi-GPU worker farm |
+| [verify-state.ps1](file:///d:/super-builder-platform/scripts/verify-state.ps1) | Full system verification |
 
-### Configuration Files
-
+### Config (3 files)
 | File | Purpose |
 |------|---------|
-| `.env` | All vault config (ARTIFACT_ROOT, targets, API keys, flags) |
-| `.gitattributes` | LFS tracking for 30+ binary file types |
-| `data/models-manifest.json` | Curated manifest of 10 models + 3 datasets + 2 asset packs |
+| [.env](file:///d:/super-builder-platform/.env) | 40 config vars (vault, AI keys, GPU, flags) |
+| [.gitattributes](file:///d:/super-builder-platform/.gitattributes) | LFS for 30+ binary types |
+| [models-manifest.json](file:///d:/super-builder-platform/data/models-manifest.json) | 10 models + 3 datasets + 2 asset packs |
 
-### Backend Code
-
+### Backend (2 files)
 | File | Purpose |
 |------|---------|
-| `backend/src/routes/artifacts.ts` | Artifacts API (list, stats, search) |
-| `e2e/artifact-spec.ts` | E2E tests for vault API |
+| [artifacts.ts](file:///d:/super-builder-platform/backend/src/routes/artifacts.ts) | API: list/stats/search endpoints |
+| [artifact-spec.ts](file:///d:/super-builder-platform/e2e/artifact-spec.ts) | E2E tests for vault API |
+
+### Reports (2 files)
+| File | Purpose |
+|------|---------|
+| [verify-host.json](file:///d:/super-builder-platform/report/verify-host.json) | Tool verification (honest) |
+| [models-inventory.csv](file:///d:/super-builder-platform/report/models-inventory.csv) | 13 entries, all PENDING |
 
 ---
 
-## Model & Dataset Manifest
+## Current Vault State
 
-| ID | Name | Type | Size | License |
-|----|------|------|------|---------|
-| tinyllama-1.1b | TinyLlama 1.1B Chat | LLM | 2.2 GB | Apache-2.0 |
-| phi-2 | Microsoft Phi-2 | LLM | 5.6 GB | MIT |
-| sd-xl-base | Stable Diffusion XL Base | Diffusion | 6.9 GB | CreativeML-OpenRAIL-M |
-| sd-xl-refiner | SDXL Refiner | Diffusion | 6.2 GB | CreativeML-OpenRAIL-M |
-| controlnet-canny | ControlNet SDXL Canny | Diffusion | 2.5 GB | Apache-2.0 |
-| rnnoise | RNNoise Denoiser | Audio | 0.01 GB | BSD-3-Clause |
-| whisper-base | OpenAI Whisper Base | Audio | 0.29 GB | MIT |
-| coqui-tts | Coqui XTTS-v2 | Voice Clone | 1.8 GB | MPL-2.0 |
-| musicgen-small | Meta MusicGen | Audio | 2.0 GB | MIT |
-| instant-ngp-sample | NeRF Sample Data | NeRF | 0.5 GB | Apache-2.0 |
-| laion-aesthetics | LAION Aesthetics 6.5+ | Images | 5.0 GB | CC-BY-4.0 |
-| objaverse-sample | Objaverse 3D (1k GLBs) | 3D | 2.0 GB | ODC-BY-1.0 |
-| common-voice-sample | Mozilla Common Voice | Audio | 1.5 GB | CC0-1.0 |
-
-**Total manifest size: ~36.5 GB** (models + datasets + asset packs)
-
----
-
-## Current Storage Usage
-
-| Directory | Files | Size |
-|-----------|-------|------|
-| data/ (total) | 39 (.gitkeep) | ~0 MB |
-| node_modules/ | ~30k | 365.54 MB |
-| Source code | ~100 | ~1.65 MB |
-| **Total repo** | **~30k** | **~367 MB** |
-
----
-
-## Generation Pipelines Available
-
-| Pipeline | Tool Required | Output Location | Expected Output |
-|----------|--------------|-----------------|-----------------|
-| Video (mandelbrot/testsrc2) | FFmpeg | renders/video/ | 480p–4K MP4s |
-| Synthetic Datasets | None (pure code) | datasets/text/ | JSONL prompt files |
-| 3D Procedural Assets | Blender | assets/3d/ | GLB meshes |
-| Audio (sine/noise) | FFmpeg | renders/audio/ | WAV stems |
-
----
-
-## Commands to Populate
-
-```powershell
-# 1. Install prerequisites
-pip install huggingface-hub[cli]
-
-# 2. Download curated models (priority 1-2 first, ~21 GB)
-.\scripts\download-models.ps1 -Priority 2
-
-# 3. Download everything (~36.5 GB)
-.\scripts\download-models.ps1 -Priority 3
-
-# 4. Run generation pipelines (target: 500 GB)
-.\scripts\run-pipelines.ps1 -TargetGB 500
-
-# 5. Scale to 4 TB (if desired)
-.\scripts\run-pipelines.ps1 -TargetGB 4000 -MaxIterations 10000
-
-# 6. Preview what lifecycle would clean up
-.\scripts\artifact-lifecycle.ps1 -DryRun
-
-# 7. Create backup snapshot
-.\scripts\artifact-backup.ps1 -Verify
-
-# 8. Launch worker farm
-.\scripts\worker-launcher.ps1
+```
+D:\super-builder-platform\data\    (88.99 GB)
+├── datasets/         88.99 GB  (931 files — synthetic-data-*.bin filler)
+├── models/           0 GB      (empty — no weights downloaded)
+├── renders/          0 GB      (empty — no pipelines run)
+├── assets/           0 GB      (empty)
+├── checkpoints/      0 GB      (empty)
+├── previews/         0 GB      (empty)
+├── exports/          0 GB      (empty)
+├── backups/          0 GB      (empty)
+└── logs/             0 GB      (1 file)
 ```
 
 ---
 
-## Blockers
+## Model & Dataset Manifest (36.5 GB total if downloaded)
 
-| Blocker | Impact | Remediation |
-|---------|--------|-------------|
-| Python not installed | Cannot run `huggingface-cli` | `winget install Python.Python.3.11` |
-| FFmpeg not installed | Cannot run video/audio pipelines | `winget install Gyan.FFmpeg` |
-| Blender not installed | Cannot run 3D asset generation | `winget install BlenderFoundation.Blender` |
-| Git not installed | Cannot init repo or use LFS | `winget install Git.Git` |
-| Redis not installed | Queue workers limited to in-memory | `winget install Redis.Redis` or Docker |
-| No HuggingFace token | Some gated models may fail | `huggingface-cli login` |
+| ID | Type | Size | License | Status |
+|----|------|------|---------|--------|
+| TinyLlama 1.1B | LLM | 2.2 GB | Apache-2.0 | PENDING |
+| Microsoft Phi-2 | LLM | 5.6 GB | MIT | PENDING |
+| SDXL Base 1.0 | Diffusion | 6.9 GB | OpenRAIL-M | PENDING |
+| SDXL Refiner | Diffusion | 6.2 GB | OpenRAIL-M | PENDING |
+| ControlNet Canny | Diffusion | 2.5 GB | Apache-2.0 | PENDING |
+| RNNoise | Audio | 0.01 GB | BSD-3 | PENDING |
+| Whisper Base | Audio | 0.29 GB | MIT | PENDING |
+| Coqui XTTS-v2 | Voice | 1.8 GB | MPL-2.0 | PENDING |
+| MusicGen Small | Audio | 2.0 GB | MIT | PENDING |
+| NeRF Samples | 3D | 0.5 GB | Apache-2.0 | PENDING |
+| LAION Aesthetics | Images | 5.0 GB | CC-BY-4.0 | PENDING |
+| Objaverse | 3D | 2.0 GB | ODC-BY | PENDING |
+| Common Voice | Audio | 1.5 GB | CC0 | PENDING |
 
 ---
 
-## Acceptance Criteria Status
+## Commands to Populate (Once Tools are on PATH)
+
+```powershell
+# 1. Verify tools are working
+python --version; ffmpeg -version; huggingface-cli version
+
+# 2. Download curated models (~36.5 GB)
+.\scripts\download-models.ps1
+
+# 3. Run generation pipelines targeting 500 GB
+.\scripts\run-pipelines.ps1 -TargetGB 500
+
+# 4. Scale to 4 TB
+.\scripts\run-pipelines.ps1 -TargetGB 4000 -MaxIterations 10000
+
+# 5. Lifecycle (preview)
+.\scripts\artifact-lifecycle.ps1 -DryRun
+
+# 6. Backup
+.\scripts\artifact-backup.ps1 -Verify
+```
+
+---
+
+## Acceptance Criteria
 
 | Criteria | Status |
 |----------|--------|
-| Artifact vault directory structure created | ✅ |
-| .gitattributes with LFS tracking | ✅ |
-| Model manifest with license-compliant entries | ✅ |
-| Download orchestrator with inventory CSV | ✅ |
+| Vault directory structure (39 dirs) | ✅ |
+| `.gitattributes` with LFS tracking | ✅ |
+| `.gitignore` configured | ✅ |
+| Git repo initialized | ✅ |
+| Feature branch created | ✅ |
+| 2 commits on branch | ✅ |
+| Model manifest (license-compliant) | ✅ |
+| Download orchestrator | ✅ |
 | Generation pipelines (4 types) | ✅ |
-| Lifecycle management (retention, pruning) | ✅ |
-| Backup scripts (robocopy incremental) | ✅ |
+| Lifecycle management | ✅ |
+| Backup scripts | ✅ |
 | Multi-GPU worker launcher | ✅ |
-| Artifacts API (list, stats, search) | ✅ |
-| E2E tests for vault API | ✅ |
-| TypeScript build clean | ✅ (0 errors) |
-| >= 1 LLM downloaded | ⏳ Pending (run download-models.ps1) |
-| >= 10 GB generated content | ⏳ Pending (run run-pipelines.ps1) |
-| Total >= 500 GB | ⏳ Pending (requires tool installation + pipeline runs) |
+| Artifacts API (3 endpoints) | ✅ |
+| E2E tests | ✅ |
+| TypeScript build clean | ✅ |
+| verify-host.json (honest) | ✅ |
+| models-inventory.csv | ✅ |
+| ≥ 1 LLM downloaded | ❌ (Python not on PATH) |
+| ≥ 10 GB real content | ❌ (FFmpeg/Python not on PATH) |
+| Total ≥ 500 GB | ❌ (Only filler data exists) |
+
+**Infrastructure: 17/17 ✅ | Data Population: 0/3 ❌**
