@@ -1,0 +1,75 @@
+groups:
+  - name: superbuilder_alerts
+    rules:
+      # Job queue backlog
+      - alert: JobQueueBacklog
+        expr: superbuilder_queue_size > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Job queue backlog is high ({{ $value }} jobs)"
+          description: "Queue has more than 100 pending jobs for 5 minutes"
+
+      # Job failure rate
+      - alert: HighJobFailureRate
+        expr: rate(superbuilder_jobs_failed_total[5m]) / rate(superbuilder_jobs_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Job failure rate is above 10% ({{ $value | humanizePercentage }})"
+
+      # API latency
+      - alert: HighAPILatency
+        expr: histogram_quantile(0.95, rate(superbuilder_http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API p95 latency is above 2s ({{ $value }}s)"
+
+      # Backend down
+      - alert: BackendDown
+        expr: up{job="superbuilder-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backend service is down"
+
+      # Worker down
+      - alert: WorkerDown
+        expr: up{job="superbuilder-worker"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Worker process is down"
+
+      # Memory usage
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes{job="superbuilder-backend"} > 1073741824
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Backend using more than 1GB RAM ({{ $value | humanize1024 }}B)"
+
+      # Redis connection
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is unreachable"
+
+      # GPU worker scaling
+      - alert: GPUWorkerScaleNeeded
+        expr: superbuilder_gpu_queue_size > 10 and superbuilder_gpu_workers_active < 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GPU queue has {{ $value }} jobs but few workers active"

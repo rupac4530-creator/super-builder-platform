@@ -1,0 +1,95 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+    "name": "Engine Alto Dev Container",
+    "dockerComposeFile": [
+        "../docker-compose.yml"
+    ],
+    "service": "backend",
+    "workspaceFolder": "/workspace",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "20"
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.11"
+        },
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/nvidia-cuda:1": {
+            "installCudnn": true,
+            "cudaVersion": "12.2"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ms-python.python",
+                "ms-vscode.vscode-typescript-next",
+                "bradlc.vscode-tailwindcss",
+                "ms-azuretools.vscode-docker",
+                "ms-playwright.playwright",
+                "eamodio.gitlens",
+                "github.copilot",
+                "ms-vscode.js-debug",
+                "redhat.vscode-yaml",
+                "yzhang.markdown-all-in-one"
+            ],
+            "settings": {
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "editor.formatOnSave": true,
+                "typescript.tsdk": "node_modules/typescript/lib",
+                "python.defaultInterpreterPath": "/usr/local/bin/python3",
+                "editor.codeActionsOnSave": {
+                    "source.fixAll.eslint": "always"
+                }
+            }
+        }
+    },
+    "forwardPorts": [
+        3000,
+        3001,
+        3003,
+        5432,
+        6379,
+        8080,
+        9090,
+        16686
+    ],
+    "portsAttributes": {
+        "3000": {
+            "label": "Frontend",
+            "onAutoForward": "openBrowser"
+        },
+        "3001": {
+            "label": "Backend API"
+        },
+        "3003": {
+            "label": "Worker Health"
+        },
+        "5432": {
+            "label": "PostgreSQL"
+        },
+        "6379": {
+            "label": "Redis"
+        },
+        "8080": {
+            "label": "Local LLM"
+        },
+        "9090": {
+            "label": "Prometheus"
+        },
+        "16686": {
+            "label": "Jaeger UI"
+        }
+    },
+    "postCreateCommand": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "postStartCommand": "npm run dev",
+    "remoteUser": "node",
+    "containerEnv": {
+        "NODE_ENV": "development",
+        "REDIS_URL": "redis://redis:6379",
+        "DATABASE_URL": "postgresql://postgres:postgres@postgres:5432/engine_alto?sslmode=disable"
+    }
+}

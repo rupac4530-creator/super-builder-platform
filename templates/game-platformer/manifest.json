@@ -1,0 +1,44 @@
+{
+    "name": "Alto Starter — Platformer Game",
+    "type": "game",
+    "engine": "alto-ecs",
+    "version": "1.0.0",
+    "description": "A 2D platformer game template with ECS, physics, input, and rendering systems",
+    "structure": {
+        "scenes": [
+            "MainMenu",
+            "Level1",
+            "GameOver"
+        ],
+        "systems": [
+            "Physics",
+            "Input",
+            "Render",
+            "AI",
+            "Audio"
+        ],
+        "entities": [
+            "Player",
+            "Enemy",
+            "Platform",
+            "Collectible",
+            "Camera"
+        ]
+    },
+    "config": {
+        "resolution": {
+            "width": 1920,
+            "height": 1080
+        },
+        "targetFPS": 60,
+        "physics": {
+            "gravity": 9.81,
+            "friction": 0.3
+        },
+        "rendering": {
+            "backend": "webgl2",
+            "shadows": true,
+            "postProcessing": true
+        }
+    }
+}

@@ -1,0 +1,84 @@
+{
+    "name": "Godot HTML5 Action RPG",
+    "engine": "godot",
+    "version": "4.2",
+    "genre": "action-rpg",
+    "description": "Godot 4.2 project with action RPG mechanics, exportable to HTML5 for browser play",
+    "features": [
+        "html5-export",
+        "combat-system",
+        "inventory",
+        "dialogue",
+        "tile-maps",
+        "ai-npcs"
+    ],
+    "structure": {
+        "project.godot": "Godot project file",
+        "scenes/": {
+            "main/": [
+                "MainMenu.tscn",
+                "GameWorld.tscn",
+                "UI.tscn"
+            ],
+            "player/": [
+                "Player.tscn",
+                "PlayerCamera.tscn"
+            ],
+            "enemies/": [
+                "Slime.tscn",
+                "Skeleton.tscn",
+                "BossGoblin.tscn"
+            ],
+            "levels/": [
+                "Forest.tscn",
+                "Dungeon.tscn",
+                "Village.tscn"
+            ],
+            "ui/": [
+                "HealthBar.tscn",
+                "Inventory.tscn",
+                "DialogueBox.tscn",
+                "MiniMap.tscn"
+            ]
+        },
+        "scripts/": {
+            "player/": [
+                "player_controller.gd",
+                "player_stats.gd",
+                "player_combat.gd"
+            ],
+            "enemies/": [
+                "enemy_base.gd",
+                "enemy_ai.gd",
+                "patrol_state.gd",
+                "attack_state.gd"
+            ],
+            "systems/": [
+                "game_manager.gd",
+                "save_system.gd",
+                "quest_manager.gd",
+                "dialogue_system.gd"
+            ],
+            "ui/": [
+                "hud.gd",
+                "inventory_ui.gd",
+                "menu_manager.gd"
+            ]
+        },
+        "assets/": {
+            "sprites/": "Character and tile sprites",
+            "audio/": "SFX and music",
+            "fonts/": "UI fonts",
+            "tilesets/": "Tilemap resources"
+        },
+        "export_presets.cfg": "HTML5 and desktop export presets"
+    },
+    "exportTargets": [
+        "HTML5",
+        "Windows",
+        "Linux",
+        "macOS",
+        "Android"
+    ],
+    "godotVersion": "4.2.stable"
+}

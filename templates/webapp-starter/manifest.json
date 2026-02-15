@@ -1,0 +1,46 @@
+{
+    "name": "Alto Starter — Web Application",
+    "type": "app",
+    "framework": "next.js",
+    "version": "1.0.0",
+    "description": "A modern web application template with authentication, database, and API routes",
+    "structure": {
+        "pages": [
+            "Home",
+            "Dashboard",
+            "Settings",
+            "Login",
+            "Register"
+        ],
+        "components": [
+            "Navbar",
+            "Sidebar",
+            "Card",
+            "Table",
+            "Form",
+            "Modal"
+        ],
+        "api": [
+            "auth",
+            "users",
+            "projects",
+            "upload"
+        ]
+    },
+    "features": [
+        "Dark mode design system",
+        "JWT authentication",
+        "PostgreSQL database",
+        "File upload (S3)",
+        "Real-time WebSocket",
+        "Responsive layout",
+        "SEO optimization"
+    ],
+    "stack": {
+        "frontend": "Next.js 14 + React + CSS",
+        "backend": "Express + TypeScript",
+        "database": "PostgreSQL",
+        "auth": "JWT + bcrypt",
+        "deploy": "Docker + Vercel"
+    }
+}

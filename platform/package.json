@@ -1,0 +1,30 @@
+{
+    "name": "alto-platform",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev --port 3000",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "test": "vitest run"
+    },
+    "dependencies": {
+        "next": "14.1.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "socket.io-client": "^4.7.4",
+        "lucide-react": "^0.303.0",
+        "recharts": "^2.10.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.3.0",
+        "@types/node": "^20.10.0",
+        "@types/react": "^18.2.0",
+        "@types/react-dom": "^18.2.0",
+        "autoprefixer": "^10.4.16",
+        "postcss": "^8.4.32",
+        "eslint": "^8.55.0",
+        "eslint-config-next": "14.1.0"
+    }
+}

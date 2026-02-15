@@ -1,0 +1,15 @@
+torch>=2.1.0
+torchvision>=0.16.0
+torchaudio>=2.1.0
+onnx>=1.15.0
+onnxruntime-gpu>=1.16.0
+fastapi>=0.104.0
+uvicorn>=0.24.0
+python-multipart>=0.0.6
+numpy>=1.24.0
+Pillow>=10.0.0
+scipy>=1.11.0
+tensorboard>=2.15.0
+pydantic>=2.5.0
+requests>=2.31.0
+tqdm>=4.66.0

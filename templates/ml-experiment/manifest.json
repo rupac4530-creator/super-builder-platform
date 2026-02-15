@@ -1,0 +1,48 @@
+{
+    "name": "Alto Starter — ML Experiment",
+    "type": "ml",
+    "framework": "pytorch",
+    "version": "1.0.0",
+    "description": "An ML experiment template with dataset management, training pipeline, and model evaluation",
+    "structure": {
+        "pipeline": [
+            "DataLoader",
+            "Preprocessing",
+            "Training",
+            "Evaluation",
+            "Export"
+        ],
+        "models": [
+            "CNN",
+            "ResNet",
+            "Transformer"
+        ],
+        "tools": [
+            "TensorBoard",
+            "Weights&Biases",
+            "MLflow"
+        ]
+    },
+    "config": {
+        "defaultArchitecture": "cnn",
+        "gpuRequired": false,
+        "datasetFormat": [
+            "csv",
+            "images",
+            "json"
+        ],
+        "outputFormats": [
+            "pytorch",
+            "onnx",
+            "tensorrt"
+        ]
+    },
+    "features": [
+        "Mixed precision (FP16) training",
+        "Automatic hyperparameter tuning",
+        "Early stopping",
+        "Model checkpointing",
+        "ONNX export",
+        "GPU memory optimization"
+    ]
+}

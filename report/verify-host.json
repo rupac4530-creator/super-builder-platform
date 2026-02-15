@@ -1,0 +1,60 @@
+{
+    "timestamp": "2026-02-15T08:09:14Z",
+    "platform": "windows",
+    "checks": {
+        "node": {
+            "installed": true,
+            "version": "v20.11.1"
+        },
+        "npm": {
+            "installed": true,
+            "version": "10.2.4"
+        },
+        "git": {
+            "installed": false,
+            "version": null
+        },
+        "python": {
+            "installed": false,
+            "version": null
+        },
+        "redis": {
+            "installed": false,
+            "version": null
+        },
+        "ffmpeg": {
+            "installed": false,
+            "version": null
+        },
+        "docker": {
+            "installed": false,
+            "version": null
+        },
+        "nvidia_gpu": {
+            "installed": true,
+            "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+            "driver": "551.86"
+        },
+        "blender": {
+            "installed": false,
+            "version": null
+        },
+        "chrome": {
+            "installed": false,
+            "version": null
+        }
+    },
+    "required_ok": true,
+    "missing_recommended": [
+        "git",
+        "python",
+        "redis",
+        "ffmpeg",
+        "docker"
+    ],
+    "missing_optional": [
+        "blender",
+        "chrome"
+    ],
+    "overall": "PARTIAL"
+}

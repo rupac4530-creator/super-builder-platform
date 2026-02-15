@@ -1,0 +1,256 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Engine Alto — Governance Agent Interfaces",
+    "description": "Schema definitions for the three branches of autonomous governance",
+    "version": "1.0.0",
+    "branches": {
+        "legislative": {
+            "description": "Proposes changes, features, and policy amendments",
+            "agents": [
+                {
+                    "type": "builder",
+                    "role": "Propose feature implementations and code changes",
+                    "capabilities": [
+                        "code_generation",
+                        "architecture_design",
+                        "testing"
+                    ],
+                    "input_schema": {
+                        "proposal_id": "string",
+                        "title": "string",
+                        "description": "string",
+                        "impact_analysis": {
+                            "affected_modules": [
+                                "string"
+                            ],
+                            "risk_level": "low | medium | high | critical",
+                            "estimated_effort_hours": "number",
+                            "resource_requirements": {
+                                "cpu": "string",
+                                "gpu": "boolean",
+                                "memory_gb": "number"
+                            }
+                        },
+                        "justification": "string"
+                    },
+                    "output_schema": {
+                        "proposal_id": "string",
+                        "status": "submitted | under_review | approved | rejected",
+                        "artifacts": [
+                            "string"
+                        ],
+                        "created_at": "ISO 8601 timestamp"
+                    }
+                },
+                {
+                    "type": "researcher",
+                    "role": "Scan emerging tech, papers, repos and propose capability upgrades",
+                    "capabilities": [
+                        "web_scanning",
+                        "paper_analysis",
+                        "trend_detection"
+                    ],
+                    "input_schema": {
+                        "scan_scope": [
+                            "string"
+                        ],
+                        "depth": "shallow | deep",
+                        "time_horizon_months": "number"
+                    },
+                    "output_schema": {
+                        "findings": [
+                            {
+                                "source": "string",
+                                "capability_delta": "string",
+                                "confidence": "number (0-1)",
+                                "urgency": "low | medium | high"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "growth",
+                    "role": "Propose user-acquisition and retention experiments",
+                    "capabilities": [
+                        "ab_testing",
+                        "funnel_analysis",
+                        "content_generation"
+                    ]
+                },
+                {
+                    "type": "sasn",
+                    "role": "Set long-term strategic goals and capability targets",
+                    "capabilities": [
+                        "goal_scoring",
+                        "industry_analysis",
+                        "forecasting"
+                    ]
+                }
+            ]
+        },
+        "judicial": {
+            "description": "Evaluates proposals through adversarial testing and ethical review",
+            "agents": [
+                {
+                    "type": "auditor",
+                    "role": "Consistency checks, policy compliance, penalty tracking",
+                    "capabilities": [
+                        "code_review",
+                        "policy_check",
+                        "compliance_audit"
+                    ],
+                    "input_schema": {
+                        "proposal_id": "string",
+                        "artifacts": [
+                            "string"
+                        ]
+                    },
+                    "output_schema": {
+                        "verdict": "pass | fail | conditional",
+                        "issues": [
+                            {
+                                "severity": "info | warning | error | critical",
+                                "description": "string",
+                                "remediation": "string"
+                            }
+                        ],
+                        "score": "number (0-100)"
+                    }
+                },
+                {
+                    "type": "security",
+                    "role": "Ethical hacker — probes for vulnerabilities via simulated attacks",
+                    "capabilities": [
+                        "penetration_testing",
+                        "dependency_audit",
+                        "secret_detection"
+                    ],
+                    "input_schema": {
+                        "target_module": "string",
+                        "attack_vectors": [
+                            "string"
+                        ],
+                        "sandbox_id": "string"
+                    },
+                    "output_schema": {
+                        "vulnerabilities": [
+                            {
+                                "cve_id": "string | null",
+                                "severity": "low | medium | high | critical",
+                                "description": "string",
+                                "exploitable": "boolean",
+                                "remediation": "string"
+                            }
+                        ],
+                        "overall_risk": "low | medium | high | critical"
+                    }
+                },
+                {
+                    "type": "contrarian",
+                    "role": "Adversarial tester — tries to break proposals with edge cases",
+                    "capabilities": [
+                        "fuzz_testing",
+                        "edge_case_generation",
+                        "regression_testing"
+                    ]
+                },
+                {
+                    "type": "doctor_healer",
+                    "role": "Meta-validator — validates that fixes from doctor agents are correct",
+                    "capabilities": [
+                        "fix_validation",
+                        "regression_check",
+                        "health_monitoring"
+                    ]
+                }
+            ]
+        },
+        "executive": {
+            "description": "Executes approved changes with canary deployments and monitoring",
+            "agents": [
+                {
+                    "type": "deployer",
+                    "role": "Model optimization, export, containerization, and deployment",
+                    "capabilities": [
+                        "docker_build",
+                        "k8s_deploy",
+                        "canary_management",
+                        "rollback"
+                    ],
+                    "input_schema": {
+                        "approved_proposal_id": "string",
+                        "deployment_strategy": "canary | blue_green | rolling",
+                        "canary_config": {
+                            "initial_percentage": "number (1-100)",
+                            "step_percentage": "number",
+                            "observation_minutes": "number",
+                            "rollback_threshold_error_rate": "number (0-1)"
+                        }
+                    },
+                    "output_schema": {
+                        "deployment_id": "string",
+                        "status": "deploying | canary | rolling_out | complete | rolled_back",
+                        "metrics": {
+                            "error_rate": "number",
+                            "latency_p99_ms": "number",
+                            "success_count": "number"
+                        }
+                    }
+                },
+                {
+                    "type": "doctor",
+                    "role": "Self-healing — detects and auto-fixes common issues",
+                    "capabilities": [
+                        "bug_detection",
+                        "auto_fix",
+                        "performance_tuning"
+                    ]
+                },
+                {
+                    "type": "performance_tracker",
+                    "role": "Real-time metrics, SLO monitoring, and alerting",
+                    "capabilities": [
+                        "metrics_collection",
+                        "anomaly_detection",
+                        "slo_tracking"
+                    ]
+                }
+            ]
+        }
+    },
+    "common_interfaces": {
+        "agent_lifecycle": {
+            "methods": [
+                "register(config) -> agent_id",
+                "activate(agent_id) -> status",
+                "deactivate(agent_id) -> status",
+                "retire(agent_id, reason) -> audit_record",
+                "get_status(agent_id) -> agent_status",
+                "get_metrics(agent_id) -> agent_metrics"
+            ]
+        },
+        "task_interface": {
+            "methods": [
+                "accept_task(task_id) -> acknowledgement",
+                "report_progress(task_id, progress) -> void",
+                "complete_task(task_id, result) -> void",
+                "fail_task(task_id, error, retry?) -> void"
+            ]
+        },
+        "memory_interface": {
+            "methods": [
+                "store(key, value, ttl?) -> void",
+                "retrieve(key) -> value",
+                "search(query) -> results[]",
+                "consolidate() -> summary"
+            ]
+        },
+        "audit_interface": {
+            "methods": [
+                "log_decision(agent_id, decision, rationale) -> audit_id",
+                "get_history(agent_id, since?) -> audit_record[]",
+                "export_full_log() -> audit_dump"
+            ]
+        }
+    }
+}

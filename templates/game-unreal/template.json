@@ -1,0 +1,105 @@
+{
+    "name": "Unreal Engine 5 Open World",
+    "engine": "unreal",
+    "version": "5.3",
+    "genre": "open-world",
+    "description": "UE5 project with Nanite, Lumen, World Partition, and open world streaming",
+    "features": [
+        "nanite",
+        "lumen",
+        "world-partition",
+        "chaos-physics",
+        "niagara-vfx",
+        "mass-ai",
+        "multiplayer"
+    ],
+    "structure": {
+        "Source/": {
+            "SuperBuilder/": {
+                "Player/": [
+                    "SBPlayerCharacter.h",
+                    "SBPlayerCharacter.cpp",
+                    "SBPlayerController.h",
+                    "SBPlayerController.cpp"
+                ],
+                "Game/": [
+                    "SBGameMode.h",
+                    "SBGameMode.cpp",
+                    "SBGameState.h",
+                    "SBGameState.cpp"
+                ],
+                "AI/": [
+                    "SBAIController.h",
+                    "SBAIController.cpp",
+                    "SBBehaviorTree.h"
+                ],
+                "Vehicles/": [
+                    "SBVehicle.h",
+                    "SBVehicle.cpp"
+                ],
+                "Weapons/": [
+                    "SBWeaponBase.h",
+                    "SBWeaponBase.cpp",
+                    "SBProjectile.h"
+                ],
+                "UI/": [
+                    "SBHUD.h",
+                    "SBHUD.cpp",
+                    "SBInventoryWidget.h"
+                ]
+            }
+        },
+        "Content/": {
+            "Maps/": [
+                "OpenWorld/",
+                "MainMenu/"
+            ],
+            "Characters/": [
+                "Player/",
+                "NPCs/",
+                "Enemies/"
+            ],
+            "Environment/": [
+                "Terrain/",
+                "Foliage/",
+                "Buildings/",
+                "Props/"
+            ],
+            "VFX/": [
+                "Niagara/",
+                "Materials/"
+            ],
+            "Audio/": [
+                "Music/",
+                "SFX/",
+                "Ambience/"
+            ],
+            "UI/": [
+                "Widgets/",
+                "Textures/"
+            ]
+        },
+        "Config/": [
+            "DefaultEngine.ini",
+            "DefaultGame.ini",
+            "DefaultInput.ini"
+        ],
+        "Plugins/": [
+            "CommonLoadingScreen/",
+            "OnlineSubsystem/"
+        ]
+    },
+    "dependencies": {
+        "Chaos": "Physics and destruction",
+        "Niagara": "VFX system",
+        "MassAI": "Large-scale AI crowds",
+        "WorldPartition": "Open world streaming"
+    },
+    "buildTargets": [
+        "Win64",
+        "Linux",
+        "PS5",
+        "XboxSeriesX"
+    ],
+    "unrealVersion": "5.3"
+}

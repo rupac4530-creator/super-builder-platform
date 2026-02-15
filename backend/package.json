@@ -1,0 +1,49 @@
+{
+    "name": "alto-backend",
+    "version": "0.1.0",
+    "description": "Engine Alto Backend API — Express + TypeScript",
+    "main": "dist/server.js",
+    "scripts": {
+        "dev": "tsx watch src/server.ts",
+        "build": "tsc",
+        "start": "node dist/server.js",
+        "start:worker": "tsx src/workers/index.ts",
+        "test": "vitest run",
+        "lint": "eslint src/ --ext .ts"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "cors": "^2.8.5",
+        "helmet": "^7.1.0",
+        "morgan": "^1.10.0",
+        "dotenv": "^16.3.1",
+        "socket.io": "^4.7.4",
+        "bullmq": "^5.1.0",
+        "ioredis": "^5.3.2",
+        "pg": "^8.11.3",
+        "uuid": "^9.0.0",
+        "zod": "^3.22.4",
+        "winston": "^3.11.0",
+        "prom-client": "^15.1.0",
+        "multer": "^1.4.5-lts.1",
+        "jsonwebtoken": "^9.0.2",
+        "bcryptjs": "^2.4.3"
+    },
+    "devDependencies": {
+        "typescript": "^5.3.0",
+        "tsx": "^4.7.0",
+        "@types/express": "^4.17.21",
+        "@types/cors": "^2.8.17",
+        "@types/morgan": "^1.9.9",
+        "@types/uuid": "^9.0.7",
+        "@types/multer": "^1.4.11",
+        "@types/jsonwebtoken": "^9.0.5",
+        "@types/bcryptjs": "^2.4.6",
+        "@types/pg": "^8.10.9",
+        "@types/node": "^20.10.0",
+        "vitest": "^1.1.0",
+        "eslint": "^8.55.0",
+        "@typescript-eslint/parser": "^6.13.0",
+        "@typescript-eslint/eslint-plugin": "^6.13.0"
+    }
+}

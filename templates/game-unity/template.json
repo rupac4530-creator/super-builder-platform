@@ -1,0 +1,92 @@
+{
+    "name": "Unity Multiplayer Starter",
+    "engine": "unity",
+    "version": "2022.3",
+    "genre": "multiplayer",
+    "description": "Ready-to-open Unity project with Netcode for GameObjects, lobby system, player controllers, and sample arena map",
+    "features": [
+        "multiplayer",
+        "lobby",
+        "matchmaking",
+        "player-controller",
+        "physics",
+        "ui"
+    ],
+    "structure": {
+        "Assets/": {
+            "Scripts/": {
+                "Networking/": [
+                    "NetworkManager.cs",
+                    "LobbyManager.cs",
+                    "PlayerSpawner.cs"
+                ],
+                "Player/": [
+                    "PlayerController.cs",
+                    "PlayerInput.cs",
+                    "PlayerHealth.cs",
+                    "PlayerUI.cs"
+                ],
+                "Game/": [
+                    "GameManager.cs",
+                    "ScoreManager.cs",
+                    "RoundManager.cs"
+                ],
+                "AI/": [
+                    "NPCController.cs",
+                    "BehaviorTree.cs",
+                    "PatrolState.cs",
+                    "ChaseState.cs"
+                ],
+                "UI/": [
+                    "MainMenu.cs",
+                    "HUD.cs",
+                    "PauseMenu.cs",
+                    "ScoreBoard.cs"
+                ]
+            },
+            "Scenes/": [
+                "MainMenu.unity",
+                "Lobby.unity",
+                "Arena.unity"
+            ],
+            "Prefabs/": [
+                "Player.prefab",
+                "NPC.prefab",
+                "Projectile.prefab",
+                "PickupHealth.prefab"
+            ],
+            "Materials/": [
+                "PlayerMat.mat",
+                "FloorMat.mat",
+                "WallMat.mat"
+            ],
+            "Animations/": [
+                "PlayerAnimator.controller",
+                "Idle.anim",
+                "Run.anim",
+                "Jump.anim"
+            ]
+        },
+        "Packages/": [
+            "manifest.json"
+        ],
+        "ProjectSettings/": [
+            "ProjectSettings.asset",
+            "QualitySettings.asset",
+            "InputManager.asset"
+        ]
+    },
+    "dependencies": {
+        "com.unity.netcode.gameobjects": "1.7.1",
+        "com.unity.services.lobby": "1.1.0",
+        "com.unity.inputsystem": "1.7.0",
+        "com.unity.cinemachine": "2.9.7"
+    },
+    "buildTargets": [
+        "StandaloneWindows64",
+        "StandaloneOSX",
+        "WebGL",
+        "Android",
+        "iOS"
+    ]
+}

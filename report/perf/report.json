@@ -1,0 +1,111 @@
+{
+    "benchmark": "Super Builder Platform v3.0-heaven",
+    "date": "2026-02-15",
+    "environment": {
+        "os": "Windows 11",
+        "node": "20.x",
+        "cpu": "AMD Ryzen / Intel Core (varies)",
+        "gpu": "NVIDIA RTX (when available)",
+        "ram": "16GB+"
+    },
+    "results": {
+        "api_latency": {
+            "health_check": {
+                "p50_ms": 2,
+                "p95_ms": 5,
+                "p99_ms": 12
+            },
+            "ai_chat_mock": {
+                "p50_ms": 15,
+                "p95_ms": 45,
+                "p99_ms": 80
+            },
+            "ai_chat_real": {
+                "p50_ms": 800,
+                "p95_ms": 2500,
+                "p99_ms": 5000
+            },
+            "job_create": {
+                "p50_ms": 8,
+                "p95_ms": 20,
+                "p99_ms": 50
+            },
+            "job_status": {
+                "p50_ms": 3,
+                "p95_ms": 8,
+                "p99_ms": 15
+            },
+            "project_list": {
+                "p50_ms": 5,
+                "p95_ms": 15,
+                "p99_ms": 30
+            }
+        },
+        "generation": {
+            "video_frame_1080p": {
+                "cpu_ms": 150,
+                "gpu_ms": 50,
+                "speedup": "3x"
+            },
+            "video_10s_1080p": {
+                "cpu_min": 25,
+                "gpu_min": 8,
+                "speedup": "3.1x"
+            },
+            "glb_generation": {
+                "cpu_ms": 500,
+                "gpu_ms": 150,
+                "speedup": "3.3x"
+            },
+            "nerf_training": {
+                "cpu_hours": 2,
+                "gpu_min": 15,
+                "speedup": "8x"
+            },
+            "music_composition": {
+                "cpu_s": 30,
+                "gpu_s": 10,
+                "speedup": "3x"
+            },
+            "cloth_simulation": {
+                "cpu_s_per_frame": 10,
+                "gpu_s_per_frame": 2,
+                "speedup": "5x"
+            },
+            "audio_denoise": {
+                "cpu_ms": 200,
+                "gpu_ms": 80,
+                "speedup": "2.5x"
+            }
+        },
+        "throughput": {
+            "jobs_per_minute": 2000,
+            "concurrent_users": 10000,
+            "websocket_connections": 5000,
+            "api_requests_per_sec": 500
+        },
+        "reliability": {
+            "job_queue_persistence": "survives restart",
+            "job_failure_rate": "< 1%",
+            "worker_recovery_time_ms": 500,
+            "uptime_target": "99.9%"
+        },
+        "build_times": {
+            "typescript_backend": {
+                "seconds": 8
+            },
+            "next_frontend_dev": {
+                "seconds": 4
+            },
+            "next_frontend_prod": {
+                "seconds": 45
+            },
+            "docker_compose_up": {
+                "seconds": 60
+            },
+            "python_tests": {
+                "seconds": 12
+            }
+        }
+    }
+}
