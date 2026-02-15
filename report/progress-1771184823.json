@@ -1,0 +1,23 @@
+{
+  "phase": "C",
+  "step": "sdxl-1024-tiling",
+  "status": "COMPLETE",
+  "timestamp": "2026-02-16T01:17:03.626141",
+  "artifact": "D:\\super-builder-platform\\data\\previews\\sdxl-tiled-1024x1024-1771184823.png",
+  "details": {
+    "pipeline": "sdxl-tiled-1024",
+    "prompt": "a futuristic city at night with neon lights, cyberpunk, 8k",
+    "resolution": "1024x1024",
+    "tile_size": 512,
+    "overlap": 64,
+    "tiles": 9,
+    "steps": 4,
+    "model": "stabilityai/sdxl-turbo",
+    "file": "D:\\super-builder-platform\\data\\previews\\sdxl-tiled-1024x1024-1771184823.png",
+    "size_bytes": 1778381,
+    "sha256": "f131b2bbf4d57af65d2f272878e1c5beacefff20afa80fe254fd7a0d1d42f9f6",
+    "generation_time_s": 233.16,
+    "device": "cuda",
+    "timestamp": "2026-02-16T01:17:03.626141"
+  }
+}

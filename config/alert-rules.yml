@@ -1,0 +1,47 @@
+# Alert rules for Engine Alto GPU AI Lab
+groups:
+  - name: gpu_alerts
+    rules:
+      - alert: GPUTemperatureHigh
+        expr: nvidia_gpu_temperature_celsius > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'GPU temperature above 85C'
+          
+      - alert: GPUMemoryOOM
+        expr: nvidia_gpu_memory_used_bytes / nvidia_gpu_memory_total_bytes > 0.95
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'GPU memory usage above 95%'
+
+  - name: queue_alerts
+    rules:
+      - alert: QueueBacklog
+        expr: bullmq_queue_waiting > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Job queue backlog exceeds 100 jobs'
+
+      - alert: JobFailureRate
+        expr: rate(jobs_failed_total[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Job failure rate exceeds 10%'
+
+  - name: storage_alerts
+    rules:
+      - alert: DiskSpaceLow
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Disk space below 10%'

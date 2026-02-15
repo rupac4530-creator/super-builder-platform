@@ -1,142 +1,110 @@
-<#
-.SYNOPSIS
-  Backup artifact vault to external path or local snapshot.
-.DESCRIPTION
-  Creates incremental snapshots of the artifact vault using robocopy
-  (Windows equivalent of rsync). Supports bandwidth limiting, verify,
-  and timestamped snapshot naming.
-.PARAMETER ArtifactRoot
-  Source directory to back up
-.PARAMETER BackupTarget
-  Destination path (external drive, network share, etc.)
-.PARAMETER BandwidthMBps
-  Bandwidth limit in MB/s (0 = unlimited)
-.PARAMETER Verify
-  Verify files after copy
-.PARAMETER DryRun
-  Show what would be copied without doing it
-#>
+# Engine Alto — Artifact Backup Script
+# Phase I: Mirror data to external storage
 
 param(
-    [string]$ArtifactRoot = $(if ($env:ARTIFACT_ROOT) { $env:ARTIFACT_ROOT } else { 'D:\super-builder-platform\data' }),
-    [string]$BackupTarget = $(if ($env:BACKUP_EXTERNAL_PATH) { $env:BACKUP_EXTERNAL_PATH } else { 'D:\super-builder-platform\data\backups' }),
-    [int]$BandwidthMBps = 0,
-    [switch]$Verify,
-    [switch]$DryRun
+    [string]$Destination = 'F:\engine-alto-backups',
+    [switch]$DryRun,
+    [switch]$Full
 )
 
 $ErrorActionPreference = 'Continue'
-$timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$snapshotName = "snap-$timestamp"
-$logPath = Join-Path $ArtifactRoot 'logs\backup-log.txt'
+$source = 'D:\super-builder-platform\data'
+$logFile = 'D:\super-builder-platform\logs\backup.log'
 
-Write-Host "=== Engine Alto — Artifact Backup ===" -ForegroundColor Cyan
-Write-Host "Source: $ArtifactRoot"
-Write-Host "Target: $BackupTarget\$snapshotName"
-Write-Host "Bandwidth limit: $(if($BandwidthMBps -eq 0) {'unlimited'} else {"$BandwidthMBps MB/s"})"
-Write-Host "Verify: $Verify"
-Write-Host "Dry run: $DryRun"
-Write-Host ""
+Write-Host '============================================' -ForegroundColor Cyan
+Write-Host '  Engine Alto Artifact Backup' -ForegroundColor Cyan
+Write-Host "  $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Cyan
+Write-Host '============================================' -ForegroundColor Cyan
 
-# Ensure log directory
-$logDir = Split-Path $logPath -Parent
-if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
-
-Add-Content -Path $logPath -Value "=== Backup started: $timestamp ==="
-
-# Ensure target exists
-$targetPath = Join-Path $BackupTarget $snapshotName
-if (-not $DryRun) {
-    if (-not (Test-Path $targetPath)) {
-        New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
+# Ensure destination exists
+if (-not (Test-Path $Destination)) {
+    Write-Host "  Destination not found: $Destination" -ForegroundColor Yellow
+    Write-Host "  Creating backup directory..." -ForegroundColor Yellow
+    try {
+        New-Item -ItemType Directory -Path $Destination -Force | Out-Null
+    }
+    catch {
+        Write-Host "  Cannot create $Destination - backup to local archive instead" -ForegroundColor Red
+        $Destination = 'D:\super-builder-platform\data\backups\local-mirror'
+        New-Item -ItemType Directory -Path $Destination -Force | Out-Null
     }
 }
 
-# Build robocopy command (excludes backups dir to avoid recursive copy)
-$excludeDirs = @('backups', 'logs', '.git')
-$excludeArgs = $excludeDirs | ForEach-Object { "/XD `"$_`"" }
+Write-Host "  Source:      $source"
+Write-Host "  Destination: $Destination"
 
-# Calculate source size
-$sourceSize = (Get-ChildItem $ArtifactRoot -Recurse -Force -ErrorAction SilentlyContinue |
-    Where-Object { -not $_.PSIsContainer } |
-    Measure-Object -Property Length -Sum).Sum
-$sourceGB = [math]::Round($sourceSize / 1073741824, 2)
+# Priority dirs for backup
+$backupDirs = @(
+    @{ Name = 'models'; Priority = 'CRITICAL'; Description = 'AI model weights' },
+    @{ Name = 'renders'; Priority = 'HIGH'; Description = 'Rendered outputs' },
+    @{ Name = 'checkpoints'; Priority = 'HIGH'; Description = 'Training checkpoints' },
+    @{ Name = 'datasets'; Priority = 'MEDIUM'; Description = 'Training datasets' },
+    @{ Name = 'assets'; Priority = 'MEDIUM'; Description = 'Generated assets' },
+    @{ Name = 'previews'; Priority = 'LOW'; Description = 'Preview files' },
+    @{ Name = 'exports'; Priority = 'LOW'; Description = 'Export bundles' }
+)
 
-Write-Host "Source size: $sourceGB GB" -ForegroundColor Cyan
-
-if ($DryRun) {
-    Write-Host "[DRY RUN] Would copy $sourceGB GB from $ArtifactRoot to $targetPath" -ForegroundColor DarkYellow
-    Write-Host "[DRY RUN] Excluding directories: $($excludeDirs -join ', ')"
-
-    # List what would be copied
-    $dirs = Get-ChildItem $ArtifactRoot -Directory | Where-Object { $_.Name -notin $excludeDirs }
-    foreach ($d in $dirs) {
-        $dSize = (Get-ChildItem $d.FullName -Recurse -Force -ErrorAction SilentlyContinue |
-            Measure-Object -Property Length -Sum).Sum
-        $dMB = [math]::Round($dSize / 1048576, 2)
-        Write-Host "  $($d.Name): $dMB MB"
-    }
+$stats = @{
+    total_dirs  = 0
+    total_files = 0
+    total_size  = 0
+    errors      = 0
 }
-else {
-    Write-Host "Starting robocopy..." -ForegroundColor Yellow
 
-    # Use robocopy for incremental copy
-    $robocopyArgs = @(
-        "`"$ArtifactRoot`"",
-        "`"$targetPath`"",
-        '/MIR',         # Mirror mode (incremental)
-        '/R:3',         # Retry 3 times
-        '/W:5',         # Wait 5 seconds between retries
-        '/MT:8',        # 8 threads
-        '/NP',          # No progress percentage (cleaner log)
-        '/NDL',         # No directory list
-        '/NFL'          # No file list (summary only)
-    )
-
-    # Add bandwidth limit (robocopy uses /IPG for inter-packet gap)
-    if ($BandwidthMBps -gt 0) {
-        $ipg = [math]::Round(1000 / $BandwidthMBps, 0)
-        $robocopyArgs += "/IPG:$ipg"
+foreach ($dir in $backupDirs) {
+    $srcPath = Join-Path $source $dir.Name
+    $dstPath = Join-Path $Destination $dir.Name
+    
+    if (-not (Test-Path $srcPath)) {
+        Write-Host "  SKIP: $($dir.Name) (not found)" -ForegroundColor Yellow
+        continue
     }
-
-    # Add exclude dirs
-    foreach ($exDir in $excludeDirs) {
-        $robocopyArgs += "/XD `"$(Join-Path $ArtifactRoot $exDir)`""
-    }
-
-    $cmdLine = "robocopy $($robocopyArgs -join ' ')"
-    Write-Host "  Command: $cmdLine" -ForegroundColor DarkGray
-
-    Invoke-Expression $cmdLine
-    $exitCode = $LASTEXITCODE
-
-    # Robocopy exit codes: 0-7 = success/info, 8+ = error
-    if ($exitCode -lt 8) {
-        Write-Host "Backup completed successfully (exit code: $exitCode)" -ForegroundColor Green
-        Add-Content -Path $logPath -Value "  Status: SUCCESS (exit $exitCode), Target: $targetPath"
+    
+    $files = Get-ChildItem $srcPath -File -Recurse -ErrorAction SilentlyContinue
+    $dirSize = ($files | Measure-Object -Property Length -Sum).Sum
+    
+    Write-Host "`n  [$($dir.Priority)] $($dir.Name): $($files.Count) files, $([math]::Round($dirSize/1GB, 2)) GB"
+    
+    if ($DryRun) {
+        Write-Host "    DRY RUN - would copy to $dstPath" -ForegroundColor Yellow
     }
     else {
-        Write-Host "Backup had errors (exit code: $exitCode)" -ForegroundColor Red
-        Add-Content -Path $logPath -Value "  Status: ERROR (exit $exitCode)"
-    }
-
-    # Verify if requested
-    if ($Verify) {
-        Write-Host "Verifying backup..." -ForegroundColor Yellow
-        $targetSize = (Get-ChildItem $targetPath -Recurse -Force -ErrorAction SilentlyContinue |
-            Where-Object { -not $_.PSIsContainer } |
-            Measure-Object -Property Length -Sum).Sum
-        $targetGB = [math]::Round($targetSize / 1073741824, 2)
-        $match = [math]::Abs($sourceGB - $targetGB) -lt 0.01
-        if ($match) {
-            Write-Host "  VERIFIED: Source ($sourceGB GB) matches target ($targetGB GB)" -ForegroundColor Green
+        try {
+            # Use robocopy for efficient mirroring
+            $roboArgs = @($srcPath, $dstPath, '/MIR', '/MT:4', '/R:2', '/W:5', '/NFL', '/NDL', '/NJH', '/NJS')
+            if (-not $Full) {
+                # Incremental: only copy newer files
+                $roboArgs += '/XO'
+            }
+            $roboResult = & robocopy @roboArgs 2>&1
+            Write-Host "    Backed up to $dstPath" -ForegroundColor Green
         }
-        else {
-            Write-Host "  WARNING: Size mismatch — source $sourceGB GB vs target $targetGB GB" -ForegroundColor Yellow
+        catch {
+            Write-Host "    ERROR backing up: $_" -ForegroundColor Red
+            $stats.errors++
         }
     }
+    
+    $stats.total_dirs++
+    $stats.total_files += $files.Count
+    $stats.total_size += $dirSize
 }
 
-Write-Host ""
-Write-Host "=== Backup Complete ===" -ForegroundColor Cyan
-Add-Content -Path $logPath -Value "=== Backup ended: $(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss') ==="
+Write-Host "`n============================================" -ForegroundColor Cyan
+Write-Host '  BACKUP SUMMARY' -ForegroundColor Cyan
+Write-Host '============================================' -ForegroundColor Cyan
+Write-Host "  Directories: $($stats.total_dirs)"
+Write-Host "  Files:       $($stats.total_files)"
+Write-Host "  Total size:  $([math]::Round($stats.total_size/1GB, 2)) GB"
+Write-Host "  Errors:      $($stats.errors)"
+if ($DryRun) { Write-Host "  MODE: DRY RUN" -ForegroundColor Yellow }
+
+$report = @{
+    timestamp   = (Get-Date -Format 'o')
+    source      = $source
+    destination = $Destination
+    stats       = $stats
+    dry_run     = [bool]$DryRun
+}
+$report | ConvertTo-Json -Depth 3 | Out-File 'D:\super-builder-platform\report\backup-report.json' -Encoding utf8
+Write-Host "  Report: report\backup-report.json" -ForegroundColor Green

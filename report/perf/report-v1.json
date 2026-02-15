@@ -1,0 +1,92 @@
+{
+  "report_version": "1.0",
+  "timestamp": "2026-02-16T00:35:11.538136",
+  "system": {
+    "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "vram_gb": 6.0,
+    "cuda_version": "12.1",
+    "pytorch_version": "2.5.1+cu121",
+    "compute_capability": "8.9",
+    "driver_version": "551.86",
+    "python_version": "3.11.9",
+    "ffmpeg_version": "8.0.1"
+  },
+  "optimization": {
+    "precision": "fp16 (half precision)",
+    "mixed_precision": true,
+    "sdxl_turbo_steps": 4,
+    "sdxl_turbo_guidance": 0.0,
+    "video_crf": 23,
+    "video_preset": "medium"
+  },
+  "benchmarks": {
+    "sdxl_turbo": {
+      "pipeline": "SDXL-Turbo Text-to-Image",
+      "model": "stabilityai/sdxl-turbo",
+      "precision": "fp16",
+      "device": "RTX 4050 6GB",
+      "resolution": "512x512",
+      "inference_steps": 4,
+      "guidance_scale": 0.0,
+      "images_generated": 8,
+      "avg_time_s": 29.78,
+      "min_time_s": 28.23,
+      "max_time_s": 31.51,
+      "avg_size_kb": 414.1,
+      "total_size_mb": 3.2,
+      "throughput_images_per_min": 2.0,
+      "vram_used_gb": 6.6,
+      "status": "PASS"
+    },
+    "video_pipeline": {
+      "pipeline": "Frame Sequence to MP4",
+      "encoder": "libx264",
+      "resolution": "1280x720",
+      "fps": 30,
+      "duration_s": 5,
+      "total_frames": 150,
+      "output_size_mb": 0.32,
+      "codec": "H.264",
+      "crf": 23,
+      "status": "PASS"
+    },
+    "audio_pipeline": {
+      "pipeline": "Audio Synthesis + Processing",
+      "effects": [
+        "chord_synthesis",
+        "echo_reverb",
+        "mp3_encode"
+      ],
+      "sample_rate": 44100,
+      "duration_s": 10,
+      "files_generated": 1,
+      "total_size_kb": 861.4,
+      "status": "PASS"
+    },
+    "3d_mesh": {
+      "pipeline": "Procedural Icosphere Generation",
+      "vertices": 642,
+      "faces": 1280,
+      "file_size_kb": 37.9,
+      "format": "OBJ",
+      "subdivisions": 3,
+      "status": "PASS"
+    },
+    "dataset": {
+      "pipeline": "Synthetic Prompt Dataset",
+      "entries": 10000,
+      "format": "JSONL",
+      "size_mb": 2.0,
+      "categories": 10,
+      "styles": 10,
+      "status": "PASS"
+    }
+  },
+  "summary": {
+    "total_pipelines": 5,
+    "passed": 5,
+    "failed": 0,
+    "avg_sdxl_time_s": 29.78,
+    "sdxl_throughput_per_min": 2.0
+  }
+}

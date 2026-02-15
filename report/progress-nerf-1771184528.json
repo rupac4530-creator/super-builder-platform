@@ -1,0 +1,18 @@
+{
+  "phase": "F",
+  "step": "nerf-small",
+  "status": "COMPLETE",
+  "timestamp": "2026-02-16T01:12:08.061598",
+  "details": {
+    "pipeline": "nerf-small",
+    "resolution": 48,
+    "vertices": 1062,
+    "faces": 224,
+    "input_images": 8,
+    "file": "D:\\super-builder-platform\\data\\previews\\nerf-mesh-1771184528.obj",
+    "size_bytes": 36715,
+    "sha256": "b287f5986c23222349c86a312b579fe70542488b08e9e12e598c8d30a4b8d50c",
+    "time_s": 0.17,
+    "timestamp": "2026-02-16T01:12:08.061598"
+  }
+}

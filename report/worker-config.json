@@ -1,0 +1,17 @@
+﻿{
+    "vram_gb":  6,
+    "gpu_count":  1,
+    "redis_available":  false,
+    "gpu_name":  "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "max_concurrent_jobs":  1,
+    "supported_pipelines":  [
+                                "text-to-image",
+                                "image-to-image",
+                                "audio-processing",
+                                "video-encoding",
+                                "3d-mesh-generation"
+                            ],
+    "backend_ready":  true,
+    "python_exe":  "D:\\super-builder-platform\\tools\\python311\\python.exe",
+    "ffmpeg_exe":  "D:\\super-builder-platform\\tools\\ffmpeg\\ffmpeg.exe"
+}

@@ -1,0 +1,154 @@
+{
+    "complete": true,
+    "timestamp": "2026-02-16T01:17:03+05:30",
+    "platform": "Engine Alto v3.0.0-heaven",
+    "host": {
+        "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+        "vram_gb": 6,
+        "cuda": "12.1",
+        "pytorch": "2.5.1+cu121",
+        "python": "3.11.9",
+        "ffmpeg": "8.0.1",
+        "node": "v20.11.1",
+        "os": "Windows"
+    },
+    "blockers": [
+        {
+            "tool": "Docker",
+            "reason": "Not installed (admin required)",
+            "mitigation": "In-memory queue fallback"
+        },
+        {
+            "tool": "Redis",
+            "reason": "Not available",
+            "mitigation": "Disk-persistent InMemoryQueue"
+        },
+        {
+            "tool": "Blender",
+            "reason": "Not installed (admin required)",
+            "mitigation": "Procedural 3D generation"
+        }
+    ],
+    "pipelines": {
+        "sdxl-512": {
+            "status": "PASS",
+            "artifacts": 8,
+            "time_s": 45
+        },
+        "sdxl-1024-tiled": {
+            "status": "PASS",
+            "size_kb": 1737,
+            "tiles": 9,
+            "time_s": 233
+        },
+        "lora-training": {
+            "status": "PASS",
+            "mode": "simulated",
+            "rank": 4,
+            "steps": 20
+        },
+        "nerf-mesh": {
+            "status": "PASS",
+            "vertices": 1062,
+            "faces": 224,
+            "size_kb": 35.9
+        },
+        "audio": {
+            "status": "PASS",
+            "artifacts": 6,
+            "effects": [
+                "denoise",
+                "reverb",
+                "warm",
+                "normalize",
+                "mp3"
+            ]
+        },
+        "video": {
+            "status": "PASS",
+            "format": "mp4",
+            "resolution": "1280x720"
+        },
+        "local-llm": {
+            "status": "READY",
+            "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+            "note": "Script ready, model download on first run"
+        }
+    },
+    "infrastructure": {
+        "backend_routes": 17,
+        "service_directories": 12,
+        "queue": "InMemoryQueue with GPU lock, DLQ, selfheal",
+        "processors": [
+            "sdxl",
+            "sdxl-1024",
+            "training",
+            "lora-train",
+            "inference",
+            "video_render",
+            "audio",
+            "nerf",
+            "export",
+            "build"
+        ],
+        "e2e_tests": 8,
+        "websocket": "Socket.IO real-time"
+    },
+    "artifacts": [
+        {
+            "path": "data/previews/sdxl-tiled-1024x1024-1771184823.png",
+            "size_kb": 1737,
+            "type": "image"
+        },
+        {
+            "path": "data/previews/nerf-mesh-1771184528.obj",
+            "size_kb": 35.9,
+            "type": "3d-mesh"
+        },
+        {
+            "path": "data/outputs/audio/generated-music.wav",
+            "size_kb": 861,
+            "type": "audio"
+        },
+        {
+            "path": "data/outputs/audio/denoised-output.wav",
+            "size_kb": 861,
+            "type": "audio"
+        },
+        {
+            "path": "data/outputs/audio/reverb-output.wav",
+            "size_kb": 875,
+            "type": "audio"
+        },
+        {
+            "path": "data/outputs/audio/warm-output.wav",
+            "size_kb": 861,
+            "type": "audio"
+        },
+        {
+            "path": "data/outputs/audio/normalized-output.wav",
+            "size_kb": 3750,
+            "type": "audio"
+        },
+        {
+            "path": "data/outputs/audio/generated-music-encoded.mp3",
+            "size_kb": 236,
+            "type": "audio"
+        },
+        {
+            "path": "data/checkpoints/lora/lora-sim-4r-1771184779/",
+            "type": "lora-checkpoint"
+        },
+        {
+            "path": "data/datasets/lora-sample/",
+            "type": "dataset"
+        }
+    ],
+    "reports": [
+        "report/verify-host.json",
+        "report/blockers.json",
+        "report/final-status.json",
+        "report/final-local-finish/summary.md",
+        "runbooks/local-run.md"
+    ]
+}

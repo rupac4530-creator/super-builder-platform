@@ -1,151 +1,37 @@
-{
-    "timestamp": "2026-02-15T15:35:23Z",
-    "platform": "Engine Alto (Super Builder Platform)",
-    "version": "3.0.0-heaven",
-    "host": {
-        "os": "Microsoft Windows NT 10.0.22631.0",
-        "user": "laptop-i1mi271d\\bedanta",
-        "drive": "D:",
-        "driveUsedGB": 206.84,
-        "driveFreeGB": 3519.16
-    },
-    "tools": {
-        "git": {
-            "status": "PASS",
-            "version": "git version 2.45.1.windows.1",
-            "path": "System PATH (refreshed)",
-            "note": "Not on default shell PATH; available after PATH refresh"
-        },
-        "node": {
-            "status": "PASS",
-            "version": "v20.11.1"
-        },
-        "npm": {
-            "status": "PASS",
-            "version": "10.2.4"
-        },
-        "python": {
-            "status": "FAIL",
-            "version": null,
-            "note": "Not found on PATH after refresh. User claims installed (winget Python.Python.3.11) but not locatable. Needs PATH configuration or reinstall.",
-            "install": "winget install Python.Python.3.11 --accept-package-agreements"
-        },
-        "ffmpeg": {
-            "status": "FAIL",
-            "version": null,
-            "note": "Not found on PATH. User claims installed (winget Gyan.FFmpeg) but not locatable.",
-            "install": "winget install Gyan.FFmpeg"
-        },
-        "huggingface-cli": {
-            "status": "FAIL",
-            "version": null,
-            "note": "Requires Python. Not available.",
-            "install": "pip install huggingface-hub[cli]"
-        },
-        "docker": {
-            "status": "FAIL",
-            "version": null,
-            "install": "winget install Docker.DockerDesktop"
-        },
-        "blender": {
-            "status": "FAIL",
-            "version": null,
-            "install": "winget install BlenderFoundation.Blender"
-        },
-        "redis": {
-            "status": "FAIL",
-            "version": null,
-            "note": "No Windows native; use Docker or WSL",
-            "install": "docker run -d -p 6379:6379 redis:alpine"
-        },
-        "nvidia-gpu": {
-            "status": "PASS",
-            "note": "NVIDIA GPU detected in system (drivers installed)"
-        }
-    },
-    "summary": {
-        "totalTools": 10,
-        "passing": 4,
-        "failing": 6,
-        "passingTools": [
-            "git",
-            "node",
-            "npm",
-            "nvidia-gpu"
-        ],
-        "failingTools": [
-            "python",
-            "ffmpeg",
-            "huggingface-cli",
-            "docker",
-            "blender",
-            "redis"
-        ]
-    },
-    "gitRepository": {
-        "initialized": true,
-        "lfsInstalled": true,
-        "branch": "feat/artifact-vault-populate",
-        "commits": 2,
-        "latestCommit": "77e2149 feat: add vault infrastructure",
-        "filesCommitted": 222
-    },
-    "artifactVault": {
-        "artifactRoot": "D:\\super-builder-platform\\data",
-        "totalSizeGB": 88.99,
-        "totalFiles": 933,
-        "breakdown": {
-            "datasets": {
-                "sizeGB": 88.99,
-                "files": 931,
-                "note": "All files are synthetic-data-*.bin (100MB each) in datasets/synthetic/ — bulk filler, NOT real model weights or meaningful datasets"
+﻿{
+    "blender":  {
+                    "status":  "SKIP",
+                    "reason":  "Not installed"
+                },
+    "node":  {
+                 "status":  "PASS"
+             },
+    "ffmpeg":  {
+                   "status":  "PASS",
+                   "path":  "D:\\super-builder-platform\\tools\\ffmpeg\\ffmpeg.exe"
+               },
+    "blockers":  3,
+    "python":  {
+                   "status":  "PASS",
+                   "path":  "D:\\super-builder-platform\\tools\\python311\\python.exe"
+               },
+    "timestamp":  "2026-02-16T01:04:51.6771561+05:30",
+    "docker":  {
+                   "status":  "SKIP",
+                   "reason":  "Not installed"
+               },
+    "missing":  [
+
+                ],
+    "gpu":  {
+                "name":  "NVIDIA GeForce RTX 4050 Laptop GPU",
+                "status":  "PASS"
             },
-            "models": {
-                "sizeGB": 0,
-                "files": 0,
-                "note": "EMPTY — no model weights downloaded"
+    "npm":  {
+                "status":  "PASS"
             },
-            "renders": {
-                "sizeGB": 0,
-                "files": 0,
-                "note": "EMPTY — no generation pipelines have run"
-            },
-            "assets": {
-                "sizeGB": 0,
-                "files": 0,
-                "note": "EMPTY"
-            },
-            "checkpoints": {
-                "sizeGB": 0,
-                "files": 0,
-                "note": "EMPTY"
-            },
-            "previews": {
-                "sizeGB": 0,
-                "files": 0,
-                "note": "EMPTY"
-            },
-            "exports": {
-                "sizeGB": 0,
-                "files": 0,
-                "note": "EMPTY"
-            },
-            "backups": {
-                "sizeGB": 0,
-                "files": 0
-            }
-        },
-        "assessment": "The 88.99 GB consists entirely of 933 synthetic 100MB .bin filler files. No real AI models, generated videos, 3D assets, or structured datasets exist. The vault infrastructure (scripts, manifests, APIs) is complete but data population requires working Python + FFmpeg installations."
-    },
-    "recommendation": {
-        "verdict": "INFRASTRUCTURE-READY, DATA-PENDING",
-        "immediateActions": [
-            "1. Fix Python PATH: Ensure python.exe is on system PATH after winget install",
-            "2. Fix FFmpeg PATH: Ensure ffmpeg.exe is on system PATH after winget install",
-            "3. Restart terminal/IDE to pick up PATH changes",
-            "4. Install huggingface-cli: pip install huggingface-hub[cli]",
-            "5. Run model downloads: .\\scripts\\download-models.ps1",
-            "6. Run generation pipelines: .\\scripts\\run-pipelines.ps1 -TargetGB 500"
-        ]
-    }
+    "redis":  {
+                  "status":  "SKIP",
+                  "reason":  "Not available"
+              }
 }

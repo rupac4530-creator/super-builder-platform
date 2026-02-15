@@ -1,0 +1,92 @@
+{
+    "ready": true,
+    "timestamp": "2026-02-16T01:17:03+05:30",
+    "models_to_upload": [
+        {
+            "path": "data/models/sdxl-turbo/",
+            "size_estimate_gb": 6.5,
+            "priority": "HIGH"
+        },
+        {
+            "path": "data/checkpoints/lora/",
+            "size_estimate_mb": 5,
+            "priority": "MEDIUM"
+        },
+        {
+            "path": "data/models/llm/",
+            "size_estimate_gb": 1.1,
+            "priority": "LOW",
+            "note": "Download on remote instead"
+        }
+    ],
+    "datasets_to_stage": [
+        {
+            "path": "data/datasets/lora-sample/",
+            "images": 5,
+            "purpose": "LoRA fine-tuning seed"
+        },
+        {
+            "path": "data/datasets/training-prompts.jsonl",
+            "entries": 10000,
+            "purpose": "Prompt dataset"
+        }
+    ],
+    "docker_images": [
+        {
+            "name": "engine-alto-backend",
+            "dockerfile": "backend/Dockerfile",
+            "build": "docker build -t engine-alto-backend ./backend"
+        },
+        {
+            "name": "engine-alto-platform",
+            "dockerfile": "platform/Dockerfile",
+            "build": "docker build -t engine-alto-platform ./platform"
+        }
+    ],
+    "remote_scripts": [
+        {
+            "script": "scripts/tiling_gen.py",
+            "purpose": "SDXL 1024+ large tiling (A100/H100)"
+        },
+        {
+            "script": "scripts/train_lora.py",
+            "purpose": "Full LoRA training with PEFT (needs bitsandbytes)"
+        },
+        {
+            "script": "scripts/llm_local.py",
+            "purpose": "LLM inference on larger models (7B+)"
+        },
+        {
+            "script": "scripts/nerf_small.py",
+            "purpose": "High-res NeRF (128+ resolution)"
+        }
+    ],
+    "credentials_checklist": [
+        {
+            "name": "HF_TOKEN",
+            "purpose": "Hugging Face model downloads",
+            "status": "SET"
+        },
+        {
+            "name": "CLOUD_GPU_API_KEY",
+            "purpose": "Cloud GPU rental API",
+            "status": "NEEDED"
+        },
+        {
+            "name": "S3_BUCKET",
+            "purpose": "Artifact storage",
+            "status": "NEEDED"
+        },
+        {
+            "name": "REDIS_URL",
+            "purpose": "Production queue",
+            "status": "NEEDED"
+        }
+    ],
+    "estimated_cloud_costs": {
+        "a100_80gb_hourly": "$2.50",
+        "h100_hourly": "$4.00",
+        "estimated_training_hours": 4,
+        "estimated_total": "$10-$16"
+    }
+}

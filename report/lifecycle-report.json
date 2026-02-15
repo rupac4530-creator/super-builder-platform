@@ -1,0 +1,14 @@
+﻿{
+    "cold_retention_days":  365,
+    "timestamp":  "2026-02-16T00:36:37.0399541+05:30",
+    "warm_retention_days":  90,
+    "hot_retention_days":  30,
+    "stats":  {
+                  "scanned":  4272,
+                  "would_archive":  0,
+                  "would_delete":  0,
+                  "kept":  4272,
+                  "total_size_freed":  0
+              },
+    "dry_run":  true
+}

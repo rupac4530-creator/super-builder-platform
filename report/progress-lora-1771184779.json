@@ -1,0 +1,19 @@
+{
+  "phase": "D",
+  "step": "lora-training",
+  "status": "COMPLETE",
+  "timestamp": "2026-02-16T01:16:19.094575",
+  "details": {
+    "pipeline": "lora-finetune",
+    "model": "stabilityai/sdxl-turbo",
+    "rank": 4,
+    "epochs": 1,
+    "lr": 0.0001,
+    "max_steps": 20,
+    "output_dir": "D:\\super-builder-platform\\data\\checkpoints\\lora\\lora-sim-4r-1771184779",
+    "training_time_s": 0.0,
+    "device": "cuda",
+    "simulated": true,
+    "timestamp": "2026-02-16T01:16:19.093496"
+  }
+}

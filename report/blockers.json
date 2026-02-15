@@ -1,0 +1,17 @@
+﻿[
+    {
+        "step":  "docker",
+        "reason":  "Docker not installed (admin required)",
+        "mitigation":  "Using in-memory fallback queue"
+    },
+    {
+        "step":  "redis",
+        "reason":  "Redis not available",
+        "mitigation":  "Using disk-persistent BullMQ fallback"
+    },
+    {
+        "step":  "blender",
+        "reason":  "Blender not installed (admin required)",
+        "mitigation":  "Using procedural 3D generation"
+    }
+]

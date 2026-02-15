@@ -1,0 +1,8 @@
+{
+  "pytorch_version": "2.5.1+cu121",
+  "cuda_available": true,
+  "cuda_version": "12.1",
+  "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "vram_gb": 6.0,
+  "compute_capability": "8.9"
+}

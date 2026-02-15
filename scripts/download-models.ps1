@@ -1,162 +1,104 @@
-<#
-.SYNOPSIS
-  Download models and datasets from the curated manifest.
-.DESCRIPTION
-  Reads data/models-manifest.json and downloads each entry to the
-  appropriate directory under ARTIFACT_ROOT. Produces inventory CSV
-  and checksum log. Supports incremental/resumable downloads.
-.PARAMETER ArtifactRoot
-  Root directory for artifacts (default: env ARTIFACT_ROOT or D:\super-builder-platform\data)
-.PARAMETER Priority
-  Only download items with priority <= this value (1=critical, 2=important, 3=nice-to-have)
-.PARAMETER DryRun
-  If set, show what would be downloaded without downloading.
-#>
+# Engine Alto — Download Models Script
+# Phase C/H: Download all licensed AI model weights
 
 param(
-    [string]$ArtifactRoot = $(if ($env:ARTIFACT_ROOT) { $env:ARTIFACT_ROOT } else { 'D:\super-builder-platform\data' }),
-    [int]$Priority = 3,
+    [switch]$SmallOnly,  # Only download models that fit in 6GB VRAM
     [switch]$DryRun
 )
 
 $ErrorActionPreference = 'Continue'
-$manifestPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'data\models-manifest.json'
-$inventoryPath = Join-Path (Split-Path $PSScriptRoot -Parent) 'report\models-inventory.csv'
-$logPath = Join-Path $ArtifactRoot 'logs\downloads\download-log.txt'
+$pyExe = 'D:\super-builder-platform\tools\python311\python.exe'
+$modelsDir = 'D:\super-builder-platform\data\models'
 
-Write-Host "=== Engine Alto — Model & Dataset Downloader ===" -ForegroundColor Cyan
-Write-Host "ARTIFACT_ROOT: $ArtifactRoot"
-Write-Host "Priority filter: <= $Priority"
-Write-Host "Dry run: $DryRun"
-Write-Host ""
+$env:HF_HUB_ENABLE_HF_TRANSFER = '0'  # Disable broken xet transport
 
-# Load manifest
-if (-not (Test-Path $manifestPath)) {
-    Write-Host "ERROR: Manifest not found at $manifestPath" -ForegroundColor Red
-    exit 1
+Write-Host '============================================' -ForegroundColor Cyan
+Write-Host '  Engine Alto Model Downloader' -ForegroundColor Cyan
+Write-Host "  $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Cyan
+Write-Host '============================================' -ForegroundColor Cyan
+
+# Model registry with licenses and VRAM requirements
+$models = @(
+    @{
+        id          = 'stabilityai/sdxl-turbo'
+        type        = 'text-to-image'
+        license     = 'openrail++'
+        vram_gb     = 4
+        size_gb     = 3.5
+        description = 'Fast SDXL text-to-image (4 steps)'
+        variant     = 'fp16'
+        status      = 'downloaded'
+    },
+    @{
+        id          = 'openai/whisper-tiny'
+        type        = 'speech-to-text'
+        license     = 'MIT'
+        vram_gb     = 1
+        size_gb     = 0.15
+        description = 'Speech recognition (tiny model)'
+        variant     = ''
+        status      = 'pending'
+    },
+    @{
+        id          = 'facebook/musicgen-small'
+        type        = 'text-to-music'
+        license     = 'CC-BY-NC-4.0'
+        vram_gb     = 2
+        size_gb     = 1.8
+        description = 'Music generation from text'
+        variant     = ''
+        status      = 'pending'
+    },
+    @{
+        id          = 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'
+        type        = 'text-generation'
+        license     = 'Apache-2.0'
+        vram_gb     = 2
+        size_gb     = 2.2
+        description = 'Small LLM for text generation'
+        variant     = ''
+        status      = 'pending'
+    }
+)
+
+Write-Host "`n>>> Available models:"
+foreach ($model in $models) {
+    $statusIcon = if ($model.status -eq 'downloaded') { 'OK' } else { '--' }
+    Write-Host "  [$statusIcon] $($model.id) ($($model.type), $($model.size_gb)GB, $($model.license))"
 }
-$manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
 
-# Ensure report directory
-$reportDir = Split-Path $inventoryPath -Parent
-if (-not (Test-Path $reportDir)) { New-Item -ItemType Directory -Path $reportDir -Force | Out-Null }
+if ($DryRun) {
+    Write-Host "`n  DRY RUN - no downloads performed" -ForegroundColor Yellow
+    exit 0
+}
 
-# Ensure log directory
-$logDir = Split-Path $logPath -Parent
-if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
-
-# CSV header
-$csvLines = @('id,name,type,format,sizeGB,license,source,destination,status,downloadDate,sha256')
-
-# Check for huggingface-cli
-$hasHF = $null -ne (Get-Command 'huggingface-cli' -ErrorAction SilentlyContinue)
-$hasCurl = $null -ne (Get-Command 'curl' -ErrorAction SilentlyContinue)
-$hasPython = $null -ne (Get-Command 'python' -ErrorAction SilentlyContinue)
-
-if (-not $hasHF) {
-    Write-Host "WARNING: huggingface-cli not found. Install with: pip install huggingface-hub[cli]" -ForegroundColor Yellow
-    if ($hasPython) {
-        Write-Host "Attempting to install huggingface-hub..." -ForegroundColor Yellow
-        & python -m pip install --quiet "huggingface-hub[cli]" 2>$null
-        $hasHF = $null -ne (Get-Command 'huggingface-cli' -ErrorAction SilentlyContinue)
+# Download pending models
+foreach ($model in $models) {
+    if ($model.status -eq 'downloaded') {
+        Write-Host "`n  SKIP: $($model.id) (already downloaded)" -ForegroundColor Green
+        continue
+    }
+    
+    if ($SmallOnly -and $model.vram_gb -gt 4) {
+        Write-Host "`n  SKIP: $($model.id) (requires $($model.vram_gb)GB VRAM, -SmallOnly mode)" -ForegroundColor Yellow
+        continue
+    }
+    
+    Write-Host "`n  Downloading: $($model.id) ($($model.size_gb) GB)..." -ForegroundColor Yellow
+    $cacheDir = Join-Path $modelsDir ($model.id -replace '/', '_')
+    
+    $downloadScript = @"
+import os
+os.environ['HF_HUB_ENABLE_HF_TRANSFER'] = '0'
+from huggingface_hub import snapshot_download
+snapshot_download('$($model.id)', cache_dir=r'$cacheDir', ignore_patterns=['*.bin', '*.h5', 'flax_model*'])
+print('Download complete')
+"@
+    
+    $downloadScript | Out-File "$env:TEMP\dl_model.py" -Encoding utf8
+    & $pyExe "$env:TEMP\dl_model.py" 2>&1 | ForEach-Object {
+        if ($_ -match 'complete|error|Download') { Write-Host "    $_" -ForegroundColor Gray }
     }
 }
 
-$timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-Add-Content -Path $logPath -Value "=== Download session started: $timestamp ==="
-
-function Download-Item {
-    param($item, $type)
-
-    if ($item.priority -gt $Priority) {
-        Write-Host "  [SKIP] $($item.name) (priority $($item.priority) > $Priority)" -ForegroundColor DarkGray
-        $csvLines += "$($item.id),$($item.name),$type,$($item.format),$($item.sizeGB),$($item.license),$($item.source),$($item.destination),SKIPPED-PRIORITY,,"
-        return
-    }
-
-    $destPath = Join-Path $ArtifactRoot $item.destination
-    Write-Host "  [DL] $($item.name) -> $destPath ($($item.sizeGB) GB)" -ForegroundColor Green
-
-    if ($DryRun) {
-        Write-Host "    (dry run — skipping actual download)" -ForegroundColor DarkYellow
-        $script:csvLines += "$($item.id),$($item.name),$type,$($item.format),$($item.sizeGB),$($item.license),$($item.source),$($item.destination),DRY-RUN,,"
-        return
-    }
-
-    # Ensure destination
-    if (-not (Test-Path $destPath)) {
-        New-Item -ItemType Directory -Path $destPath -Force | Out-Null
-    }
-
-    $status = 'PENDING'
-    $sha256 = ''
-    $downloadDate = Get-Date -Format 'yyyy-MM-dd'
-
-    # Try download
-    try {
-        $cmd = $item.downloadCmd -replace '\$\{ARTIFACT_ROOT\}', $ArtifactRoot
-        Add-Content -Path $logPath -Value "[$(Get-Date -Format 'HH:mm:ss')] Downloading: $($item.name)"
-        Add-Content -Path $logPath -Value "  Command: $cmd"
-
-        if ($hasHF -and $cmd -match 'huggingface-cli') {
-            Invoke-Expression $cmd 2>&1 | Out-Null
-            $status = if ($LASTEXITCODE -eq 0) { 'OK' } else { 'FAILED' }
-        }
-        elseif ($hasCurl -and $cmd -match 'curl') {
-            Invoke-Expression $cmd 2>&1 | Out-Null
-            $status = if ($LASTEXITCODE -eq 0) { 'OK' } else { 'FAILED' }
-        }
-        else {
-            Write-Host "    No suitable download tool available" -ForegroundColor Yellow
-            $status = 'NO-TOOL'
-        }
-
-        Add-Content -Path $logPath -Value "  Status: $status"
-    }
-    catch {
-        $status = 'ERROR'
-        Add-Content -Path $logPath -Value "  Error: $_"
-        Write-Host "    ERROR: $_" -ForegroundColor Red
-    }
-
-    $script:csvLines += "$($item.id),$($item.name),$type,$($item.format),$($item.sizeGB),$($item.license),$($item.source),$($item.destination),$status,$downloadDate,$sha256"
-}
-
-# Process models
-Write-Host "--- Models ---" -ForegroundColor Yellow
-foreach ($model in $manifest.models) {
-    Download-Item $model 'model'
-}
-
-# Process datasets
-Write-Host "--- Datasets ---" -ForegroundColor Yellow
-foreach ($ds in $manifest.datasets) {
-    Download-Item $ds 'dataset'
-}
-
-# Process asset packs
-Write-Host "--- Asset Packs ---" -ForegroundColor Yellow
-foreach ($ap in $manifest.assetPacks) {
-    Download-Item $ap 'asset-pack'
-}
-
-# Write inventory
-$csvLines | Out-File -FilePath $inventoryPath -Encoding utf8
-Write-Host ""
-Write-Host "Inventory written to: $inventoryPath" -ForegroundColor Cyan
-
-# Summary
-$totalSizeGB = ($manifest.models | Measure-Object -Property sizeGB -Sum).Sum +
-($manifest.datasets | Measure-Object -Property sizeGB -Sum).Sum +
-($manifest.assetPacks | Measure-Object -Property sizeGB -Sum).Sum
-Write-Host "Total manifest size: $totalSizeGB GB" -ForegroundColor Cyan
-
-# Current actual size
-$actualSize = (Get-ChildItem $ArtifactRoot -Recurse -Force -ErrorAction SilentlyContinue |
-    Where-Object { -not $_.PSIsContainer } |
-    Measure-Object -Property Length -Sum).Sum
-$actualGB = [math]::Round($actualSize / 1073741824, 2)
-Write-Host "Current ARTIFACT_ROOT size: $actualGB GB" -ForegroundColor Cyan
-
-Add-Content -Path $logPath -Value "=== Session ended: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ==="
-Add-Content -Path $logPath -Value "Manifest total: $totalSizeGB GB, Actual on disk: $actualGB GB"
+Write-Host "`n  Done at $(Get-Date -Format 'HH:mm:ss')" -ForegroundColor Green
