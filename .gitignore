@@ -1,0 +1,45 @@
+﻿# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Artifact vault heavy data (use LFS or external storage)
+data/models/**/*.pt
+data/models/**/*.safetensors
+data/models/**/*.onnx
+data/models/**/*.ckpt
+data/models/**/*.h5
+data/models/**/*.pth
+data/datasets/synthetic/
+data/renders/
+data/checkpoints/
+data/backups/*.tar.zst
+data/backups/*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Testing
+coverage/
+test-results/
+playwright-report/

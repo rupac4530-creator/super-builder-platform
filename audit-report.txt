@@ -1,0 +1,135 @@
+﻿=== ENGINE ALTO REPO AUDIT ===
+Date: 2026-02-15T14:16:55Z
+OS: Microsoft Windows NT 10.0.22631.0
+User: laptop-i1mi271d\bedanta
+
+D: Drive -- Used: 206.84 GB, Free: 3519.16 GB
+
+Total repo size: 367.19 MB (0.36 GB)
+
+=== DIRECTORY SIZES ===
+.devcontainer                           0 MB
+.github                                 0 MB
+agents                               0.19 MB
+ai-training                          0.02 MB
+apps                                    0 MB
+backend                              0.22 MB
+docs                                 0.01 MB
+e2e                                  0.02 MB
+engine                               0.08 MB
+examples                                0 MB
+governance                           0.01 MB
+infra                                0.01 MB
+kubernetes                              0 MB
+modules                               0.4 MB
+monitoring                           0.02 MB
+node_modules                       365.54 MB
+platform                             0.09 MB
+report                               0.02 MB
+research                             0.01 MB
+scripts                              0.04 MB
+services                             0.07 MB
+templates                            0.03 MB
+tests                                0.01 MB
+
+=== TOP 50 LARGEST FILES ===
+    117.69 MB  D:\super-builder-platform\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+     10.85 MB  D:\super-builder-platform\node_modules\@esbuild\win32-x64\esbuild.exe
+      9.45 MB  D:\super-builder-platform\node_modules\vite\node_modules\@esbuild\win32-x64\esbuild.exe
+      8.69 MB  D:\super-builder-platform\node_modules\typescript\lib\typescript.js
+      5.93 MB  D:\super-builder-platform\node_modules\typescript\lib\_tsc.js
+      3.59 MB  D:\super-builder-platform\node_modules\lucide-react\dist\umd\lucide-react.js.map
+      3.54 MB  D:\super-builder-platform\node_modules\lucide-react\dist\cjs\lucide-react.js.map
+      3.46 MB  D:\super-builder-platform\node_modules\lucide-react\dist\umd\lucide-react.min.js.map
+      2.94 MB  D:\super-builder-platform\node_modules\next\dist\compiled\next-server\app-page-experimental.runtime.dev.js.map
+      2.65 MB  D:\super-builder-platform\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js.map
+      2.52 MB  D:\super-builder-platform\node_modules\next\dist\server\lib\squoosh\avif\avif_node_enc.wasm
+      2.41 MB  D:\super-builder-platform\node_modules\@rollup\rollup-win32-x64-msvc\rollup.win32-x64-msvc.node
+      2.38 MB  D:\super-builder-platform\node_modules\next\dist\compiled\webpack\bundle5.js
+      1.99 MB  D:\super-builder-platform\node_modules\vite\dist\node\chunks\dep-BK3b2jBa.js
+      1.98 MB  D:\super-builder-platform\node_modules\bintrees\test\perf\100k
+      1.88 MB  D:\super-builder-platform\node_modules\@rollup\rollup-win32-x64-gnu\rollup.win32-x64-gnu.node
+      1.81 MB  D:\super-builder-platform\node_modules\@unrs\resolver-binding-win32-x64-msvc\resolver.win32-x64-msvc.node
+      1.79 MB  D:\super-builder-platform\node_modules\typescript\lib\lib.dom.d.ts
+      1.64 MB  D:\super-builder-platform\node_modules\recharts\umd\Recharts.js.map
+      1.51 MB  D:\super-builder-platform\node_modules\lucide-react\dist\lucide-react.d.ts
+      1.49 MB  D:\super-builder-platform\node_modules\lucide-react\dynamicIconImports.d.ts
+      1.42 MB  D:\super-builder-platform\node_modules\next\dist\compiled\babel-packages\packages-bundle.js
+      1.31 MB  D:\super-builder-platform\node_modules\next\dist\compiled\@vercel\og\resvg.wasm
+       1.3 MB  D:\super-builder-platform\node_modules\next\dist\compiled\react-dom-experimental\cjs\react-dom-unstable_testing.development.js
+       1.3 MB  D:\super-builder-platform\node_modules\next\dist\server\lib\squoosh\avif\avif_node_dec.wasm
+      1.29 MB  D:\super-builder-platform\node_modules\next\dist\compiled\react-dom-experimental\cjs\react-dom.development.js
+      1.27 MB  D:\super-builder-platform\node_modules\next\dist\compiled\react-dom\cjs\react-dom.development.js
+      1.23 MB  D:\super-builder-platform\node_modules\next\dist\compiled\next-server\app-page-turbo-experimental.runtime.prod.js.map
+      1.22 MB  D:\super-builder-platform\node_modules\next\dist\compiled\babel\bundle.js
+       1.2 MB  D:\super-builder-platform\node_modules\axe-core\axe.js
+      1.18 MB  D:\super-builder-platform\node_modules\next\dist\compiled\next-server\app-page-experimental.runtime.prod.js.map
+      1.16 MB  D:\super-builder-platform\node_modules\next\dist\compiled\next-server\app-page-turbo.runtime.prod.js.map
+      1.12 MB  D:\super-builder-platform\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js.map
+      1.06 MB  D:\super-builder-platform\node_modules\language-subtag-registry\data\json\registry.json
+      1.03 MB  D:\super-builder-platform\node_modules\react-dom\umd\react-dom.development.js
+      0.98 MB  D:\super-builder-platform\node_modules\react-dom\cjs\react-dom.development.js
+      0.95 MB  D:\super-builder-platform\node_modules\next\dist\compiled\react-dom-experimental\cjs\react-dom.profiling.js
+      0.94 MB  D:\super-builder-platform\node_modules\next\dist\compiled\react-dom\cjs\react-dom.profiling.js
+      0.93 MB  D:\super-builder-platform\node_modules\next\dist\compiled\react-dom-experimental\cjs\react-dom-unstable_testing.production.js
+      0.91 MB  D:\super-builder-platform\node_modules\next\dist\compiled\react-dom-experimental\cjs\react-dom.production.js
+       0.9 MB  D:\super-builder-platform\node_modules\next\dist\compiled\react-dom\cjs\react-dom.production.js
+      0.89 MB  D:\super-builder-platform\node_modules\rollup\dist\es\shared\node-entry.js
+      0.89 MB  D:\super-builder-platform\node_modules\rollup\dist\shared\rollup.js
+      0.85 MB  D:\super-builder-platform\node_modules\csstype\index.d.ts
+      0.78 MB  D:\super-builder-platform\node_modules\next\dist\compiled\next-server\server.runtime.prod.js.map
+      0.78 MB  D:\super-builder-platform\node_modules\next\dist\compiled\@next\font\dist\fontkit\index.js
+      0.75 MB  D:\super-builder-platform\node_modules\styled-jsx\dist\babel\index.js
+      0.75 MB  D:\super-builder-platform\node_modules\graphemer\lib\Graphemer.js
+      0.69 MB  D:\super-builder-platform\node_modules\next\dist\compiled\edge-runtime\index.js
+      0.68 MB  D:\super-builder-platform\node_modules\next\dist\compiled\@vercel\og\index.node.js
+
+=== HEAVY FILE SEARCH ===
+  *.zip                1 file(s), 0 MB total
+             0 MB  D:\super-builder-platform\node_modules\es-iterator-helpers\Iterator.zip
+  *.bin                6 file(s), 0 MB total
+             0 MB  D:\super-builder-platform\node_modules\eslint-plugin-import\node_modules\.bin
+             0 MB  D:\super-builder-platform\node_modules\eslint-plugin-react\node_modules\.bin
+             0 MB  D:\super-builder-platform\node_modules\vite\node_modules\.bin
+             0 MB  D:\super-builder-platform\node_modules\.bin
+             0 MB  D:\super-builder-platform\node_modules\@next\eslint-plugin-next\node_modules\.bin
+
+=== NODE_MODULES ===
+  node_modules: 365.54 MB
+  backend\node_modules: NOT PRESENT
+  platform\node_modules: NOT PRESENT
+
+=== DATA AND ASSETS DIRECTORIES ===
+  data                      MISSING
+  assets                    MISSING
+  data\models               MISSING
+  data\previews             MISSING
+  data\outputs              MISSING
+  data\exports              MISSING
+  data\datasets             MISSING
+
+=== GIT AND LFS ===
+.git: NOT FOUND (no git repo initialized)
+
+=== ENV FLAGS ===
+  .env NOT PRESENT
+
+=== MISSING ARTIFACTS ANALYSIS ===
+  [MISSING] AI model weights -- no trained model files found
+  [MISSING] 3D model exports -- no GLB/FBX/OBJ files found
+  [MISSING] Video outputs -- no rendered video files found
+  [MISSING] Datasets -- no dataset directory or data files found
+  [FOUND] Archives: 1 files
+
+=== RECOMMENDATION ===
+MISSING HEAVY ARTIFACTS: YES
+The following artifact types are NOT on disk:
+  - AI model weights (*.pt *.onnx *.safetensors *.ckpt *.h5)
+  - 3D exports (*.glb *.fbx *.obj)
+  - Video outputs (*.mp4 *.mov *.mkv *.webm)
+  - Datasets (data/datasets/ or *.csv *.parquet files)
+
+This explains the small repo size (~367.19 MB).
+The codebase is source-code-only. All heavy artifacts (trained models,
+rendered videos, 3D exports, datasets) must be generated at runtime or
+pulled from external storage (S3/GCS/Azure Blob) or Git LFS.

@@ -1,0 +1,244 @@
+{
+    "auditTimestamp": "2026-02-15T14:16:55Z",
+    "platform": "Engine Alto (Super Builder Platform)",
+    "version": "3.0.0-heaven",
+    "hostEnvironment": {
+        "os": "Microsoft Windows NT 10.0.22631.0",
+        "user": "laptop-i1mi271d\\bedanta",
+        "diskDrive": "D:",
+        "diskUsedGB": 206.84,
+        "diskFreeGB": 3519.16
+    },
+    "repoSize": {
+        "totalMB": 367.19,
+        "totalGB": 0.36,
+        "nodeModulesMB": 365.54,
+        "sourceCodeMB": 1.65,
+        "nodeModulesPercent": 99.55,
+        "sourceCodePercent": 0.45
+    },
+    "directorySizes": {
+        "node_modules": 365.54,
+        "modules": 0.40,
+        "backend": 0.22,
+        "agents": 0.19,
+        "platform": 0.09,
+        "engine": 0.08,
+        "services": 0.07,
+        "scripts": 0.04,
+        "templates": 0.03,
+        "e2e": 0.02,
+        "ai-training": 0.02,
+        "monitoring": 0.02,
+        "report": 0.02,
+        "docs": 0.01,
+        "governance": 0.01,
+        "infra": 0.01,
+        "research": 0.01,
+        "tests": 0.01,
+        ".devcontainer": 0,
+        ".github": 0,
+        "apps": 0,
+        "examples": 0,
+        "kubernetes": 0
+    },
+    "top5LargestFiles": [
+        {
+            "path": "node_modules/@next/swc-win32-x64-msvc/next-swc.win32-x64-msvc.node",
+            "sizeMB": 117.69
+        },
+        {
+            "path": "node_modules/@esbuild/win32-x64/esbuild.exe",
+            "sizeMB": 10.85
+        },
+        {
+            "path": "node_modules/vite/node_modules/@esbuild/win32-x64/esbuild.exe",
+            "sizeMB": 9.45
+        },
+        {
+            "path": "node_modules/typescript/lib/typescript.js",
+            "sizeMB": 8.69
+        },
+        {
+            "path": "node_modules/typescript/lib/_tsc.js",
+            "sizeMB": 5.93
+        }
+    ],
+    "heavyFilesFound": {
+        "zip": {
+            "count": 1,
+            "totalMB": 0,
+            "note": "node_modules/es-iterator-helpers/Iterator.zip (trivial)"
+        },
+        "bin": {
+            "count": 6,
+            "totalMB": 0,
+            "note": "all are .bin shim directories in node_modules"
+        },
+        "pt": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "onnx": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "safetensors": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "ckpt": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "h5": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "glb": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "fbx": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "mp4": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "mov": {
+            "count": 0,
+            "totalMB": 0
+        },
+        "mkv": {
+            "count": 0,
+            "totalMB": 0
+        }
+    },
+    "nodeModules": {
+        "root": {
+            "present": true,
+            "sizeMB": 365.54
+        },
+        "backend": {
+            "present": false,
+            "sizeMB": 0
+        },
+        "platform": {
+            "present": false,
+            "sizeMB": 0
+        }
+    },
+    "directories": {
+        "data": "MISSING",
+        "assets": "MISSING",
+        "data/models": "MISSING",
+        "data/previews": "MISSING",
+        "data/outputs": "MISSING",
+        "data/exports": "MISSING",
+        "data/datasets": "MISSING"
+    },
+    "git": {
+        "initialized": false,
+        "gitattributes": false,
+        "lfsConfigured": false,
+        "packfileSizeMB": 0
+    },
+    "envFile": {
+        "present": false,
+        "enableRealAI": null,
+        "enableGPU": null,
+        "mockMode": null
+    },
+    "missingArtifacts": {
+        "hasMissing": true,
+        "categories": [
+            {
+                "name": "AI Model Weights",
+                "extensions": [
+                    "*.pt",
+                    "*.onnx",
+                    "*.safetensors",
+                    "*.ckpt",
+                    "*.h5",
+                    "*.pth"
+                ],
+                "expectedSizeMB": "500-10000",
+                "status": "MISSING",
+                "impact": "AI training outputs, inference models, LoRA adapters",
+                "remediation": [
+                    "Run training pipeline: cd ai-training && python trainer.py",
+                    "Download pre-trained models from HuggingFace: huggingface-cli download <model-id> --local-dir data/models",
+                    "Pull from S3: aws s3 sync s3://engine-alto-models/ data/models/",
+                    "Generate ONNX export: python -m scripts.export_onnx --model-path <checkpoint> --output data/models/"
+                ]
+            },
+            {
+                "name": "3D Model Exports",
+                "extensions": [
+                    "*.glb",
+                    "*.fbx",
+                    "*.obj",
+                    "*.blend"
+                ],
+                "expectedSizeMB": "50-2000",
+                "status": "MISSING",
+                "impact": "NeRF outputs, Blender renders, game-ready meshes, LOD files",
+                "remediation": [
+                    "Run NeRF pipeline on test images: POST /api/services/3d-pipeline with input images",
+                    "Run Blender automation: npm run inference (requires Blender installed)",
+                    "Download sample assets: npx gltf-sample-models --output data/models/",
+                    "Pull from asset store: aws s3 sync s3://engine-alto-assets/3d/ data/outputs/3d/"
+                ]
+            },
+            {
+                "name": "Video Outputs",
+                "extensions": [
+                    "*.mp4",
+                    "*.mov",
+                    "*.mkv",
+                    "*.webm"
+                ],
+                "expectedSizeMB": "100-5000",
+                "status": "MISSING",
+                "impact": "Generated videos, preview renders, VFX composites",
+                "remediation": [
+                    "Run video generation: POST /api/services/video-gen with prompt (requires FFmpeg)",
+                    "Generate test video: ffmpeg -f lavfi -i testsrc=duration=10:size=1920x1080:rate=30 data/outputs/test.mp4",
+                    "Pull from storage: aws s3 sync s3://engine-alto-renders/videos/ data/outputs/videos/"
+                ]
+            },
+            {
+                "name": "Datasets",
+                "extensions": [
+                    "*.csv",
+                    "*.jsonl",
+                    "*.parquet",
+                    "*.arrow"
+                ],
+                "expectedSizeMB": "10-5000",
+                "status": "MISSING",
+                "impact": "Training data, evaluation sets, prompt libraries",
+                "remediation": [
+                    "Create data directory structure: mkdir -p data/datasets data/models data/outputs data/previews data/exports",
+                    "Download datasets: huggingface-cli download <dataset-id> --local-dir data/datasets/",
+                    "Pull from storage: aws s3 sync s3://engine-alto-data/ data/datasets/"
+                ]
+            }
+        ]
+    },
+    "recommendation": {
+        "verdict": "MISSING HEAVY ARTIFACTS: YES",
+        "explanation": "The repo is 367 MB, of which 365.5 MB (99.55%) is node_modules. Source code is only 1.65 MB. No data/, assets/, .git, or .env exist. All pipeline output directories (models, previews, outputs, exports, datasets) are absent. This is a pure source-code checkout with no generated artifacts.",
+        "actionItems": [
+            "1. Initialize git: git init && git add . && git commit -m 'Initial commit'",
+            "2. Create directory scaffold: mkdir -p data/models data/previews data/outputs data/exports data/datasets assets",
+            "3. Create .env from template: cp .env.example .env (or create manually with API keys)",
+            "4. Install missing host tools (see BLOCKING-ISSUE.md)",
+            "5. Configure Git LFS for heavy files: git lfs install && git lfs track '*.pt' '*.onnx' '*.glb' '*.mp4' '*.safetensors'",
+            "6. Run training/generation pipelines to produce artifacts",
+            "7. Optionally pull pre-built artifacts from cloud storage"
+        ]
+    }
+}

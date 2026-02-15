@@ -1,0 +1,91 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: alto_db
+      POSTGRES_USER: alto
+      POSTGRES_PASSWORD: alto_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alto -d alto_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://alto:alto_secret@postgres:5432/alto_db
+      REDIS_URL: redis://redis:6379
+      FRONTEND_URL: http://localhost:3000
+      ENABLE_REAL_AI: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+
+  # Frontend
+  frontend:
+    build:
+      context: ./platform
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      - backend
+
+  # AI Training Worker (GPU-enabled)
+  ai-worker:
+    build:
+      context: ./ai-training
+      dockerfile: Dockerfile
+    environment:
+      REDIS_URL: redis://redis:6379
+      MODELS_DIR: /app/data/models
+      CHECKPOINTS_DIR: /app/data/checkpoints
+      TRAINING_DATA_DIR: /app/data/datasets
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  postgres_data:
+  redis_data:
