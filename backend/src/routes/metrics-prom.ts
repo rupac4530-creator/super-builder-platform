@@ -13,7 +13,7 @@ const router = Router();
 router.get('/', async (_req: Request, res: Response) => {
   try {
     // Collect queue metrics
-    const queueStats = await jobQueue.getQueueStats();
+    const queueStats = await jobQueue.getStats();
     metrics.gauge('job_queue_waiting', queueStats.waiting, {});
     metrics.gauge('job_queue_active', queueStats.active, {});
     metrics.gauge('job_queue_completed', queueStats.completed, {});
@@ -29,7 +29,7 @@ router.get('/', async (_req: Request, res: Response) => {
 // JSON format for internal dashboards
 router.get('/json', async (_req: Request, res: Response) => {
   try {
-    const queueStats = await jobQueue.getQueueStats();
+    const queueStats = await jobQueue.getStats();
     res.json({
       timestamp: new Date().toISOString(),
       system: {

@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-02-16T14:32:51.991Z",
+  "jobs": [
+    [
+      "job_1771252360529_m8p1325ce",
+      {
+        "id": "job_1771252360529_m8p1325ce",
+        "type": "sdxl",
+        "data": {
+          "prompt": "persistence test final",
+          "priority": "normal"
+        },
+        "status": "completed",
+        "progress": 100,
+        "attempts": 1,
+        "maxRetries": 3,
+        "requiresGpu": true,
+        "createdAt": "2026-02-16T14:32:40.529Z",
+        "logs": [
+          "[2026-02-16T14:32:40.529Z] Job created: type=sdxl",
+          "[2026-02-16T14:32:40.531Z] Attempt 1/3"
+        ],
+        "processedAt": "2026-02-16T14:32:40.531Z",
+        "result": {
+          "pipeline": "sdxl-turbo",
+          "status": "generated"
+        },
+        "completedAt": "2026-02-16T14:32:40.550Z"
+      }
+    ],
+    [
+      "job_1771252370426_9qd8j0y55",
+      {
+        "id": "job_1771252370426_9qd8j0y55",
+        "type": "general",
+        "data": {
+          "test": true,
+          "priority": "normal"
+        },
+        "status": "completed",
+        "progress": 100,
+        "attempts": 1,
+        "maxRetries": 3,
+        "requiresGpu": false,
+        "createdAt": "2026-02-16T14:32:50.426Z",
+        "logs": [
+          "[2026-02-16T14:32:50.426Z] Job created: type=general",
+          "[2026-02-16T14:32:50.428Z] Attempt 1/3"
+        ],
+        "processedAt": "2026-02-16T14:32:50.428Z",
+        "result": {
+          "success": true
+        },
+        "completedAt": "2026-02-16T14:32:51.987Z"
+      }
+    ]
+  ],
+  "dlqCount": 0,
+  "metrics": {
+    "jobsTotal": 2,
+    "jobsCompleted": 2,
+    "jobsFailed": 0,
+    "jobsRetried": 0,
+    "jobsDLQ": 0,
+    "gpuJobsActive": 0,
+    "cpuJobsActive": 0,
+    "totalProcessingTimeMs": 1578
+  }
+}

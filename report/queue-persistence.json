@@ -3,28 +3,30 @@
                   {
                       "step":  1,
                       "name":  "state_file_check",
-                      "exists":  false
+                      "exists":  true
                   },
                   {
+                      "dlq":  0,
                       "step":  2,
+                      "timestamp":  "2026-02-16T14:32:51.991Z",
                       "name":  "read_state",
-                      "status":  "no_state_file"
+                      "jobs":  2
                   },
                   {
                       "step":  3,
                       "name":  "job_outputs",
-                      "count":  0
+                      "count":  2
                   },
                   {
                       "step":  4,
-                      "hasDLQ":  false,
+                      "hasDLQ":  true,
                       "name":  "verify_persistence",
-                      "type":  "none"
+                      "type":  "disk"
                   }
               ],
-    "persistenceType":  "none",
-    "recommendation":  "Start backend once to create queue-state.json. Queue uses disk persistence when Redis unavailable.",
-    "pass":  false,
+    "persistenceType":  "disk",
+    "recommendation":  "Queue persistence verified.",
+    "pass":  true,
     "test":  "queue-persistence",
-    "timestamp":  "2026-02-16T15:41:56.3505191+05:30"
+    "timestamp":  "2026-02-16T20:03:10.1107139+05:30"
 }
