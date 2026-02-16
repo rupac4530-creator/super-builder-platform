@@ -1,187 +1,50 @@
 {
-    "version": "1.0",
-    "description": "Curated model and dataset manifest for Engine Alto artifact vault",
-    "lastUpdated": "2026-02-15",
-    "notes": "All entries must have permissive or open-source licenses. Download with huggingface-cli or direct URL.",
-    "models": [
-        {
-            "id": "tinyllama-1.1b",
-            "name": "TinyLlama 1.1B Chat",
-            "source": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-            "type": "llm",
-            "format": "safetensors",
-            "sizeGB": 2.2,
-            "license": "Apache-2.0",
-            "destination": "models/llm/tinyllama-1.1b/",
-            "downloadCmd": "huggingface-cli download TinyLlama/TinyLlama-1.1B-Chat-v1.0 --local-dir ${ARTIFACT_ROOT}/models/llm/tinyllama-1.1b/",
-            "priority": 1
-        },
-        {
-            "id": "phi-2",
-            "name": "Microsoft Phi-2 (2.7B)",
-            "source": "microsoft/phi-2",
-            "type": "llm",
-            "format": "safetensors",
-            "sizeGB": 5.6,
-            "license": "MIT",
-            "destination": "models/llm/phi-2/",
-            "downloadCmd": "huggingface-cli download microsoft/phi-2 --local-dir ${ARTIFACT_ROOT}/models/llm/phi-2/",
-            "priority": 2
-        },
-        {
-            "id": "sd-xl-base",
-            "name": "Stable Diffusion XL Base 1.0",
-            "source": "stabilityai/stable-diffusion-xl-base-1.0",
-            "type": "diffusion",
-            "format": "safetensors",
-            "sizeGB": 6.9,
-            "license": "CreativeML-OpenRAIL-M",
-            "destination": "models/diffusion/sdxl-base/",
-            "downloadCmd": "huggingface-cli download stabilityai/stable-diffusion-xl-base-1.0 --local-dir ${ARTIFACT_ROOT}/models/diffusion/sdxl-base/",
-            "priority": 1
-        },
-        {
-            "id": "sd-xl-refiner",
-            "name": "Stable Diffusion XL Refiner 1.0",
-            "source": "stabilityai/stable-diffusion-xl-refiner-1.0",
-            "type": "diffusion",
-            "format": "safetensors",
-            "sizeGB": 6.2,
-            "license": "CreativeML-OpenRAIL-M",
-            "destination": "models/diffusion/sdxl-refiner/",
-            "downloadCmd": "huggingface-cli download stabilityai/stable-diffusion-xl-refiner-1.0 --local-dir ${ARTIFACT_ROOT}/models/diffusion/sdxl-refiner/",
-            "priority": 2
-        },
-        {
-            "id": "controlnet-canny",
-            "name": "ControlNet SDXL Canny",
-            "source": "diffusers/controlnet-canny-sdxl-1.0",
-            "type": "diffusion",
-            "format": "safetensors",
-            "sizeGB": 2.5,
-            "license": "Apache-2.0",
-            "destination": "models/diffusion/controlnet-canny/",
-            "downloadCmd": "huggingface-cli download diffusers/controlnet-canny-sdxl-1.0 --local-dir ${ARTIFACT_ROOT}/models/diffusion/controlnet-canny/",
-            "priority": 3
-        },
-        {
-            "id": "rnnoise",
-            "name": "RNNoise Denoiser Model",
-            "source": "xiph/rnnoise",
-            "type": "audio",
-            "format": "onnx",
-            "sizeGB": 0.01,
-            "license": "BSD-3-Clause",
-            "destination": "models/audio/rnnoise/",
-            "downloadCmd": "curl -L https://github.com/xiph/rnnoise/releases/latest/download/rnnoise_weights.onnx -o ${ARTIFACT_ROOT}/models/audio/rnnoise/rnnoise_weights.onnx",
-            "priority": 1
-        },
-        {
-            "id": "whisper-base",
-            "name": "OpenAI Whisper Base",
-            "source": "openai/whisper-base",
-            "type": "audio",
-            "format": "pt",
-            "sizeGB": 0.29,
-            "license": "MIT",
-            "destination": "models/audio/whisper-base/",
-            "downloadCmd": "huggingface-cli download openai/whisper-base --local-dir ${ARTIFACT_ROOT}/models/audio/whisper-base/",
-            "priority": 2
-        },
-        {
-            "id": "coqui-tts",
-            "name": "Coqui TTS VITS",
-            "source": "coqui/XTTS-v2",
-            "type": "voice-clone",
-            "format": "pth",
-            "sizeGB": 1.8,
-            "license": "MPL-2.0",
-            "destination": "models/voice-clone/coqui-xtts/",
-            "downloadCmd": "huggingface-cli download coqui/XTTS-v2 --local-dir ${ARTIFACT_ROOT}/models/voice-clone/coqui-xtts/",
-            "priority": 3
-        },
-        {
-            "id": "instant-ngp-sample",
-            "name": "Instant-NGP Sample Data (Lego + Chair)",
-            "source": "nerfstudio-project/nerfstudio-data",
-            "type": "nerf",
-            "format": "mixed",
-            "sizeGB": 0.5,
-            "license": "Apache-2.0",
-            "destination": "datasets/3d/nerf-samples/",
-            "downloadCmd": "huggingface-cli download nerfstudio-project/nerfstudio-data --local-dir ${ARTIFACT_ROOT}/datasets/3d/nerf-samples/ --include poster/*",
-            "priority": 2
-        },
-        {
-            "id": "musicgen-small",
-            "name": "Meta MusicGen Small",
-            "source": "facebook/musicgen-small",
-            "type": "audio",
-            "format": "safetensors",
-            "sizeGB": 2.0,
-            "license": "MIT (CC-BY-NC-4.0 for model)",
-            "destination": "models/audio/musicgen-small/",
-            "downloadCmd": "huggingface-cli download facebook/musicgen-small --local-dir ${ARTIFACT_ROOT}/models/audio/musicgen-small/",
-            "priority": 3
-        }
-    ],
-    "datasets": [
-        {
-            "id": "laion-aesthetics-sample",
-            "name": "LAION Aesthetics 6.5+ (sample 10k)",
-            "source": "laion/laion-aesthetics-12m-subset",
-            "type": "images",
-            "sizeGB": 5.0,
-            "license": "CC-BY-4.0",
-            "destination": "datasets/images/laion-aesthetics/",
-            "downloadCmd": "huggingface-cli download laion/laion-aesthetics-12m-subset --local-dir ${ARTIFACT_ROOT}/datasets/images/laion-aesthetics/ --include data/train-00000-of-*",
-            "priority": 3
-        },
-        {
-            "id": "objaverse-sample",
-            "name": "Objaverse 3D Objects (sample 1k)",
-            "source": "allenai/objaverse",
-            "type": "3d",
-            "sizeGB": 2.0,
-            "license": "ODC-BY-1.0",
-            "destination": "datasets/3d/objaverse/",
-            "downloadCmd": "huggingface-cli download allenai/objaverse --local-dir ${ARTIFACT_ROOT}/datasets/3d/objaverse/ --include glbs/000-000/*",
-            "priority": 3
-        },
-        {
-            "id": "common-voice-sample",
-            "name": "Mozilla Common Voice (sample English)",
-            "source": "mozilla-foundation/common_voice_11_0",
-            "type": "audio",
-            "sizeGB": 1.5,
-            "license": "CC0-1.0",
-            "destination": "datasets/audio/common-voice/",
-            "downloadCmd": "huggingface-cli download mozilla-foundation/common_voice_11_0 --config en --split train[:1000] --local-dir ${ARTIFACT_ROOT}/datasets/audio/common-voice/",
-            "priority": 3
-        }
-    ],
-    "assetPacks": [
-        {
-            "id": "poly-haven-textures",
-            "name": "Poly Haven PBR Textures (sample)",
-            "source": "https://polyhaven.com/textures",
-            "type": "textures",
-            "sizeGB": 3.0,
-            "license": "CC0-1.0",
-            "destination": "assets/textures/poly-haven/",
-            "downloadCmd": "echo 'Manual download from https://polyhaven.com/textures — select and download desired packs'",
-            "priority": 3
-        },
-        {
-            "id": "poly-haven-hdri",
-            "name": "Poly Haven HDRI (sample)",
-            "source": "https://polyhaven.com/hdris",
-            "type": "hdri",
-            "sizeGB": 1.0,
-            "license": "CC0-1.0",
-            "destination": "assets/hdri/poly-haven/",
-            "downloadCmd": "echo 'Manual download from https://polyhaven.com/hdris — select and download desired environments'",
-            "priority": 3
-        }
-    ]
+  "version": "1.0.0",
+  "updated": "2026-02-16",
+  "models": [
+    {
+      "id": "sdxl-turbo",
+      "name": "Stable Diffusion XL Turbo",
+      "source": "stabilityai/sdxl-turbo",
+      "size_gb": 6.5,
+      "format": "safetensors",
+      "dtype": "float16",
+      "license": "STABILITY-AI-NC-RESEARCH",
+      "checksum_sha256": "PLACEHOLDER_DOWNLOAD_AND_VERIFY",
+      "local_path": "data/models/sdxl-turbo/",
+      "required": true,
+      "category": "image-generation"
+    },
+    {
+      "id": "tinyllama-1.1b",
+      "name": "TinyLlama 1.1B Chat",
+      "source": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+      "size_gb": 2.2,
+      "format": "safetensors",
+      "dtype": "float16",
+      "license": "Apache-2.0",
+      "checksum_sha256": "PLACEHOLDER_DOWNLOAD_AND_VERIFY",
+      "local_path": "data/models/tinyllama/",
+      "required": false,
+      "category": "text-generation"
+    },
+    {
+      "id": "lora-adapter",
+      "name": "Custom LoRA Adapter (User-trained)",
+      "source": "local",
+      "size_gb": 0.1,
+      "format": "safetensors",
+      "dtype": "float16",
+      "license": "user-owned",
+      "checksum_sha256": "generated-at-training-time",
+      "local_path": "data/models/lora/",
+      "required": false,
+      "category": "fine-tune-adapter"
+    }
+  ],
+  "download_instructions": {
+    "huggingface_cli": "huggingface-cli download stabilityai/sdxl-turbo --local-dir data/models/sdxl-turbo/",
+    "python_script": "python scripts/download-models.ps1 --manifest data/models-manifest.json",
+    "verify": "sha256sum -c checksums.txt"
+  }
 }

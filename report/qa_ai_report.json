@@ -1,0 +1,90 @@
+{
+    "passed":  10,
+    "pass":  true,
+    "timestamp":  "2026-02-16T16:05:35.3423276+05:30",
+    "total":  10,
+    "failed":  0,
+    "results":  [
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "Hello, how are you?",
+                        "statusCode":  200,
+                        "latencyMs":  72,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "Explain quantum computing in one sentence",
+                        "statusCode":  200,
+                        "latencyMs":  14,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "Write a haiku about coding",
+                        "statusCode":  200,
+                        "latencyMs":  14,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "What is the meaning of life?",
+                        "statusCode":  200,
+                        "latencyMs":  11,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "Describe the color blue",
+                        "statusCode":  200,
+                        "latencyMs":  13,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "Tell me a joke",
+                        "statusCode":  200,
+                        "latencyMs":  13,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "What is 2+2?",
+                        "statusCode":  200,
+                        "latencyMs":  13,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "Summarize machine learning",
+                        "statusCode":  200,
+                        "latencyMs":  12,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "Write a short poem",
+                        "statusCode":  200,
+                        "latencyMs":  14,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    },
+                    {
+                        "mode":  "mock-alto-ai",
+                        "prompt":  "Explain gravity simply",
+                        "statusCode":  200,
+                        "latencyMs":  13,
+                        "status":  "PASS",
+                        "hasResponse":  true
+                    }
+                ],
+    "endpoint":  "http://localhost:3001/api/ai/chat"
+}

@@ -1,0 +1,35 @@
+{
+    "timestamp": "2026-02-16T15:40:00+05:30",
+    "test": "lifecycle-dryrun",
+    "mode": "dry-run",
+    "retention_policy": {
+        "hot_tier": {
+            "max_age_days": 7,
+            "location": "data/outputs/"
+        },
+        "warm_tier": {
+            "max_age_days": 30,
+            "location": "data/archive/"
+        },
+        "cold_tier": {
+            "max_age_days": 365,
+            "location": "external/backup/"
+        }
+    },
+    "scan_results": {
+        "total_files_scanned": 0,
+        "files_to_archive": 0,
+        "files_to_delete": 0,
+        "total_size_mb": 0,
+        "actions": []
+    },
+    "backup_results": {
+        "status": "dry-run",
+        "source": "data/",
+        "destination": "external/backup/",
+        "files_backed_up": 0,
+        "total_size_mb": 0
+    },
+    "pass": true,
+    "note": "Dry run completed. No files moved or deleted. Run without --dry-run to execute."
+}

@@ -1,0 +1,29 @@
+{
+    "steps":  [
+                  {
+                      "count":  3,
+                      "step":  1,
+                      "action":  "clear_old_logs"
+                  },
+                  {
+                      "step":  2,
+                      "file":  "D:\\super-builder-platform\\report\\selfheal\\crash-test-639068531976664887.json",
+                      "action":  "simulate_crash"
+                  },
+                  {
+                      "step":  3,
+                      "file":  "D:\\super-builder-platform\\report\\selfheal\\crash-test-639068531978022442.json",
+                      "action":  "simulate_crash"
+                  },
+                  {
+                      "step":  4,
+                      "file":  "D:\\super-builder-platform\\report\\selfheal\\crash-test-639068531979247922.json",
+                      "action":  "simulate_crash"
+                  }
+              ],
+    "pass":  true,
+    "crash_files_found":  5,
+    "test":  "selfheal-quarantine",
+    "quarantine_triggered":  true,
+    "timestamp":  "2026-02-16T15:39:57.6540719+05:30"
+}

@@ -1,0 +1,20 @@
+# TYPE process_heap_used_bytes gauge
+process_heap_used_bytes{service="engine-alto"} 14689168
+# TYPE process_heap_total_bytes gauge
+process_heap_total_bytes{service="engine-alto"} 16842752
+# TYPE process_rss_bytes gauge
+process_rss_bytes{service="engine-alto"} 55709696
+# TYPE process_uptime_seconds gauge
+process_uptime_seconds{service="engine-alto"} 30.2163589
+# TYPE process_cpu_user_microseconds gauge
+process_cpu_user_microseconds{service="engine-alto"} 93000
+# TYPE process_cpu_system_microseconds gauge
+process_cpu_system_microseconds{service="engine-alto"} 62000
+# TYPE job_queue_waiting gauge
+job_queue_waiting{} 0
+# TYPE job_queue_active gauge
+job_queue_active{} 0
+# TYPE job_queue_completed gauge
+job_queue_completed{} 0
+# TYPE job_queue_failed gauge
+job_queue_failed{} 0

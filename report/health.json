@@ -1,0 +1,20 @@
+{
+    "status":  "healthy",
+    "name":  "Engine Alto",
+    "version":  "0.1.0",
+    "uptime":  "38s",
+    "timestamp":  "2026-02-16T10:35:46.037Z",
+    "system":  {
+                   "platform":  "win32",
+                   "arch":  "x64",
+                   "cpus":  12,
+                   "totalMemory":  "64GB",
+                   "freeMemory":  "45GB",
+                   "nodeVersion":  "v20.11.1"
+               },
+    "services":  {
+                     "database":  "connected",
+                     "redis":  "not configured",
+                     "ai":  "mock mode"
+                 }
+}

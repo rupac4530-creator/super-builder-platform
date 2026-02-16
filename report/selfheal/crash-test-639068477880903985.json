@@ -1,0 +1,7 @@
+{
+    "jobId":  "test-crash-2",
+    "error":  "Simulated GPU OOM crash #2",
+    "timestamp":  "2026-02-16T14:09:48.0903985+05:30",
+    "quarantined":  false,
+    "crashCount":  2
+}

@@ -1,37 +1,30 @@
 ﻿{
-    "blender":  {
-                    "status":  "SKIP",
-                    "reason":  "Not installed"
-                },
-    "node":  {
-                 "status":  "PASS"
-             },
-    "ffmpeg":  {
-                   "status":  "PASS",
-                   "path":  "D:\\super-builder-platform\\tools\\ffmpeg\\ffmpeg.exe"
+    "checks":  {
+                   "node":  {
+                                "installed":  true
+                            },
+                   "ffmpeg":  {
+                                  "installed":  true
+                              },
+                   "python":  {
+                                  "installed":  true
+                              },
+                   "git":  {
+                               "installed":  true
+                           },
+                   "docker":  {
+                                  "installed":  false
+                              },
+                   "gpu":  {
+                               "installed":  false
+                           },
+                   "npm":  {
+                               "installed":  true
+                           },
+                   "redis":  {
+                                 "installed":  false
+                             }
                },
-    "blockers":  3,
-    "python":  {
-                   "status":  "PASS",
-                   "path":  "D:\\super-builder-platform\\tools\\python311\\python.exe"
-               },
-    "timestamp":  "2026-02-16T01:04:51.6771561+05:30",
-    "docker":  {
-                   "status":  "SKIP",
-                   "reason":  "Not installed"
-               },
-    "missing":  [
-
-                ],
-    "gpu":  {
-                "name":  "NVIDIA GeForce RTX 4050 Laptop GPU",
-                "status":  "PASS"
-            },
-    "npm":  {
-                "status":  "PASS"
-            },
-    "redis":  {
-                  "status":  "SKIP",
-                  "reason":  "Not available"
-              }
+    "timestamp":  "2026-02-16T16:05:29.1229178+05:30",
+    "platform":  "windows"
 }

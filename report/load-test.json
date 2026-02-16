@@ -1,0 +1,26 @@
+{
+  "total": 100,
+  "concurrency": 5,
+  "url": "http://localhost:3001/api/jobs",
+  "startedAt": "2026-02-16T10:35:40.332Z",
+  "completedAt": "2026-02-16T10:35:40.468Z",
+  "statusCodes": {
+    "201": 100
+  },
+  "errors": 0,
+  "successes": 100,
+  "p50": 5,
+  "p95": 19,
+  "p99": 33,
+  "avg": 6,
+  "failureRate": "0.00%",
+  "pass": true,
+  "latencyDistribution": {
+    "min": 3,
+    "p50": 5,
+    "p95": 19,
+    "p99": 33,
+    "max": 33,
+    "avg": 6
+  }
+}

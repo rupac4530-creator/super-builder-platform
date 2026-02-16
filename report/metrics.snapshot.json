@@ -1,0 +1,116 @@
+{
+    "timestamp":  "2026-02-16T10:11:52.502Z",
+    "system":  {
+                   "uptime":  88.0891688,
+                   "memory":  {
+                                  "rss":  56262656,
+                                  "heapTotal":  17367040,
+                                  "heapUsed":  15910536,
+                                  "external":  4157535,
+                                  "arrayBuffers":  66363
+                              },
+                   "cpu":  {
+                               "user":  156000,
+                               "system":  78000
+                           }
+               },
+    "queue":  {
+                  "waiting":  0,
+                  "active":  0,
+                  "completed":  0,
+                  "failed":  0,
+                  "deadLetter":  0
+              },
+    "metrics":  {
+                    "process_heap_used_bytes:{\"service\":\"engine-alto\"}":  {
+                                                                                  "name":  "process_heap_used_bytes",
+                                                                                  "type":  "gauge",
+                                                                                  "value":  14561200,
+                                                                                  "labels":  {
+                                                                                                 "service":  "engine-alto"
+                                                                                             },
+                                                                                  "timestamp":  1771236699746
+                                                                              },
+                    "process_heap_total_bytes:{\"service\":\"engine-alto\"}":  {
+                                                                                   "name":  "process_heap_total_bytes",
+                                                                                   "type":  "gauge",
+                                                                                   "value":  16056320,
+                                                                                   "labels":  {
+                                                                                                  "service":  "engine-alto"
+                                                                                              },
+                                                                                   "timestamp":  1771236699746
+                                                                               },
+                    "process_rss_bytes:{\"service\":\"engine-alto\"}":  {
+                                                                            "name":  "process_rss_bytes",
+                                                                            "type":  "gauge",
+                                                                            "value":  54726656,
+                                                                            "labels":  {
+                                                                                           "service":  "engine-alto"
+                                                                                       },
+                                                                            "timestamp":  1771236699746
+                                                                        },
+                    "process_uptime_seconds:{\"service\":\"engine-alto\"}":  {
+                                                                                 "name":  "process_uptime_seconds",
+                                                                                 "type":  "gauge",
+                                                                                 "value":  75.3332787,
+                                                                                 "labels":  {
+                                                                                                "service":  "engine-alto"
+                                                                                            },
+                                                                                 "timestamp":  1771236699746
+                                                                             },
+                    "process_cpu_user_microseconds:{\"service\":\"engine-alto\"}":  {
+                                                                                        "name":  "process_cpu_user_microseconds",
+                                                                                        "type":  "gauge",
+                                                                                        "value":  109000,
+                                                                                        "labels":  {
+                                                                                                       "service":  "engine-alto"
+                                                                                                   },
+                                                                                        "timestamp":  1771236699746
+                                                                                    },
+                    "process_cpu_system_microseconds:{\"service\":\"engine-alto\"}":  {
+                                                                                          "name":  "process_cpu_system_microseconds",
+                                                                                          "type":  "gauge",
+                                                                                          "value":  62000,
+                                                                                          "labels":  {
+                                                                                                         "service":  "engine-alto"
+                                                                                                     },
+                                                                                          "timestamp":  1771236699746
+                                                                                      },
+                    "job_queue_waiting:{}":  {
+                                                 "name":  "job_queue_waiting",
+                                                 "type":  "gauge",
+                                                 "value":  0,
+                                                 "labels":  {
+
+                                                            },
+                                                 "timestamp":  1771236712469
+                                             },
+                    "job_queue_active:{}":  {
+                                                "name":  "job_queue_active",
+                                                "type":  "gauge",
+                                                "value":  0,
+                                                "labels":  {
+
+                                                           },
+                                                "timestamp":  1771236712469
+                                            },
+                    "job_queue_completed:{}":  {
+                                                   "name":  "job_queue_completed",
+                                                   "type":  "gauge",
+                                                   "value":  0,
+                                                   "labels":  {
+
+                                                              },
+                                                   "timestamp":  1771236712469
+                                               },
+                    "job_queue_failed:{}":  {
+                                                "name":  "job_queue_failed",
+                                                "type":  "gauge",
+                                                "value":  0,
+                                                "labels":  {
+
+                                                           },
+                                                "timestamp":  1771236712469
+                                            }
+                }
+}
