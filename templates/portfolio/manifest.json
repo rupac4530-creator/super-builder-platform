@@ -1,0 +1,8 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "description": "Personal portfolio and project showcase with blog support",
+  "stack": ["next.js", "typescript", "markdown"],
+  "features": ["about-page", "project-gallery", "blog", "contact-form", "responsive"],
+  "difficulty": "beginner"
+}

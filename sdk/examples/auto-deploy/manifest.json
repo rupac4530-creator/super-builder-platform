@@ -1,0 +1,9 @@
+{
+  "name": "auto-deploy",
+  "version": "1.0.0",
+  "description": "Automatic deployment pipeline — deploy projects to Vercel, Cloudflare, or custom servers",
+  "author": "SuperBuilder Community",
+  "license": "AGPL-3.0",
+  "main": "index.ts",
+  "capabilities": ["tool", "deployment"]
+}

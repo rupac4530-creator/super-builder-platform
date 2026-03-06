@@ -1,91 +1,119 @@
-# SuperBuilder / Engine Alto
+<div align="center">
 
-**The open-source AI creation platform.**
+# ⚡ SuperBuilder / Engine Alto
 
-Build AI tools, media pipelines, autonomous agents, creator studios, and full applications — all from one unified platform.
+### The Open-Source AI Creation Platform
 
-SuperBuilder combines AI orchestration, autonomous agents, creative pipelines, code generation, deployment, and self-improving intelligence into a single system that anyone can use, extend, and improve.
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/rupac4530-creator/super-builder-platform?style=social)](https://github.com/rupac4530-creator/super-builder-platform/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/rupac4530-creator/super-builder-platform?style=social)](https://github.com/rupac4530-creator/super-builder-platform/network)
+[![GitHub issues](https://img.shields.io/github/issues/rupac4530-creator/super-builder-platform)](https://github.com/rupac4530-creator/super-builder-platform/issues)
+[![Contributors](https://img.shields.io/github/contributors/rupac4530-creator/super-builder-platform)](https://github.com/rupac4530-creator/super-builder-platform/graphs/contributors)
+[![CI](https://github.com/rupac4530-creator/super-builder-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/rupac4530-creator/super-builder-platform/actions)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](docker-compose.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js)](https://nodejs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+**Build AI tools, media pipelines, autonomous agents, creator studios, and full applications — all from one unified platform.**
+
+[Quick Start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Contributing](#-contributing) · [Roadmap](ROADMAP.md) · [Plugin SDK](sdk/)
+
+</div>
+
+---
+
+## What is SuperBuilder?
+
+SuperBuilder is a **next-generation AI development platform** that combines AI orchestration, autonomous agents, creative pipelines, code generation, deployment, and self-improving intelligence into a single system.
+
+Instead of switching between 15 different tools for chat, image generation, deployment, monitoring, and automation — you open SuperBuilder and **everything is there**.
+
+```
+User: "Build a SaaS landing page and deploy it"
+
+SuperBuilder:
+  → Planner Agent creates architecture
+  → Coder Agent writes frontend + backend
+  → Tester Agent runs checks
+  → Deployer Agent ships to production
+  → All in one platform, fully autonomous
+```
 
 ---
 
 ## Why SuperBuilder?
 
-Today, building AI-powered products requires stitching together dozens of tools — one for chat, one for image generation, one for deployment, one for monitoring, and so on.
-
-**SuperBuilder replaces that fragmentation with one platform.**
-
-Instead of switching between 15 different tools, you open SuperBuilder and everything is there — AI chat, code generation, media creation, agent orchestration, deployment, analytics, and more.
+| Problem | SuperBuilder Solution |
+|---|---|
+| Too many AI tools to manage | One unified platform for everything |
+| AI can chat but can't build | Autonomous agents that plan, code, test, and deploy |
+| No way to create media with AI | 7 Creator Studios (video, audio, 3D, games, design, fashion, robotics) |
+| Hard to extend AI platforms | Plugin SDK — build and share extensions |
+| AI doesn't learn from mistakes | Evolution Engine — self-improving intelligence |
+| Complex setup for contributors | `docker compose up` — running in 60 seconds |
 
 ---
 
-## Core Features
+## Features
 
-### Platform
-| Feature | Description |
-|---|---|
-| **Dashboard** | Real-time platform overview with system health, GPU status, and quick actions |
-| **AI Assistant** | Multi-model AI chat with streaming, context awareness, and tool use |
-| **Project Manager** | Create, manage, and organize AI projects and experiments |
-| **Unified Control Center** | Single dashboard aggregating status of every module in the platform |
-
-### AI / ML
-| Feature | Description |
-|---|---|
-| **Training Studio** | Train AI models with GPU acceleration and mixed precision |
-| **Model Registry** | Version, deploy, export, and manage trained models |
-| **Inference Engine** | Real-time AI inference endpoints — deploy and test models |
-| **Multi-Model Orchestration** | Route requests to the best model (OpenAI, Gemini, Groq, Ollama, Cloudflare Workers AI, and more) |
-
-### Creator Studios
-| Feature | Description |
-|---|---|
-| **Game Studio** | Build games with AI assistance — Unity, Godot, Unreal, or Web |
-| **Video Studio** | AI video generation — text-to-video with multiple styles |
-| **Audio Studio** | Music composition, voice cloning, audio denoising |
-| **3D Studio** | Generate 3D models, NeRF reconstruction, GLB/GLTF export |
-| **Fashion Studio** | AI garment design — fabrics, patterns, tech packs |
-| **Design Suite** | Posters, social media graphics, logos, presentations |
-| **Robotics Lab** | Multi-backend robotics simulation and control |
+### Platform Core
+- **Dashboard** — Real-time overview with system health, GPU status, quick actions
+- **AI Assistant** — Multi-model chat with streaming, context awareness, tool use
+- **Project Manager** — Create and manage AI projects and experiments
+- **Unified Control Center** — Single dashboard for every module
 
 ### Autonomous Agent Hub (OpenClaw)
-| Feature | Description |
-|---|---|
-| **Agent Hub** | Autonomous agent system — create plans, execute tasks, build and deploy automatically |
-| **Task Monitor** | Real-time task execution with pause, resume, cancel controls |
-| **Multi-Agent Teams** | Specialized AI teams (planner, coder, tester, deployer, researcher, security) working together |
-| **Tool Registry** | 10+ built-in tools (web search, code gen, shell, deploy, browser, DB, etc.) plus custom tool registration |
-| **Sandboxed Execution** | Safe execution with resource limits, network whitelists, and dry-run mode |
-| **Agent Memory** | Long-term memory store with vector search for context-aware agents |
+- **Plan & Execute** — Describe a goal, AI creates a step-by-step plan and executes it
+- **Multi-Agent Teams** — Planner, Coder, Tester, Deployer, Researcher, Security agents working together
+- **10+ Built-in Tools** — Web search, code gen, shell, deploy, browser, DB, file ops, API calls
+- **Task Monitor** — Real-time execution with pause/resume/cancel
+- **Agent Memory** — Long-term memory with search for context-aware agents
+- **Sandboxed Execution** — Safe execution with resource limits and dry-run mode
 
-### Innovation Labs
-| Feature | Description |
-|---|---|
-| **Knowledge Brain** | AI research engine — knowledge graphs, concept maps, explain anything |
-| **AI Memory** | Persistent memory — remembers conversations, preferences, learning history |
-| **Idea Lab** | Validate ideas, evolve them, combine concepts, build startup plans |
-| **Code Forge** | AI debugging, code evolution, screenshot-to-code, auto-refactor |
-| **Data Insights** | Upload data, find patterns, run simulations, predict trends |
-| **Learning Hub** | AI courses, skill builder, debate mode, curiosity engine |
-| **Trend Radar** | Scan trends, analyze markets, AI decision helper |
-| **Collab Space** | AI collaboration rooms, product designer, team workspace |
-| **AI Marketplace** | Browse agents, models, pipelines, plugins, datasets, templates |
-| **Self-Improve** | Platform self-improvement — auto bug detection, optimization, evolution |
+### Creator Studios (7 Studios)
+- **Game Studio** — Build games with AI (Unity, Godot, Unreal, Web)
+- **Video Studio** — AI video generation with multiple styles
+- **Audio Studio** — Music composition, voice cloning, denoising
+- **3D Studio** — 3D model generation, NeRF reconstruction
+- **Fashion Studio** — AI garment design, fabrics, patterns
+- **Design Suite** — Posters, social media, logos, presentations
+- **Robotics Lab** — Multi-backend robotics simulation
 
-### AI Evolution Engine
-| Feature | Description |
-|---|---|
-| **Performance Analysis** | Track agent success rates, task completion times, and efficiency trends |
-| **Workflow Optimization** | Learn successful workflow patterns and reuse them automatically |
-| **Optimization Insights** | AI-generated suggestions to improve performance, security, and code quality |
-| **Continuous Learning** | Knowledge accumulation — the platform gets smarter over time |
+### Innovation Labs (10 Modules)
+- **Knowledge Brain** — Research engine, knowledge graphs, concept maps
+- **AI Memory** — Persistent memory across conversations
+- **Idea Lab** — Validate ideas, build startup plans
+- **Code Forge** — AI debugging, screenshot-to-code, auto-refactor
+- **Data Insights** — Pattern detection, simulations, predictions
+- **Learning Hub** — AI courses, skill builder, debate mode
+- **Trend Radar** — Market analysis, trend scanning
+- **Collab Space** — AI collaboration rooms
+- **AI Marketplace** — Browse agents, models, plugins, templates
+- **Self-Improve** — Auto bug detection, optimization
 
-### System & Infrastructure
-| Feature | Description |
-|---|---|
-| **Job Queue** | Background task management — training, rendering, builds |
-| **Metrics & Observability** | Real-time monitoring with Prometheus metrics and structured logging |
-| **Artifact Vault** | Secure storage for generated assets, models, and builds |
-| **Agent Civilization** | Autonomous AI agents managing platform operations |
+### AI Evolution Engine (Self-Improving)
+- **Performance Analysis** — Track agent success rates and efficiency
+- **Workflow Optimization** — Learn and reuse successful patterns
+- **Optimization Insights** — AI-generated improvement suggestions
+- **Continuous Learning** — Platform gets smarter over time
+
+### Multi-Model AI Orchestration
+| Provider | Models | Type |
+|---|---|---|
+| OpenAI | GPT-5, GPT-5-mini, GPT-4o, Embeddings | Cloud |
+| Google Gemini | Gemini 1.5 Flash, Pro | Cloud |
+| Groq | Llama 3.3 70B, GPT OSS 120B | Cloud (fast) |
+| Cloudflare Workers AI | Qwen1.5-14B, Llama 2, OpenChat, Zephyr | Edge |
+| Ollama | Any local model | Local |
+| OpenRouter | 600+ models | Cloud |
+| DeepSeek | DeepSeek-R1-0528 | Cloud |
+| Meta | Llama-3.2-90B-Vision | Cloud |
+
+### Plugin SDK
+- Build custom plugins with the [Plugin SDK](sdk/)
+- Example plugins included (AI provider, web scraper, automation)
+- Share plugins through the marketplace
 
 ---
 
@@ -94,96 +122,66 @@ Instead of switching between 15 different tools, you open SuperBuilder and every
 ```
 SuperBuilder Platform
 │
-├── Frontend (Next.js)
+├── Frontend (Next.js 14)
 │   ├── Dashboard & Control Center
-│   ├── Creator Studios (7 studios)
-│   ├── Agent Hub (OpenClaw)
-│   ├── Innovation Labs (10 modules)
+│   ├── 7 Creator Studios
+│   ├── Agent Hub (OpenClaw) — plans, tasks, teams
+│   ├── 10 Innovation Lab modules
 │   └── Evolution Dashboard
 │
 ├── Backend API (Express + TypeScript)
-│   ├── AI Orchestration (multi-model routing)
-│   ├── Agent System (plans, tasks, teams, tools)
+│   ├── AI Orchestration (8+ providers)
+│   ├── Agent System (plans → tasks → execution)
 │   ├── Job Queue & Workers
-│   ├── Innovation APIs
-│   └── Evolution Engine
+│   ├── Innovation APIs (10 modules)
+│   └── Evolution Engine (self-improving)
 │
-├── AI Layer
-│   ├── OpenAI (GPT-5, GPT-4o, embeddings)
-│   ├── Google Gemini
-│   ├── Groq (Llama, GPT OSS)
-│   ├── Cloudflare Workers AI
-│   ├── Ollama (local models)
-│   └── OpenRouter (multi-model)
-│
-├── Pipelines
-│   ├── Video Generation
-│   ├── Audio / Music
-│   ├── 3D / NeRF
-│   └── Image / SDXL
+├── Plugin SDK
+│   ├── Plugin interface & lifecycle
+│   ├── Example plugins
+│   └── Plugin marketplace integration
 │
 └── Infrastructure
-    ├── Artifact Vault
-    ├── Monitoring (Prometheus)
-    ├── Sandbox Runner
-    └── Self-Healing Runtime
+    ├── Artifact Vault (asset storage)
+    ├── Monitoring (Prometheus metrics)
+    ├── Sandbox Runner (safe execution)
+    └── Backup & Restore system
 ```
 
 ---
 
 ## Quick Start
 
-### Prerequisites
-
-- **Node.js** 18+ (recommended: 20 LTS)
-- **npm** 9+
-- A code editor (VS Code recommended)
-
-### Setup
+### Option 1: Docker (Recommended)
 
 ```bash
-# Clone the repository
+git clone https://github.com/rupac4530-creator/super-builder-platform.git
+cd super-builder-platform
+docker compose up
+```
+
+Open **http://localhost:3000** — done.
+
+### Option 2: Manual Setup
+
+```bash
+# Clone
 git clone https://github.com/rupac4530-creator/super-builder-platform.git
 cd super-builder-platform
 
-# Install dependencies
-npm install
-
-# Create environment file
+# Configure
 cp .env.example .env
-# Edit .env with your API keys
 
-# Start backend (port 3001)
-cd backend
-npm run dev
+# Backend (terminal 1)
+cd backend && npm install && npm run dev
 
-# Start frontend (port 3000) — in a new terminal
-cd platform
-npm run dev
+# Frontend (terminal 2)
+cd platform && npm install && npm run dev
 ```
 
-Open **http://localhost:3000** in your browser.
+Open **http://localhost:3000**.
 
-### Using Docker
-
-```bash
-docker-compose up
-```
-
----
-
-## Supported AI Providers
-
-| Provider | Models | Type |
-|---|---|---|
-| OpenAI | GPT-5, GPT-5-mini, GPT-4o, text-embedding-3-small | Cloud |
-| Google Gemini | Gemini 1.5 Flash, Gemini Pro | Cloud |
-| Groq | Llama 3.3 70B, GPT OSS 120B | Cloud (fast) |
-| Cloudflare Workers AI | Qwen1.5-14B, Llama 2 13B, OpenChat 3.5, Zephyr 7B | Edge |
-| Ollama | Any local model (Llama, Mistral, Phi, etc.) | Local |
-| OpenRouter | 600+ models | Cloud |
-| DeepSeek | DeepSeek-R1-0528 | Cloud |
-| Meta (via GitHub Models) | Llama-3.2-90B-Vision-Instruct | Cloud |
+> The platform runs in mock mode by default — no API keys required. Add your own keys to `.env` to enable real AI.
 
 ---
 
@@ -191,47 +189,52 @@ docker-compose up
 
 We welcome developers, AI researchers, designers, and engineers from around the world.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started.
-
 **Ways to contribute:**
 - Improve AI pipelines and agent logic
 - Build new creator studio tools
+- Create plugins with the [Plugin SDK](sdk/)
 - Add support for new AI models
 - Optimize performance for different hardware
-- Fix bugs and improve stability
-- Write documentation and guides
-- Build plugins and extensions
+- Fix bugs, write tests, improve documentation
+- Build starter templates
+
+Check out our [good first issues](https://github.com/rupac4530-creator/super-builder-platform/labels/good%20first%20issue) to get started.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
 ---
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for the full development roadmap.
+See [ROADMAP.md](ROADMAP.md) for the complete development roadmap with checkboxes.
 
----
-
-## License
-
-This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
-
-You are free to use, modify, and distribute this software. If you run a modified version as a network service, you must make your source code available under the same license.
-
-See [LICENSE](LICENSE) for the full text.
-
----
-
-## Security
-
-If you discover a security vulnerability, please report it privately. See [SECURITY.md](SECURITY.md).
+**Next priorities:**
+- [ ] Real sandboxed code execution (Docker containers)
+- [ ] RAG with vector search
+- [ ] Plugin marketplace UI
+- [ ] Multi-user workspaces
+- [ ] Live demo deployment
 
 ---
 
 ## Community
 
-- **GitHub Discussions** — Ask questions, share ideas, discuss features
-- **Issues** — Report bugs and request features
-- **Pull Requests** — Contribute code improvements
+- [GitHub Discussions](https://github.com/rupac4530-creator/super-builder-platform/discussions) — Ask questions, share ideas
+- [Issues](https://github.com/rupac4530-creator/super-builder-platform/issues) — Report bugs, request features
+- [Contributing Guide](CONTRIBUTING.md) — How to get started
 
 ---
 
+## License
+
+**AGPL-3.0** — You can use, modify, and distribute this software freely. If you run a modified version as a network service, you must share your source code under the same license. See [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+
 **Built with passion by [rupac4530-creator](https://github.com/rupac4530-creator) and the open-source community.**
+
+If this project is useful to you, please give it a star — it helps others discover it.
+
+</div>

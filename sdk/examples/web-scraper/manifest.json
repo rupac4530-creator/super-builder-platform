@@ -1,0 +1,9 @@
+{
+  "name": "web-scraper",
+  "version": "1.0.0",
+  "description": "Web scraping tool for SuperBuilder agents — extract content from any URL",
+  "author": "SuperBuilder Community",
+  "license": "AGPL-3.0",
+  "main": "index.ts",
+  "capabilities": ["tool", "research"]
+}

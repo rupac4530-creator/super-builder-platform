@@ -1,0 +1,8 @@
+{
+  "name": "saas-starter",
+  "version": "1.0.0",
+  "description": "Full-stack SaaS application starter with auth, dashboard, and API",
+  "stack": ["next.js", "express", "typescript", "postgresql"],
+  "features": ["authentication", "dashboard", "api", "database", "billing-ready"],
+  "difficulty": "intermediate"
+}

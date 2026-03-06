@@ -1,0 +1,9 @@
+{
+  "name": "openai-provider",
+  "version": "1.0.0",
+  "description": "Add OpenAI GPT models as an AI provider for SuperBuilder agents",
+  "author": "SuperBuilder Community",
+  "license": "AGPL-3.0",
+  "main": "index.ts",
+  "capabilities": ["ai-provider", "chat", "embeddings"]
+}

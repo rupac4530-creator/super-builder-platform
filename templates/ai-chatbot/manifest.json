@@ -1,0 +1,8 @@
+{
+  "name": "ai-chatbot",
+  "version": "1.0.0",
+  "description": "AI-powered chatbot with multi-model support, streaming, and memory",
+  "stack": ["next.js", "express", "typescript", "openai", "ollama"],
+  "features": ["chat-ui", "streaming", "multi-model", "conversation-memory"],
+  "difficulty": "beginner"
+}
