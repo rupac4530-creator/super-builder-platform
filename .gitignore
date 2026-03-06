@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
@@ -43,3 +43,20 @@ logs/
 coverage/
 test-results/
 playwright-report/
+
+# Next.js
+.next/
+out/
+
+# Backups (generated locally)
+superbuilder-backups/
+
+# Agent Hub data (generated at runtime)
+.agent_hub/
+.ai_evolution/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/

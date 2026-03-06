@@ -1,131 +1,91 @@
-# Engine Alto — Architecture Documentation
+# SuperBuilder Architecture
 
-## System Overview
+## Overview
 
-Engine Alto is a unified AI-first creator platform, designed as a self-governing civilization of autonomous agents that can build apps, train models, deploy services, and maintain themselves.
+SuperBuilder is a monorepo containing a backend API server and a frontend web application, connected through REST APIs and WebSocket.
 
-## Core Principles
-
-1. **Autonomy-First** — Agents operate without human approval by default
-2. **Safety-Critical** — Master Override available for emergency recovery
-3. **Auditable** — Every action is logged to immutable audit trail
-4. **Sandboxed** — All code execution runs in isolation
-5. **Resilient** — Self-healing agents detect and fix issues automatically
-
-## Architecture Layers
+## Directory Structure
 
 ```
-┌───────────────────────────────────────────────────┐
-│               Presentation Layer                  │
-│          Next.js  •  React  •  WebSocket          │
-├───────────────────────────────────────────────────┤
-│                 API Gateway                       │
-│        Express  •  REST  •  Socket.IO             │
-├─────────┬─────────┬─────────┬─────────────────────┤
-│ Project │ AI/ML   │ Agent   │ Job Queue           │
-│ Service │ Service │ Service │ BullMQ / In-Memory   │
-├─────────┴─────────┴─────────┴─────────────────────┤
-│              Agent Orchestrator                    │
-│    Workbook  •  Balancer  •  Governance            │
-├───────────────────────────────────────────────────┤
-│              Data & Infrastructure                 │
-│    PostgreSQL  •  Redis  •  S3  •  Docker          │
-└───────────────────────────────────────────────────┘
+super-builder-platform/
+├── backend/              # Express + TypeScript API server
+│   └── src/
+│       ├── routes/       # API route handlers
+│       ├── services/     # Business logic
+│       ├── database/     # Database initialization
+│       └── utils/        # Shared utilities (logger, etc.)
+├── platform/             # Next.js frontend application
+│   └── src/
+│       └── app/          # React pages and components
+├── scripts/              # Automation and utility scripts
+├── docs/                 # Project documentation
+├── .github/              # GitHub Actions, templates
+└── assets/               # Screenshots, diagrams
 ```
 
-## Service Map
+## Backend
 
-| Service | Port | Technology | Purpose |
-|---------|------|-----------|---------|
-| Frontend | 3000 | Next.js | Platform UI |
-| Backend API | 3001 | Express | REST + WebSocket |
-| Inference Server | 8000 | FastAPI | Model serving |
-| PostgreSQL | 5432 | Postgres 16 | Persistent data |
-| Redis | 6379 | Redis 7 | Job queue + cache |
+- **Framework**: Express.js with TypeScript
+- **Port**: 3001 (default)
+- **API Structure**: Modular routes, each feature has its own route file
+- **Key routes**:
+  - `/api/health` — Health check
+  - `/api/ai` — AI orchestration
+  - `/api/projects` — Project management
+  - `/api/agents` — Agent civilization
+  - `/api/agent-hub` — Autonomous agent system (OpenClaw)
+  - `/api/evolution` — Self-improving AI engine
+  - `/api/innovation` — Innovation labs modules
+  - `/api/control-center` — Unified control center aggregator
+  - `/api/engine` — Core engine capabilities
+  - `/api/services` — Platform services (video, audio, 3D, etc.)
 
-## Agent Civilization
+## Frontend
 
-The platform runs 12 autonomous agents organized into governance branches:
+- **Framework**: Next.js 14 with React
+- **Port**: 3000 (default)
+- **Architecture**: Single-page app with sidebar navigation and dynamic page rendering
+- **State**: React hooks (useState, useEffect)
+- **API calls**: fetch() to backend REST endpoints
 
-### Executive Branch
-- **Orchestrator** — Central coordinator, task decomposition
-- **DeployAgent** — Deployment pipelines
+## AI Orchestration
 
-### Data & Training Branch
-- **DataAgent** — Dataset curation and preprocessing
-- **TrainerAgent** — Hyperparameter optimization, AutoML
+The platform routes AI requests to the best available model based on task type:
 
-### Defensive Branch
-- **DebugAgent** — Diagnose and fix failures
-- **SecurityAgent** — Ethical hacking, vulnerability scanning
-- **PoliceAgent** — Containment of rogue processes
+- **Reasoning**: OpenAI GPT-5, DeepSeek-R1
+- **Fast tasks**: Groq (Llama 3.3 70B), Gemini Flash
+- **Code**: GPT-4o, DeepSeek-R1
+- **Vision**: Llama-3.2-90B-Vision
+- **Embeddings**: OpenAI text-embedding-3-small
+- **Local/free**: Ollama, Cloudflare Workers AI
+- **Multi-model**: OpenRouter
 
-### Support Branch
-- **DoctorAgent** — Self-healing, recovery
-- **AuditorAgent** — Compliance, consistency checking
-- **DecoratorAgent** — UX polish, UI improvements
-- **GrowthAgent** — User acquisition optimization
-- **ScoutAgent** — Technology scanning, emerging trends
+## Agent System
+
+The Agent Hub implements autonomous task execution:
+
+1. **Planner** receives a goal and generates a step-by-step plan
+2. **Orchestrator** assigns steps to specialized agents
+3. **Executor** runs steps in sandboxed environments
+4. **Memory** stores context for future reference
+5. **Evolution Engine** analyzes performance and optimizes workflows
 
 ## Data Flow
 
 ```
-User Request → API Gateway → Agent Orchestrator
-                                   ↓
-                            Task Decomposition
-                                   ↓
-                        ┌──────────┼──────────┐
-                        ↓          ↓          ↓
-                   DataAgent  TrainerAgent DeployAgent
-                        ↓          ↓          ↓
-                   Dataset    Model      Deployment
-                   Prepared   Trained    Complete
-                        ↓          ↓          ↓
-                        └──────────┼──────────┘
-                                   ↓
-                          Audit Log Updated
-                                   ↓
-                          Result → User / UI
+User → Frontend (Next.js) → Backend API (Express)
+                                ↓
+                         AI Orchestrator → AI Providers
+                                ↓
+                         Job Queue → Workers → Artifact Vault
+                                ↓
+                         Agent Hub → Plans → Tasks → Execution
 ```
 
-## GPU Training Pipeline
+## Design Principles
 
-1. **Configuration** — Architecture, hyperparameters, dataset
-2. **Data Preparation** — DataAgent preprocesses, augments, splits
-3. **Training** — PyTorch with mixed precision on GPU
-4. **Monitoring** — Real-time metrics via WebSocket
-5. **Evaluation** — Accuracy, loss, confusion matrix
-6. **Export** — PyTorch (.pt) or ONNX (.onnx)
-7. **Deployment** — FastAPI inference server
-
-## Security Model
-
-- **Sandbox**: All agent code runs in isolated environments
-- **Audit Trail**: Immutable logging of all actions
-- **Ethical Hacking**: SecurityAgent proactively scans for vulnerabilities
-- **Canary Deploy**: New changes rolled out 10% at a time
-- **Master Override**: Emergency stop for all autonomous operations
-- **Input Validation**: All API inputs sanitized and size-limited
-
-## API Design
-
-All API routes follow RESTful conventions:
-- `GET /api/resource` — List all
-- `GET /api/resource/:id` — Get one
-- `POST /api/resource` — Create
-- `PUT /api/resource/:id` — Update
-- `DELETE /api/resource/:id` — Delete
-
-Real-time updates via Socket.IO events:
-- `training:progress` — Training metrics
-- `job:update` — Job status changes
-- `agent:activity` — Agent actions
-
-## Deployment Options
-
-| Target | Command | Notes |
-|--------|---------|-------|
-| Local Dev | `npm run dev` | Frontend + Backend |
-| Docker | `docker compose up` | Full stack |
-| Kubernetes | `kubectl apply -f kubernetes/` | Production |
-| AWS | `terraform apply` | Terraform infra |
+1. **Add-only**: New features are added without removing existing ones
+2. **Modular**: Each feature is self-contained in its own route/component
+3. **Safe defaults**: Sandbox mode, dry-run, feature flags
+4. **Observable**: Structured logging, Prometheus metrics
+5. **Graceful degradation**: If a service is down, others continue working

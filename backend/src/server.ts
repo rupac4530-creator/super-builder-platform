@@ -23,6 +23,10 @@ import agentDepartmentsRouter from './routes/agent-departments';
 import metricsPromRouter from './routes/metrics-prom';
 import aiStreamV2Router from './routes/ai-stream-v2';
 import artifactsRouter from './routes/artifacts';
+import controlCenterRouter from './routes/control-center';
+import innovationRouter from './routes/innovation';
+import agentHubRouter from './routes/agent-hub';
+import agentEvolutionRouter from './routes/agent-evolution';
 import { initDatabase } from './database/init';
 
 dotenv.config();
@@ -61,6 +65,10 @@ app.use('/api/departments', agentDepartmentsRouter);
 app.use('/api/metrics/prom', metricsPromRouter);
 app.use('/api/ai-stream/v2', aiStreamV2Router);
 app.use('/api/artifacts', artifactsRouter);
+app.use('/api/control-center', controlCenterRouter);
+app.use('/api/innovation', innovationRouter);
+app.use('/api/agent-hub', agentHubRouter);
+app.use('/api/evolution', agentEvolutionRouter);
 
 // Root
 app.get('/', (_req, res) => {
@@ -125,7 +133,70 @@ app.get('/', (_req, res) => {
       '/api/departments/framework',
       '/api/departments/training',
       '/api/departments/security',
-      '/api/departments/expansion'
+      '/api/departments/expansion',
+      '/api/control-center/overview',
+      '/api/control-center/health',
+      '/api/innovation/modules',
+      '/api/innovation/knowledge-brain/status',
+      '/api/innovation/knowledge-brain/research',
+      '/api/innovation/knowledge-brain/explain',
+      '/api/innovation/memory/status',
+      '/api/innovation/memory/timeline',
+      '/api/innovation/memory/store',
+      '/api/innovation/memory/retrieve',
+      '/api/innovation/idea-lab/status',
+      '/api/innovation/idea-lab/validate',
+      '/api/innovation/idea-lab/evolve',
+      '/api/innovation/idea-lab/combine',
+      '/api/innovation/idea-lab/startup',
+      '/api/innovation/code-forge/status',
+      '/api/innovation/code-forge/debug',
+      '/api/innovation/code-forge/evolve',
+      '/api/innovation/code-forge/screenshot-to-code',
+      '/api/innovation/data-insights/status',
+      '/api/innovation/data-insights/analyze',
+      '/api/innovation/data-insights/simulate',
+      '/api/innovation/learning-hub/status',
+      '/api/innovation/learning-hub/create-course',
+      '/api/innovation/learning-hub/debate',
+      '/api/innovation/learning-hub/curiosity',
+      '/api/innovation/trend-radar/status',
+      '/api/innovation/trend-radar/trends',
+      '/api/innovation/trend-radar/decide',
+      '/api/innovation/collab-space/status',
+      '/api/innovation/collab-space/rooms',
+      '/api/innovation/collab-space/design-product',
+      '/api/innovation/marketplace/status',
+      '/api/innovation/marketplace/listings',
+      '/api/innovation/self-improve/status',
+      '/api/innovation/self-improve/scan',
+      '/api/agent-hub/overview',
+      '/api/agent-hub/plans',
+      '/api/agent-hub/plans/:planId',
+      '/api/agent-hub/plans/:planId/execute',
+      '/api/agent-hub/tasks',
+      '/api/agent-hub/tasks/:taskId',
+      '/api/agent-hub/tasks/:taskId/pause',
+      '/api/agent-hub/tasks/:taskId/resume',
+      '/api/agent-hub/tasks/:taskId/cancel',
+      '/api/agent-hub/tools',
+      '/api/agent-hub/tools/register',
+      '/api/agent-hub/tools/:toolId/run',
+      '/api/agent-hub/teams/create',
+      '/api/agent-hub/teams',
+      '/api/agent-hub/teams/:teamId',
+      '/api/agent-hub/teams/:teamId/run',
+      '/api/agent-hub/memory/store',
+      '/api/agent-hub/memory',
+      '/api/agent-hub/memory/search',
+      '/api/agent-hub/sandbox/status',
+      '/api/evolution/status',
+      '/api/evolution/insights',
+      '/api/evolution/agent-performance',
+      '/api/evolution/workflows',
+      '/api/evolution/run-analysis',
+      '/api/evolution/suggestions',
+      '/api/evolution/history'
     ]
   });
 });

@@ -1,240 +1,237 @@
-# Engine Alto — Super Builder Platform
+# SuperBuilder / Engine Alto
 
-<div align="center">
+**The open-source AI creation platform.**
 
-⚡ **Engine Alto** — AI-First Creator Platform
+Build AI tools, media pipelines, autonomous agents, creator studios, and full applications — all from one unified platform.
 
-*Build apps, train AI models, create games, and deploy — all from one platform.*
-
-[![CI](https://github.com/your-org/engine-alto/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/engine-alto/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.0-purple.svg)]()
-
-</div>
+SuperBuilder combines AI orchestration, autonomous agents, creative pipelines, code generation, deployment, and self-improving intelligence into a single system that anyone can use, extend, and improve.
 
 ---
 
-## 🚀 What is Engine Alto?
+## Why SuperBuilder?
 
-A **self-governing AI civilization + platform** that unifies:
-- 🧠 **AI Model Training** — Train CNNs, ResNets, Transformers, GANs, U-Nets on your GPU
-- 🎮 **Game Engine** — ECS, physics, Vulkan rendering (planned)
-- 🌐 **Browser Runtime** — HTML/CSS renderer, V8 scripting (planned)
-- 🤖 **12 Autonomous Agents** — Debug, heal, deploy, scout, secure — no human approval needed
-- 🎨 **Creator Studio** — Image→3D, video, VFX, audio, fashion (planned)
-- 📦 **One-Click Deploy** — Docker, K8s, Vercel, AWS
+Today, building AI-powered products requires stitching together dozens of tools — one for chat, one for image generation, one for deployment, one for monitoring, and so on.
 
-## 🏗️ Architecture
+**SuperBuilder replaces that fragmentation with one platform.**
+
+Instead of switching between 15 different tools, you open SuperBuilder and everything is there — AI chat, code generation, media creation, agent orchestration, deployment, analytics, and more.
+
+---
+
+## Core Features
+
+### Platform
+| Feature | Description |
+|---|---|
+| **Dashboard** | Real-time platform overview with system health, GPU status, and quick actions |
+| **AI Assistant** | Multi-model AI chat with streaming, context awareness, and tool use |
+| **Project Manager** | Create, manage, and organize AI projects and experiments |
+| **Unified Control Center** | Single dashboard aggregating status of every module in the platform |
+
+### AI / ML
+| Feature | Description |
+|---|---|
+| **Training Studio** | Train AI models with GPU acceleration and mixed precision |
+| **Model Registry** | Version, deploy, export, and manage trained models |
+| **Inference Engine** | Real-time AI inference endpoints — deploy and test models |
+| **Multi-Model Orchestration** | Route requests to the best model (OpenAI, Gemini, Groq, Ollama, Cloudflare Workers AI, and more) |
+
+### Creator Studios
+| Feature | Description |
+|---|---|
+| **Game Studio** | Build games with AI assistance — Unity, Godot, Unreal, or Web |
+| **Video Studio** | AI video generation — text-to-video with multiple styles |
+| **Audio Studio** | Music composition, voice cloning, audio denoising |
+| **3D Studio** | Generate 3D models, NeRF reconstruction, GLB/GLTF export |
+| **Fashion Studio** | AI garment design — fabrics, patterns, tech packs |
+| **Design Suite** | Posters, social media graphics, logos, presentations |
+| **Robotics Lab** | Multi-backend robotics simulation and control |
+
+### Autonomous Agent Hub (OpenClaw)
+| Feature | Description |
+|---|---|
+| **Agent Hub** | Autonomous agent system — create plans, execute tasks, build and deploy automatically |
+| **Task Monitor** | Real-time task execution with pause, resume, cancel controls |
+| **Multi-Agent Teams** | Specialized AI teams (planner, coder, tester, deployer, researcher, security) working together |
+| **Tool Registry** | 10+ built-in tools (web search, code gen, shell, deploy, browser, DB, etc.) plus custom tool registration |
+| **Sandboxed Execution** | Safe execution with resource limits, network whitelists, and dry-run mode |
+| **Agent Memory** | Long-term memory store with vector search for context-aware agents |
+
+### Innovation Labs
+| Feature | Description |
+|---|---|
+| **Knowledge Brain** | AI research engine — knowledge graphs, concept maps, explain anything |
+| **AI Memory** | Persistent memory — remembers conversations, preferences, learning history |
+| **Idea Lab** | Validate ideas, evolve them, combine concepts, build startup plans |
+| **Code Forge** | AI debugging, code evolution, screenshot-to-code, auto-refactor |
+| **Data Insights** | Upload data, find patterns, run simulations, predict trends |
+| **Learning Hub** | AI courses, skill builder, debate mode, curiosity engine |
+| **Trend Radar** | Scan trends, analyze markets, AI decision helper |
+| **Collab Space** | AI collaboration rooms, product designer, team workspace |
+| **AI Marketplace** | Browse agents, models, pipelines, plugins, datasets, templates |
+| **Self-Improve** | Platform self-improvement — auto bug detection, optimization, evolution |
+
+### AI Evolution Engine
+| Feature | Description |
+|---|---|
+| **Performance Analysis** | Track agent success rates, task completion times, and efficiency trends |
+| **Workflow Optimization** | Learn successful workflow patterns and reuse them automatically |
+| **Optimization Insights** | AI-generated suggestions to improve performance, security, and code quality |
+| **Continuous Learning** | Knowledge accumulation — the platform gets smarter over time |
+
+### System & Infrastructure
+| Feature | Description |
+|---|---|
+| **Job Queue** | Background task management — training, rendering, builds |
+| **Metrics & Observability** | Real-time monitoring with Prometheus metrics and structured logging |
+| **Artifact Vault** | Secure storage for generated assets, models, and builds |
+| **Agent Civilization** | Autonomous AI agents managing platform operations |
+
+---
+
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                   Engine Alto Platform                │
-├──────────┬────────────┬──────────────┬───────────────┤
-│ Frontend │  Backend   │ AI Training  │ Agent System  │
-│ Next.js  │  Express   │  PyTorch     │ 12 Agents     │
-│ React    │  TypeScript│  FastAPI     │ Autonomous    │
-│ Dark UI  │  WebSocket │  CUDA/GPU    │ Self-healing  │
-├──────────┴────────────┴──────────────┴───────────────┤
-│  PostgreSQL  │  Redis/BullMQ  │  Docker  │  K8s      │
-└──────────────┴────────────────┴──────────┴───────────┘
+SuperBuilder Platform
+│
+├── Frontend (Next.js)
+│   ├── Dashboard & Control Center
+│   ├── Creator Studios (7 studios)
+│   ├── Agent Hub (OpenClaw)
+│   ├── Innovation Labs (10 modules)
+│   └── Evolution Dashboard
+│
+├── Backend API (Express + TypeScript)
+│   ├── AI Orchestration (multi-model routing)
+│   ├── Agent System (plans, tasks, teams, tools)
+│   ├── Job Queue & Workers
+│   ├── Innovation APIs
+│   └── Evolution Engine
+│
+├── AI Layer
+│   ├── OpenAI (GPT-5, GPT-4o, embeddings)
+│   ├── Google Gemini
+│   ├── Groq (Llama, GPT OSS)
+│   ├── Cloudflare Workers AI
+│   ├── Ollama (local models)
+│   └── OpenRouter (multi-model)
+│
+├── Pipelines
+│   ├── Video Generation
+│   ├── Audio / Music
+│   ├── 3D / NeRF
+│   └── Image / SDXL
+│
+└── Infrastructure
+    ├── Artifact Vault
+    ├── Monitoring (Prometheus)
+    ├── Sandbox Runner
+    └── Self-Healing Runtime
 ```
 
-## ⚡ Quick Start
+---
+
+## Quick Start
 
 ### Prerequisites
-- **Node.js** 18+ (LTS)
-- **Python** 3.10+ (for AI training)
-- **GPU** (optional: NVIDIA with CUDA for training)
 
-### 1. Clone & Install
+- **Node.js** 18+ (recommended: 20 LTS)
+- **npm** 9+
+- A code editor (VS Code recommended)
+
+### Setup
+
 ```bash
-git clone https://github.com/your-org/engine-alto.git
-cd engine-alto
+# Clone the repository
+git clone https://github.com/rupac4530-creator/super-builder-platform.git
+cd super-builder-platform
 
-# Install all dependencies
+# Install dependencies
 npm install
-cd backend && npm install && cd ..
-cd platform && npm install && cd ..
-```
 
-### 2. Configure
-```bash
+# Create environment file
 cp .env.example .env
-# Edit .env with your settings (API keys, etc.)
+# Edit .env with your API keys
+
+# Start backend (port 3001)
+cd backend
+npm run dev
+
+# Start frontend (port 3000) — in a new terminal
+cd platform
+npm run dev
 ```
 
-### 3. Start Development
+Open **http://localhost:3000** in your browser.
+
+### Using Docker
+
 ```bash
-# Terminal 1 — Backend API
-cd backend && npm run dev
-
-# Terminal 2 — Frontend
-cd platform && npm run dev
+docker-compose up
 ```
-
-Open **http://localhost:3000** — you'll see the Engine Alto dashboard.
-
-### 4. (Optional) AI Training
-```bash
-# Install PyTorch
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-pip install -r ai-training/requirements.txt
-
-# Train a demo model
-python ai-training/trainer.py --architecture cnn --epochs 10
-
-# Start inference server
-python ai-training/inference_server.py
-```
-
-### 5. (Optional) Docker
-```bash
-docker compose up --build
-```
-
-## 📁 Project Structure
-
-```
-engine-alto/
-├── backend/               # Express + TypeScript API
-│   ├── src/
-│   │   ├── server.ts          # Main server
-│   │   ├── database/          # PostgreSQL init
-│   │   ├── routes/            # API routes
-│   │   │   ├── health.ts      # Health checks
-│   │   │   ├── projects.ts    # Project CRUD
-│   │   │   ├── ai.ts          # AI chat/plan/debug/generate
-│   │   │   ├── training.ts    # GPU training management
-│   │   │   ├── models.ts      # Model registry
-│   │   │   ├── jobs.ts        # Job queue
-│   │   │   ├── agents.ts      # Agent civilization
-│   │   │   └── metrics.ts     # Prometheus metrics
-│   │   └── utils/
-│   │       └── logger.ts      # Winston logger
-│   └── Dockerfile
-│
-├── platform/              # Next.js Frontend
-│   ├── src/app/
-│   │   ├── layout.tsx         # Root layout
-│   │   ├── globals.css        # Design system
-│   │   └── page.tsx           # 9-page SPA
-│   └── Dockerfile
-│
-├── ai-training/           # Python AI Training Engine
-│   ├── trainer.py             # 5 architectures, mixed precision
-│   ├── inference_server.py    # FastAPI model serving
-│   ├── requirements.txt
-│   └── Dockerfile
-│
-├── agents/                # Agent Civilization System
-│   ├── orchestrator.ts
-│   └── specialized/
-│
-├── infra/                 # Infrastructure
-│   └── terraform/
-│
-├── kubernetes/            # K8s manifests
-│
-├── templates/             # Game & App templates
-│
-├── docs/                  # Documentation
-│
-├── examples/              # Demo scenes & tests
-│
-├── .github/workflows/     # CI/CD
-│   └── ci.yml
-│
-├── docker-compose.yml     # Full stack Docker
-├── GOVERNANCE.md          # Autonomous governance
-├── SECURITY.md            # Security policy
-├── CONTRIBUTING.md        # Contribution guide
-├── THIRD_PARTY_NOTICES.md
-└── LICENSE                # MIT
-```
-
-## 🧠 AI Training
-
-Engine Alto includes a full GPU-accelerated training engine:
-
-| Architecture | Use Case | Max Params (RTX 4050) |
-|-------------|----------|----------------------|
-| CNN | Image classification | 50M |
-| ResNet | Deep recognition | 60M |
-| Transformer | Text generation | 200M |
-| U-Net | Segmentation | 30M |
-| GAN | Image generation | 50M |
-
-### Features
-- ✅ Mixed precision training (FP16) for 2x speed
-- ✅ Gradient accumulation for larger effective batch sizes
-- ✅ Early stopping with patience
-- ✅ Cosine annealing LR scheduler
-- ✅ ONNX export for deployment
-- ✅ Real-time WebSocket training metrics
-- ✅ TensorBoard integration
-
-## 🤖 Agent Civilization
-
-12 autonomous agents manage the platform:
-
-| Agent | Role |
-|-------|------|
-| Orchestrator | Central coordinator |
-| DataAgent | Dataset curation |
-| TrainerAgent | Hyperparameter tuning |
-| DebugAgent | Diagnose failures |
-| DeployAgent | Model deployment |
-| SecurityAgent | Ethical hacking |
-| DoctorAgent | Self-healing |
-| GrowthAgent | User acquisition |
-| ScoutAgent | Tech scanning |
-| PoliceAgent | Containment |
-| AuditorAgent | Compliance |
-| DecoratorAgent | UX polish |
-
-## 🖥️ API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/health` | GET | System health |
-| `/api/projects` | CRUD | Project management |
-| `/api/ai/chat` | POST | AI chat assistant |
-| `/api/ai/plan` | POST | Implementation planning |
-| `/api/ai/debug` | POST | Code debugging |
-| `/api/ai/generate` | POST | Code generation |
-| `/api/training/start` | POST | Start GPU training |
-| `/api/training/jobs` | GET | List training jobs |
-| `/api/training/gpu/status` | GET | GPU utilization |
-| `/api/models` | CRUD | Model registry |
-| `/api/models/:id/deploy` | POST | Deploy for inference |
-| `/api/models/:id/predict` | POST | Run inference |
-| `/api/agents` | GET | List all agents |
-| `/api/agents/orchestrate` | POST | Multi-agent task |
-| `/api/jobs` | CRUD | Job queue |
-| `/api/metrics` | GET | Prometheus metrics |
-
-## 🛡️ Security
-
-- All scripts run in sandboxed environments
-- Ethical hacker agents probe for vulnerabilities
-- Immutable audit logs
-- Canary deployments with auto-rollback
-- Master override for emergency recovery
-
-## 📄 License
-
-MIT — see [LICENSE](LICENSE)
-
-## 🙏 Credits
-
-Inspired by Google Chrome, V8, Skia, Epic Games, and Rockstar (RAGE).
 
 ---
 
-<div align="center">
+## Supported AI Providers
 
-**Built with ❤️ by Engine Alto Team**
+| Provider | Models | Type |
+|---|---|---|
+| OpenAI | GPT-5, GPT-5-mini, GPT-4o, text-embedding-3-small | Cloud |
+| Google Gemini | Gemini 1.5 Flash, Gemini Pro | Cloud |
+| Groq | Llama 3.3 70B, GPT OSS 120B | Cloud (fast) |
+| Cloudflare Workers AI | Qwen1.5-14B, Llama 2 13B, OpenChat 3.5, Zephyr 7B | Edge |
+| Ollama | Any local model (Llama, Mistral, Phi, etc.) | Local |
+| OpenRouter | 600+ models | Cloud |
+| DeepSeek | DeepSeek-R1-0528 | Cloud |
+| Meta (via GitHub Models) | Llama-3.2-90B-Vision-Instruct | Cloud |
 
-*The future is autonomous.*
+---
 
-</div>
+## Contributing
+
+We welcome developers, AI researchers, designers, and engineers from around the world.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started.
+
+**Ways to contribute:**
+- Improve AI pipelines and agent logic
+- Build new creator studio tools
+- Add support for new AI models
+- Optimize performance for different hardware
+- Fix bugs and improve stability
+- Write documentation and guides
+- Build plugins and extensions
+
+---
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for the full development roadmap.
+
+---
+
+## License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+You are free to use, modify, and distribute this software. If you run a modified version as a network service, you must make your source code available under the same license.
+
+See [LICENSE](LICENSE) for the full text.
+
+---
+
+## Security
+
+If you discover a security vulnerability, please report it privately. See [SECURITY.md](SECURITY.md).
+
+---
+
+## Community
+
+- **GitHub Discussions** — Ask questions, share ideas, discuss features
+- **Issues** — Report bugs and request features
+- **Pull Requests** — Contribute code improvements
+
+---
+
+**Built with passion by [rupac4530-creator](https://github.com/rupac4530-creator) and the open-source community.**
