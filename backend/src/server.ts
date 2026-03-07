@@ -38,8 +38,6 @@ import communityRouter from './routes/community';
 import marketplaceRouter from './routes/marketplace';
 import analyticsRouter from './routes/analytics';
 import docsAiRouter from './routes/docs-ai';
-import openclawRouter from './routes/openclaw';
-import freeModelsRouter from './routes/free-models';
 import { initDatabase } from './database/init';
 
 dotenv.config();
@@ -93,8 +91,6 @@ app.use('/api/community', communityRouter);
 app.use('/api/marketplace', marketplaceRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/docs-ai', docsAiRouter);
-app.use('/api/openclaw', openclawRouter);
-app.use('/api/free-models', freeModelsRouter);
 
 // Root
 app.get('/', (_req, res) => {

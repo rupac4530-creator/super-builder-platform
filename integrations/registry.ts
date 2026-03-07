@@ -37,8 +37,6 @@ import { PrometheusGrafanaAdapter } from './observability/prometheus-grafana';
 import { ROS2Adapter } from './robotics/ros2';
 import { CARLAAdapter } from './robotics/carla';
 import { GazeboAdapter } from './robotics/gazebo';
-import { OpenClawAdapter } from './openclaw/openclaw';
-import { FreeModelsAdapter } from './free-api-providers/free-models';
 
 export class IntegrationRegistry {
     private adapters: Map<string, BaseAdapter> = new Map();
@@ -71,8 +69,6 @@ export class IntegrationRegistry {
             new PrometheusGrafanaAdapter(),
             // Robotics
             new ROS2Adapter(), new CARLAAdapter(), new GazeboAdapter(),
-            // OpenClaw + Free API
-            new OpenClawAdapter(), new FreeModelsAdapter(),
         ];
 
         for (const adapter of all) {
