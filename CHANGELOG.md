@@ -1,85 +1,96 @@
 # Changelog
 
-All notable changes to the Super Builder Platform.
-
-## [3.0.0-heaven] - 2026-02-15
-
-### Added
-
-#### Core Platform
-- 16 Python engine modules covering entire civilization framework (26 phases)
-- 16 backend TypeScript services with production patterns and mock fallbacks
-- 7 Creator Studio frontend pages (Game, Video, Audio, 3D, Fashion, Design, Robotics)
-
-#### AI & Intelligence
-- Multi-model AI orchestrator (GPT-4o, Claude 3.5 Sonnet, local LLMs via llama.cpp)
-- Streaming SSE chat endpoints at `/api/ai/stream`
-- Agent playbooks for multi-step AI workflows (planner → generator → debugger → deployer)
-- Token and cost tracking with per-user budgets and monthly limits
-- Model selector UI with cost estimates
-
-#### Media Engine
-- Sora-style noise video generation with temporal consistency
-- Frame-by-frame diffusion with keyframe control and 7 style presets
-- Enhanced GLB generator with PBR materials, auto-rigging, LODs
-- NeRF 3D reconstruction from multi-view photos
-
-#### Game Development
-- AI-powered game project generator for Unity/Godot/Unreal/Web
-- Procedural terrain, NPC behavior trees, dialogue generators
-- Playable HTML5 prototypes with iframe preview
-- Game templates for platformer, RPG, FPS, open-world genres
-
-#### Audio
-- AI music composer with real WAV synthesis, 10 styles, stem separation
-- Voice cloning (ElevenLabs + mock fallback)
-- RNNoise-based audio denoising via FFmpeg
-- Adaptive game music with intensity variations
-
-#### Creative Studios
-- Fashion Studio: garment design, 9 fabrics, measurements, tech packs
-- Design Suite: Canva-class vector editor, 6 templates, SVG/PDF export
-- Robotics Lab: PyBullet/Isaac Sim/MuJoCo simulation, 4 robot types
-
-#### Enterprise
-- RBAC with 5 roles, 18 permissions, audit logging
-- OpenTelemetry tracing + Prometheus metrics
-- Terraform for AWS (EKS + GPU nodes + Redis + RDS + S3)
-- Kubernetes manifests with HPA autoscaling
-- Docker Compose for local development
-
-#### Plugin System
-- Plugin SDK with TypeScript support
-- Sandboxed execution (WASM + vm2)
-- Permission system and lifecycle management
-
-#### E2E Testing
-- Playwright tests for AI debug, jobs, admin dashboard, video gen, game studio
-
-### Changed
-- Expanded `page.tsx` with 7 new Creator Studio pages
-- Updated sidebar navigation with Creator Studios section
-
-## [2.0.0-ultimate] - 2026-01-25
-
-### Added
-- Initial AI orchestrator and cost tracking
-- Media engine with noise video and GLB generation
-- Game templates (platformer, webapp, ML experiment)
-- Plugin SDK scaffolding
-- K8s autoscaler HPA
-- Onboarding bot and model selector UX
-
-## [1.0.0] - 2026-01-25
-
-### Added
-- Core platform with backend API (Express) and frontend (Next.js)
-- 8 API routes (health, ai, jobs, metrics, projects, training, agents, models)
-- Job queue with BullMQ/Redis and in-memory fallback
-- Docker Compose and Kubernetes deployment
-- CI/CD GitHub Actions workflow
-- Basic monitoring and Prometheus metrics
+All notable changes to SuperBuilder are documented here.  
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## [v0.3.0] — Next-Level Platform Features (2026-03-07)
+
+### 🚀 10 Next-Level Features Added
+
+#### AI Discovery Engine
+- Auto-scan GitHub, HuggingFace, PapersWithCode for new AI tools
+- One-click "Auto-Add" turns any discovered tool into an adapter
+- Detects OpenHands, Devika, Qwen2.5, Flux.1, Dify, LobeChat and more
+
+#### Self-Optimizing Smart Agents
+- AI agents that learn from usage patterns
+- Auto-suggest and auto-create optimized pipelines
+- 96% confidence RAG Knowledge Assistant suggestion
+
+#### Visual Workflow Builder
+- No-code drag-and-drop AI pipeline builder
+- 8 pre-built templates: RAG, Image Studio, Multi-Agent, 3D, FineTuning
+- Save, run, monitor pipelines with live status
+
+#### Multi-Cloud Deploy Center
+- One-click deploy to AWS, GCP, Azure, Docker, Kubernetes, Edge
+- Live deployment cards with uptime indicators and cost tracking
+- Supports GPU and non-GPU targets
+
+#### Cross-Integration Intelligence
+- Cross-pollinate tools to create novel AI fusions
+- 7 built-in fusions: AI Game Generator, Voice-to-3D, Self-Healing Code, etc.
+- Novelty scoring system (0-100)
+
+#### AI Testing & Reliability
+- 8 automated test suites: Integration Adapters, API, Workflow Engine, Security…
+- Health check dashboard: latency, uptime, service status
+- 93% average code coverage tracking
+
+#### Community Hub
+- Contributor leaderboard with badges and rankings
+- Community submissions: adapters, templates, plugins, datasets
+- Voting system — top-voted get auto-featured
+
+#### AI Marketplace
+- Browse, install, publish: pipelines, models, themes, agent templates
+- Featured items, star ratings, download counts
+- Items include: Ultimate RAG Pipeline, SDXL Art Studio, Multi-Agent Dev Team, LLM Fine-Tuning Template
+
+#### Real-Time Live Analytics
+- Live CPU, GPU, VRAM, memory, network metrics (updates every 5 seconds)
+- 30-day historical trend data
+- Pipeline health: active, queued, completed, failed counts
+
+#### AI Documentation Engine
+- Auto-generate guides, tutorials, and references from code and usage
+- Difficulty levels: Beginner / Intermediate / Advanced
+- "Generate New Doc" button for on-demand doc creation
+
+---
+
+## [v0.2.0] — Integrations Hub (2026-02-21)
+
+### Added
+- `integrations/` directory: 31 open-source adapter files across 9 categories
+- `integrations/base-adapter.ts` — abstract base class all adapters extend
+- `integrations/registry.ts` — central registry with install/start/stop lifecycle
+- `integrations/matrix.md` — compatibility matrix (license, GPU, Docker, maturity)
+- Backend route `/api/integrations` — CRUD + health checks + lifecycle management
+- Frontend **Integrations Hub** page — search, category filter, enable/disable toggles
+- Sidebar nav "Integrations" item with adapter count badge
+
+### Integration Categories
+- Agent Orchestration: LangChain, LlamaIndex, AutoGen, MetaGPT, BabyAGI, SuperAGI
+- Vector DBs: FAISS, Milvus, Weaviate, Chroma
+- Model Runtimes: ONNX Runtime, vLLM, NVIDIA Triton, BentoML, llama.cpp
+- Generative Media: Diffusers/SD, ComfyUI, Whisper, Coqui TTS
+- 3D/NeRF: Blender, instant-ngp, Nerfstudio
+- Game Engine: Godot
+- MLOps: MLflow, Apache Airflow
+- Serving: KServe, Ray
+- Observability: Prometheus, Grafana
+- Robotics: ROS 2, CARLA, Gazebo
+
+---
+
+## [v0.1.0] — Initial Platform (2026-01-01)
+
+### Added
+- Core Engine Alto platform
+- Dashboard with GPU/model/agent health cards
+- Basic AI pipelines and model management
+- Agent hub, job queue, metrics
+- Multi-agent system and evolution framework

@@ -17,7 +17,33 @@
 
 **Build AI tools, media pipelines, autonomous agents, creator studios, and full applications — all from one unified platform.**
 
-[Quick Start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [Contributing](#-contributing) · [Roadmap](ROADMAP.md) · [Plugin SDK](sdk/)
+[Quick Start](#-quick-start) · [Demo](#-demo) · [Features](#-features) · [Architecture](#-architecture) · [Contributing](#-contributing) · [Roadmap](ROADMAP.md) · [Plugin SDK](sdk/)
+
+</div>
+
+<div align="center">
+
+<br/>
+
+<picture>
+  <img src="assets/super.png" alt="SuperBuilder Platform — Dashboard Overview" width="90%" />
+</picture>
+
+<sub><em>SuperBuilder in action — unified AI dashboard with multi-agent orchestration, creator studios, and real-time monitoring.</em></sub>
+
+</div>
+
+---
+
+## 🎬 Demo
+
+<div align="center">
+
+https://github.com/rupac4530-creator/super-builder-platform/assets/super.png
+
+> **📽 Watch the full platform demo →** [supervid.mp4](assets/supervid.mp4)
+>
+> See autonomous agents plan, code, test, and deploy — all in real time.
 
 </div>
 
@@ -233,8 +259,12 @@ See [ROADMAP.md](ROADMAP.md) for the complete development roadmap with checkboxe
 
 <div align="center">
 
+<picture>
+  <img src="assets/super.png" alt="SuperBuilder Platform" width="60%" />
+</picture>
+
 **Built with passion by [rupac4530-creator](https://github.com/rupac4530-creator) and the open-source community.**
 
-If this project is useful to you, please give it a star — it helps others discover it.
+⭐ If this project is useful to you, please give it a **star** — it helps others discover it.
 
 </div>

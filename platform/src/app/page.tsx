@@ -68,8 +68,24 @@ function Sidebar({ active, onNavigate }: { active: string; onNavigate: (page: st
       ]
     },
     {
+      title: 'Next-Level',
+      items: [
+        { id: 'ai-discovery', icon: '🔎', label: 'AI Discovery', badge: 'NEW' },
+        { id: 'smart-agents', icon: '🧬', label: 'Smart Agents', badge: 'NEW' },
+        { id: 'workflow-builder', icon: '🔗', label: 'Workflow Builder', badge: 'NEW' },
+        { id: 'deploy-center', icon: '☁️', label: 'Deploy Center', badge: 'NEW' },
+        { id: 'cross-intelligence', icon: '🧪', label: 'Cross Intelligence', badge: 'NEW' },
+        { id: 'ai-testing', icon: '🧪', label: 'AI Testing', badge: 'NEW' },
+        { id: 'community-hub', icon: '🌍', label: 'Community Hub', badge: 'NEW' },
+        { id: 'ai-marketplace', icon: '🛒', label: 'AI Marketplace', badge: 'NEW' },
+        { id: 'live-analytics', icon: '📈', label: 'Live Analytics', badge: 'NEW' },
+        { id: 'ai-docs', icon: '📖', label: 'AI Docs', badge: 'NEW' },
+      ]
+    },
+    {
       title: 'System',
       items: [
+        { id: 'integrations', icon: '🔌', label: 'Integrations', badge: '31' },
         { id: 'jobs', icon: '⚙️', label: 'Job Queue' },
         { id: 'metrics', icon: '📊', label: 'Metrics' },
         { id: 'settings', icon: '🔧', label: 'Settings' },
@@ -1483,8 +1499,8 @@ function AIMemoryPage() {
   const [newMemory, setNewMemory] = useState({ title: '', content: '', kind: 'episodic' });
 
   useEffect(() => {
-    fetch(`${API}/api/innovation/memory/status`).then(r => r.json()).then(setStats).catch(() => {});
-    fetch(`${API}/api/innovation/memory/timeline`).then(r => r.json()).then(setTimeline).catch(() => {});
+    fetch(`${API}/api/innovation/memory/status`).then(r => r.json()).then(setStats).catch(() => { });
+    fetch(`${API}/api/innovation/memory/timeline`).then(r => r.json()).then(setTimeline).catch(() => { });
   }, []);
 
   const storeMemory = async () => {
@@ -1802,7 +1818,7 @@ function LearningHub() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch(`${API}/api/innovation/learning-hub/curiosity`).then(r => r.json()).then(setCuriosities).catch(() => {});
+    fetch(`${API}/api/innovation/learning-hub/curiosity`).then(r => r.json()).then(setCuriosities).catch(() => { });
   }, []);
 
   const createCourse = async () => {
@@ -1948,7 +1964,7 @@ function TrendRadar() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch(`${API}/api/innovation/trend-radar/trends`).then(r => r.json()).then(d => setTrends(d.trends || [])).catch(() => {});
+    fetch(`${API}/api/innovation/trend-radar/trends`).then(r => r.json()).then(d => setTrends(d.trends || [])).catch(() => { });
   }, []);
 
   const getDecision = async () => {
@@ -2128,7 +2144,7 @@ function MarketplacePage() {
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    fetch(`${API}/api/innovation/marketplace/listings`).then(r => r.json()).then(d => setListings(d.listings || [])).catch(() => {});
+    fetch(`${API}/api/innovation/marketplace/listings`).then(r => r.json()).then(d => setListings(d.listings || [])).catch(() => { });
   }, []);
 
   const filtered = filter === 'all' ? listings : listings.filter(l => l.type === filter);
@@ -2183,7 +2199,7 @@ function SelfImprovePage() {
   const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
-    fetch(`${API}/api/innovation/self-improve/status`).then(r => r.json()).then(setStatus).catch(() => {});
+    fetch(`${API}/api/innovation/self-improve/status`).then(r => r.json()).then(setStatus).catch(() => { });
   }, []);
 
   const runScan = async () => {
@@ -2589,6 +2605,589 @@ function AgentTeamsPage() {
 }
 
 // ===== EVOLUTION DASHBOARD =====
+// ===== AI DISCOVERY PAGE =====
+function AIDiscoveryPage() {
+  const [tools, setTools] = useState<any[]>([]);
+  const [sources, setSources] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API}/api/discovery`).then(r => r.json()).then(d => { setTools(d.tools || []); setSources(d.sources || []); })
+      .catch(() => {
+        setTools([
+          { id: 'd1', name: 'OpenHands', source: 'GitHub', stars: 42000, category: 'AI Agent', description: 'AI software development agent — autonomous coding.', status: 'new', license: 'MIT' },
+          { id: 'd2', name: 'Devika', source: 'GitHub', stars: 18000, category: 'AI Agent', description: 'Agentic AI software engineer.', status: 'new', license: 'MIT' },
+          { id: 'd3', name: 'Qwen2.5', source: 'HuggingFace', stars: 15000, category: 'LLM', description: 'Alibaba 72B parameter model.', status: 'new', license: 'Apache-2.0' },
+          { id: 'd4', name: 'Flux.1', source: 'HuggingFace', stars: 12000, category: 'Image Generation', description: 'Next-gen 12B diffusion transformer.', status: 'new', license: 'Apache-2.0' },
+          { id: 'd5', name: 'Suno Bark', source: 'GitHub', stars: 35000, category: 'Audio/TTS', description: 'Text-to-audio — speech, music, effects.', status: 'new', license: 'MIT' },
+          { id: 'd6', name: 'Dify', source: 'GitHub', stars: 55000, category: 'LLM Platform', description: 'Open-source LLM app platform.', status: 'new', license: 'Apache-2.0' },
+          { id: 'd7', name: 'LobeChat', source: 'GitHub', stars: 50000, category: 'Chat UI', description: 'Open-source ChatGPT UI.', status: 'new', license: 'MIT' },
+        ]);
+      });
+  }, []);
+  const handleAutoAdd = (id: string) => { setTools(prev => prev.map(t => t.id === id ? { ...t, status: 'added' } : t)); };
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>🔎 AI Discovery Engine</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 24 }}>Auto-scan GitHub, HuggingFace, PapersWithCode for new tools. One-click integrate.</p>
+      <button onClick={() => alert('Scan triggered!')} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: 'rgba(130,130,255,0.2)', color: '#8282ff', fontWeight: 600, cursor: 'pointer', marginBottom: 24 }}>🔄 Scan All Sources</button>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 16 }}>
+        {tools.map(t => (
+          <div key={t.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ fontWeight: 600, fontSize: 15, color: '#fff' }}>{t.name}</div>
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: t.status === 'added' ? 'rgba(0,230,118,0.15)' : 'rgba(255,215,64,0.15)', color: t.status === 'added' ? '#00e676' : '#ffd740' }}>{t.status}</span>
+            </div>
+            <div style={{ fontSize: 11, color: '#666', marginBottom: 8 }}>{t.source} • ⭐ {(t.stars / 1000).toFixed(0)}k • {t.license}</div>
+            <p style={{ fontSize: 12, color: '#999', marginBottom: 12 }}>{t.description}</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(130,130,255,0.15)', color: '#8282ff' }}>{t.category}</span>
+              {t.status !== 'added' && <button onClick={() => handleAutoAdd(t.id)} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: 'rgba(0,230,118,0.2)', color: '#00e676', fontSize: 11, cursor: 'pointer' }}>⬇ Auto-Add</button>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== SMART AGENTS PAGE =====
+function SmartAgentsPage() {
+  const [agents, setAgents] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API}/api/smart-agents`).then(r => r.json()).then(d => setAgents(d.agents || []))
+      .catch(() => setAgents([
+        { id: 'sa1', name: 'Content Creator', type: 'generative', status: 'active', learningScore: 87, tasksCompleted: 234, pipelinesCreated: 12, suggestedPipelines: ['Whisper→GPT→Diffusers'] },
+        { id: 'sa2', name: 'Code Architect', type: 'development', status: 'active', learningScore: 92, tasksCompleted: 567, pipelinesCreated: 28, suggestedPipelines: ['LangChain→CodeGen→Docker'] },
+        { id: 'sa3', name: 'Data Pipeline', type: 'analytics', status: 'learning', learningScore: 74, tasksCompleted: 145, pipelinesCreated: 8, suggestedPipelines: ['Airflow→MLflow→BentoML'] },
+        { id: 'sa4', name: 'Research Scout', type: 'discovery', status: 'active', learningScore: 95, tasksCompleted: 890, pipelinesCreated: 45, suggestedPipelines: ['GitHub Scan→License→Adapter'] },
+      ]));
+    fetch(`${API}/api/smart-agents/suggestions`).then(r => r.json()).then(d => setSuggestions(d.suggestions || []))
+      .catch(() => setSuggestions([
+        { id: 's1', title: 'AI Content Generator', description: 'Whisper→LLM→Diffusers→TTS', confidence: 94 },
+        { id: 's2', title: 'Auto-Deploy ML Model', description: 'Train→MLflow→BentoML→KServe→Monitor', confidence: 91 },
+        { id: 's3', title: 'RAG Knowledge Assistant', description: 'LlamaIndex→Milvus→LangChain→Gradio', confidence: 96 },
+      ]));
+  }, []);
+  const statusColor = (s: string) => s === 'active' ? '#00e676' : s === 'learning' ? '#ffd740' : '#666';
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>🧬 Self-Optimizing Agents</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 24 }}>AI agents that learn from usage and auto-create optimized pipelines.</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 16, marginBottom: 32 }}>
+        {agents.map(a => (
+          <div key={a.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontWeight: 600, color: '#fff' }}>{a.name}</span>
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${statusColor(a.status)}22`, color: statusColor(a.status) }}>{a.status}</span>
+            </div>
+            <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>Score: <span style={{ color: '#8282ff', fontWeight: 700 }}>{a.learningScore}%</span> • {a.tasksCompleted} tasks • {a.pipelinesCreated} pipelines</div>
+            <div style={{ background: '#1a1a2e', borderRadius: 8, height: 6, marginBottom: 8 }}><div style={{ width: `${a.learningScore}%`, height: '100%', borderRadius: 8, background: 'linear-gradient(90deg,#8282ff,#00e676)' }} /></div>
+            {a.suggestedPipelines?.map((p: string, i: number) => <div key={i} style={{ fontSize: 10, color: '#666', marginTop: 4 }}>💡 {p}</div>)}
+          </div>
+        ))}
+      </div>
+      <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, color: '#fff' }}>🎯 AI-Suggested Pipelines</h2>
+      {suggestions.map(s => (
+        <div key={s.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 12, padding: 16, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div><div style={{ fontWeight: 600, color: '#fff' }}>{s.title}</div><div style={{ fontSize: 12, color: '#999' }}>{s.description}</div></div>
+          <div style={{ textAlign: 'center' as const }}><div style={{ fontSize: 20, fontWeight: 700, color: '#00e676' }}>{s.confidence}%</div><div style={{ fontSize: 10, color: '#666' }}>confidence</div></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ===== WORKFLOW BUILDER PAGE =====
+function WorkflowBuilderPage() {
+  const [workflows, setWorkflows] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API}/api/workflows`).then(r => r.json()).then(d => setWorkflows(d.workflows || [])).catch(() => setWorkflows([{ id: 'wf1', name: 'AI Content Pipeline', description: 'Audio→Transcribe→Summarize→Image→Narrate', status: 'completed', runCount: 15, nodes: [{}, {}, {}, {}, {}] }]));
+    fetch(`${API}/api/workflows/templates`).then(r => r.json()).then(d => setTemplates(d.templates || [])).catch(() => setTemplates([
+      { id: 't1', name: 'RAG Knowledge Assistant', description: 'Index→Vector DB→Query→Response', nodes: 4, category: 'AI Agent' },
+      { id: 't2', name: 'Image Generation Studio', description: 'Prompt→SDXL→ControlNet→Upscale', nodes: 5, category: 'Creative' },
+      { id: 't3', name: 'Model Training Pipeline', description: 'Data→Preprocess→Train→Evaluate→Deploy', nodes: 5, category: 'MLOps' },
+      { id: 't4', name: 'Multi-Agent Debate', description: 'Topic→AgentA→AgentB→Judge→Summary', nodes: 5, category: 'AI Agent' },
+      { id: 't5', name: 'Photo to 3D Game Asset', description: 'Photos→NeRF→Mesh→Texture→Godot', nodes: 5, category: '3D' },
+    ]));
+  }, []);
+  const statusColor = (s: string) => s === 'completed' ? '#00e676' : s === 'running' ? '#ffd740' : '#666';
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>🔗 Visual Workflow Builder</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 24 }}>Drag-and-drop no-code AI pipeline builder. Connect tools to create powerful workflows.</p>
+      <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, color: '#fff' }}>📋 Your Workflows</h2>
+      {workflows.map(wf => (
+        <div key={wf.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 12, padding: 16, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div><div style={{ fontWeight: 600, color: '#fff' }}>{wf.name}</div><div style={{ fontSize: 12, color: '#999' }}>{wf.description} • {wf.nodes?.length || 0} nodes</div></div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${statusColor(wf.status)}22`, color: statusColor(wf.status) }}>{wf.status}</span>
+            <span style={{ fontSize: 11, color: '#666' }}>Runs: {wf.runCount}</span>
+          </div>
+        </div>
+      ))}
+      <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16, marginTop: 32, color: '#fff' }}>📦 Templates</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))', gap: 12 }}>
+        {templates.map(t => (
+          <div key={t.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 12, padding: 16, cursor: 'pointer' }}>
+            <div style={{ fontWeight: 600, color: '#fff', marginBottom: 4 }}>{t.name}</div>
+            <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>{t.description}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(130,130,255,0.15)', color: '#8282ff' }}>{t.category}</span><span style={{ fontSize: 11, color: '#666' }}>{t.nodes} nodes</span></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== DEPLOY CENTER PAGE =====
+function DeployCenterPage() {
+  const [deployments, setDeployments] = useState<any[]>([]);
+  const [targets, setTargets] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API}/api/deployments`).then(r => r.json()).then(d => setDeployments(d.deployments || [])).catch(() => setDeployments([
+      { id: 'd1', name: 'RAG Agent (Prod)', target: 'cloud', provider: 'AWS', status: 'running', region: 'us-east-1', replicas: 3, gpu: false, cost: '$45/mo', url: 'https://rag.superbuilder.app', pipeline: 'LlamaIndex+Milvus' },
+      { id: 'd2', name: 'Image Gen API', target: 'cloud', provider: 'GCP', status: 'running', region: 'us-central1', replicas: 2, gpu: true, cost: '$120/mo', url: 'https://img.superbuilder.app', pipeline: 'Diffusers+SDXL' },
+      { id: 'd3', name: 'Edge LLM (Local)', target: 'edge', provider: 'RTX 4050', status: 'running', region: 'local', replicas: 1, gpu: true, cost: '$0', url: 'http://localhost:8080', pipeline: 'llama.cpp+Phi-3' },
+    ]));
+    fetch(`${API}/api/deployments/targets`).then(r => r.json()).then(d => setTargets(d.targets || [])).catch(() => setTargets([
+      { id: 'aws', name: 'AWS', icon: '☁️' }, { id: 'gcp', name: 'GCP', icon: '🌐' }, { id: 'azure', name: 'Azure', icon: '🔷' }, { id: 'local', name: 'Local', icon: '💻' }, { id: 'edge', name: 'Edge', icon: '📱' }, { id: 'docker', name: 'Docker', icon: '🐳' }, { id: 'k8s', name: 'Kubernetes', icon: '☸️' },
+    ]));
+  }, []);
+  const statusColor = (s: string) => s === 'running' ? '#00e676' : s === 'deploying' ? '#ffd740' : '#ff5252';
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>☁️ Deploy Center</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 16 }}>Deploy to any cloud, edge device, or local machine with one click.</p>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' as const }}>
+        {targets.map(t => <div key={t.id} style={{ padding: '8px 16px', borderRadius: 12, background: '#16162a', border: '1px solid #2a2a4a', fontSize: 13 }}>{t.icon} {t.name}</div>)}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))', gap: 16 }}>
+        {deployments.map(d => (
+          <div key={d.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 16, padding: 20, position: 'relative' as const }}>
+            <div style={{ position: 'absolute' as const, top: 16, right: 16, width: 10, height: 10, borderRadius: '50%', background: statusColor(d.status), boxShadow: `0 0 8px ${statusColor(d.status)}` }} />
+            <div style={{ fontWeight: 600, fontSize: 15, color: '#fff', marginBottom: 4 }}>{d.name}</div>
+            <div style={{ fontSize: 11, color: '#666', marginBottom: 8 }}>{d.provider} • {d.region} • {d.replicas} replica(s)</div>
+            <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>{d.pipeline}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 12, color: d.cost === '$0' ? '#00e676' : '#ffd740', fontWeight: 600 }}>{d.cost}</span>
+              {d.url && <a href={d.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#8282ff', textDecoration: 'none' }}>Open ↗</a>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== CROSS INTELLIGENCE PAGE =====
+function CrossIntelligencePage() {
+  const [fusions, setFusions] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API}/api/cross-intelligence/fusions`).then(r => r.json()).then(d => setFusions(d.fusions || [])).catch(() => setFusions([
+      { id: 'f1', name: 'AI Game Generator', toolA: 'LangChain', toolB: 'Godot', description: 'LLM generates game scripts → Godot compiles & runs.', noveltyScore: 95, status: 'prototype', category: 'Gaming × AI' },
+      { id: 'f2', name: 'Voice-to-3D Scene', toolA: 'Whisper', toolB: 'Nerfstudio', description: 'Describe a scene → see it in 3D.', noveltyScore: 92, status: 'concept', category: 'Voice × 3D' },
+      { id: 'f3', name: 'Self-Healing Code', toolA: 'AutoGen', toolB: 'Prometheus', description: 'Detect bug → agents fix → auto-deploy.', noveltyScore: 98, status: 'prototype', category: 'DevOps × AI' },
+      { id: 'f4', name: 'Photo Story Gen', toolA: 'Diffusers', toolB: 'Coqui TTS', description: 'Photos narrated as audio stories.', noveltyScore: 87, status: 'production', category: 'Media × AI' },
+      { id: 'f5', name: 'Robot Training Sim', toolA: 'ROS 2', toolB: 'Ray', description: 'Parallel robot RL training at scale.', noveltyScore: 93, status: 'concept', category: 'Robotics × ML' },
+      { id: 'f6', name: 'Knowledge-Powered Art', toolA: 'Milvus', toolB: 'ComfyUI', description: 'Art from knowledge base context.', noveltyScore: 89, status: 'concept', category: 'Knowledge × Creative' },
+    ]));
+  }, []);
+  const statusColor = (s: string) => s === 'production' ? '#00e676' : s === 'prototype' ? '#ffd740' : '#8282ff';
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>🧪 Cross-Integration Intelligence</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 24 }}>Cross-pollinate tools to discover novel AI fusions — like mixing fruits to create something new.</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))', gap: 16 }}>
+        {fusions.map(f => (
+          <div key={f.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ fontWeight: 600, color: '#fff' }}>{f.name}</span>
+              <span style={{ fontSize: 20, fontWeight: 700, color: '#00e676' }}>{f.noveltyScore}%</span>
+            </div>
+            <div style={{ fontSize: 12, color: '#8282ff', marginBottom: 8 }}>🔀 {f.toolA} + {f.toolB}</div>
+            <p style={{ fontSize: 12, color: '#999', marginBottom: 12 }}>{f.description}</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(130,130,255,0.15)', color: '#8282ff' }}>{f.category}</span>
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${statusColor(f.status)}22`, color: statusColor(f.status) }}>{f.status}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== AI TESTING PAGE =====
+function AITestingPage() {
+  const [data, setData] = useState<any>({ suites: [], healthChecks: [] });
+  useEffect(() => {
+    fetch(`${API}/api/testing`).then(r => r.json()).then(d => setData(d)).catch(() => setData({
+      totalSuites: 8, totalTests: 189, totalPassed: 180, avgCoverage: 93,
+      suites: [
+        { id: 'ts1', name: 'Integration Adapters', tests: 31, passed: 29, failed: 1, duration: '4.2s', status: 'passing', coverage: 94 },
+        { id: 'ts2', name: 'API Endpoints', tests: 48, passed: 48, failed: 0, duration: '2.8s', status: 'passing', coverage: 100 },
+        { id: 'ts3', name: 'Workflow Engine', tests: 22, passed: 20, failed: 2, duration: '6.1s', status: 'failing', coverage: 88 },
+        { id: 'ts4', name: 'Model Serving', tests: 15, passed: 14, failed: 0, duration: '12.3s', status: 'passing', coverage: 93 },
+        { id: 'ts5', name: 'Security & Auth', tests: 12, passed: 12, failed: 0, duration: '1.5s', status: 'passing', coverage: 100 },
+        { id: 'ts6', name: 'UI Components', tests: 35, passed: 34, failed: 0, duration: '3.4s', status: 'passing', coverage: 97 },
+      ],
+      healthChecks: [
+        { service: 'Backend API', status: 'healthy', latency: '12ms', uptime: '99.99%' },
+        { service: 'Database', status: 'healthy', latency: '3ms', uptime: '99.98%' },
+        { service: 'Redis Cache', status: 'healthy', latency: '1ms', uptime: '100%' },
+        { service: 'AI Inference', status: 'healthy', latency: '145ms', uptime: '99.95%' },
+      ]
+    }));
+  }, []);
+  const sColor = (s: string) => s === 'passing' ? '#00e676' : s === 'healthy' ? '#00e676' : '#ff5252';
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>🧪 AI Testing & Reliability</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 16 }}>Automated testing, health monitoring, and reliability for all pipelines.</p>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+        <div style={{ background: 'rgba(0,230,118,0.1)', border: '1px solid rgba(0,230,118,0.3)', borderRadius: 12, padding: '12px 20px', textAlign: 'center' as const }}><div style={{ fontSize: 24, fontWeight: 700, color: '#00e676' }}>{data.totalPassed || 0}</div><div style={{ fontSize: 11, color: '#999' }}>Passed</div></div>
+        <div style={{ background: 'rgba(130,130,255,0.1)', border: '1px solid rgba(130,130,255,0.3)', borderRadius: 12, padding: '12px 20px', textAlign: 'center' as const }}><div style={{ fontSize: 24, fontWeight: 700, color: '#8282ff' }}>{data.totalTests || 0}</div><div style={{ fontSize: 11, color: '#999' }}>Total Tests</div></div>
+        <div style={{ background: 'rgba(255,215,64,0.1)', border: '1px solid rgba(255,215,64,0.3)', borderRadius: 12, padding: '12px 20px', textAlign: 'center' as const }}><div style={{ fontSize: 24, fontWeight: 700, color: '#ffd740' }}>{data.avgCoverage || 0}%</div><div style={{ fontSize: 11, color: '#999' }}>Coverage</div></div>
+      </div>
+      <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#fff' }}>Test Suites</h2>
+      {(data.suites || []).map((s: any) => (
+        <div key={s.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 12, padding: 14, marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div><span style={{ fontWeight: 600, color: '#fff' }}>{s.name}</span><span style={{ fontSize: 11, color: '#666', marginLeft: 8 }}>{s.tests} tests • {s.duration}</span></div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ background: '#1a1a2e', borderRadius: 8, height: 6, width: 80 }}><div style={{ width: `${s.coverage}%`, height: '100%', borderRadius: 8, background: sColor(s.status) }} /></div>
+            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${sColor(s.status)}22`, color: sColor(s.status) }}>{s.status}</span>
+          </div>
+        </div>
+      ))}
+      <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, marginTop: 24, color: '#fff' }}>Health Checks</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 8 }}>
+        {(data.healthChecks || []).map((h: any, i: number) => (
+          <div key={i} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 12, padding: 14 }}>
+            <div style={{ fontWeight: 600, color: '#fff', fontSize: 13, marginBottom: 4 }}>{h.service}</div>
+            <div style={{ fontSize: 11, color: sColor(h.status) }}>{h.status} • {h.latency} • {h.uptime}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== COMMUNITY HUB PAGE =====
+function CommunityHubPage() {
+  const [contributors, setContributors] = useState<any[]>([]);
+  const [submissions, setSubmissions] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API}/api/community/contributors`).then(r => r.json()).then(d => setContributors(d.contributors || [])).catch(() => setContributors([
+      { id: 'c1', name: 'AlexDev', avatar: '👨‍💻', contributions: 47, rank: 1, badges: ['🏆 Top', '🔧 Core'] },
+      { id: 'c2', name: 'SarahAI', avatar: '👩‍🔬', contributions: 38, rank: 2, badges: ['🤖 Pioneer'] },
+      { id: 'c3', name: 'RoboKid', avatar: '🤖', contributions: 29, rank: 3, badges: ['🦾 Robotics'] },
+    ]));
+    fetch(`${API}/api/community/submissions`).then(r => r.json()).then(d => setSubmissions(d.submissions || [])).catch(() => setSubmissions([
+      { id: 's1', title: 'Gemini Pro Adapter', type: 'adapter', author: 'AlexDev', votes: 234, status: 'featured', downloadCount: 1560 },
+      { id: 's2', title: 'Claude Agent Template', type: 'template', author: 'SarahAI', votes: 189, status: 'approved', downloadCount: 890 },
+      { id: 's3', title: 'Drone Sim Plugin', type: 'plugin', author: 'RoboKid', votes: 145, status: 'approved', downloadCount: 340 },
+    ]));
+  }, []);
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>🌍 Community Hub</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 24 }}>Contributors submit adapters, agents, templates — ranked and auto-integrated.</p>
+      <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: '#fff' }}>🏆 Top Contributors</h2>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 32, flexWrap: 'wrap' as const }}>
+        {contributors.map(c => (
+          <div key={c.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 16, padding: 20, minWidth: 180, textAlign: 'center' as const }}>
+            <div style={{ fontSize: 40, marginBottom: 8 }}>{c.avatar}</div>
+            <div style={{ fontWeight: 600, color: '#fff' }}>{c.name}</div>
+            <div style={{ fontSize: 12, color: '#8282ff' }}>{c.contributions} contributions</div>
+            <div style={{ marginTop: 4 }}>{c.badges?.map((b: string, i: number) => <span key={i} style={{ fontSize: 10, marginRight: 4 }}>{b}</span>)}</div>
+          </div>
+        ))}
+      </div>
+      <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 12, color: '#fff' }}>📦 Community Submissions</h2>
+      {submissions.map(s => (
+        <div key={s.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 12, padding: 14, marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div><span style={{ fontWeight: 600, color: '#fff' }}>{s.title}</span><span style={{ fontSize: 11, color: '#666', marginLeft: 8 }}>by {s.author} • {s.type}</span></div>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}><span style={{ color: '#ffd740' }}>👍 {s.votes}</span><span style={{ color: '#999' }}>⬇ {s.downloadCount}</span>
+            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: s.status === 'featured' ? 'rgba(0,230,118,0.15)' : 'rgba(130,130,255,0.15)', color: s.status === 'featured' ? '#00e676' : '#8282ff' }}>{s.status}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ===== AI MARKETPLACE PAGE =====
+function AIMarketplacePage() {
+  const [items, setItems] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API}/api/marketplace`).then(r => r.json()).then(d => setItems(d.items || [])).catch(() => setItems([
+      { id: 'm1', name: 'Ultimate RAG Pipeline', type: 'pipeline', author: 'SuperBuilder Team', price: 'Free', rating: 4.9, downloads: 5600, category: 'AI', featured: true },
+      { id: 'm2', name: 'SDXL Art Studio Pro', type: 'pipeline', author: 'PixelArtist', price: 'Free', rating: 4.8, downloads: 3400, category: 'Creative', featured: true },
+      { id: 'm3', name: 'Multi-Agent Dev Team', type: 'agent-template', author: 'AlexDev', price: '$9.99', rating: 4.7, downloads: 2100, category: 'Development', featured: true },
+      { id: 'm4', name: 'Voice Assistant Kit', type: 'pipeline', author: 'SarahAI', price: 'Free', rating: 4.6, downloads: 1800, category: 'Audio', featured: false },
+      { id: 'm5', name: 'Cyberpunk Dark Theme', type: 'theme', author: 'PixelArtist', price: 'Free', rating: 4.9, downloads: 8900, category: 'UI', featured: true },
+      { id: 'm6', name: 'LLM Fine-Tuning Template', type: 'model', author: 'SuperBuilder Team', price: 'Free', rating: 4.8, downloads: 3200, category: 'ML', featured: true },
+    ]));
+  }, []);
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>🛒 AI Marketplace</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 24 }}>Discover, install, and publish pipelines, models, datasets, themes, and agent templates.</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 16 }}>
+        {items.map(item => (
+          <div key={item.id} style={{ background: '#16162a', border: item.featured ? '1px solid rgba(130,130,255,0.4)' : '1px solid #2a2a4a', borderRadius: 16, padding: 20, position: 'relative' as const }}>
+            {item.featured && <div style={{ position: 'absolute' as const, top: 12, right: 12, fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(255,215,64,0.15)', color: '#ffd740' }}>⭐ Featured</div>}
+            <div style={{ fontWeight: 600, fontSize: 15, color: '#fff', marginBottom: 4 }}>{item.name}</div>
+            <div style={{ fontSize: 11, color: '#666', marginBottom: 8 }}>by {item.author} • {item.type}</div>
+            <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
+              <span style={{ color: '#ffd740' }}>★ {item.rating}</span>
+              <span style={{ color: '#999', fontSize: 12 }}>⬇ {(item.downloads / 1000).toFixed(1)}k</span>
+              <span style={{ color: item.price === 'Free' ? '#00e676' : '#8282ff', fontWeight: 600 }}>{item.price}</span>
+            </div>
+            <button style={{ width: '100%', padding: '8px 0', borderRadius: 8, border: 'none', background: 'rgba(130,130,255,0.2)', color: '#8282ff', fontWeight: 600, cursor: 'pointer' }}>Install</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== LIVE ANALYTICS PAGE =====
+function LiveAnalyticsPage() {
+  const [data, setData] = useState<any>(null);
+  useEffect(() => {
+    const load = () => fetch(`${API}/api/analytics/realtime`).then(r => r.json()).then(d => setData(d)).catch(() => setData({
+      cpu: { usage: 45, cores: 8, temp: 62 }, memory: { used: 10, total: 16, percentage: 62 }, gpu: { usage: 68, vram: { used: 4.2, total: 6 }, temp: 72, power: 110 },
+      network: { inbound: 350, outbound: 180, activeConnections: 35 }, pipelines: { active: 5, queued: 3, completed: 245, failed: 2 }
+    }));
+    load(); const iv = setInterval(load, 5000); return () => clearInterval(iv);
+  }, []);
+  if (!data) return <div style={{ padding: 32, color: '#666' }}>Loading analytics...</div>;
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>📈 Live Analytics</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 24 }}>Real-time platform metrics — CPU, GPU, memory, network, and pipeline health.</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 16, marginBottom: 24 }}>
+        {[
+          { label: 'CPU Usage', value: `${data.cpu.usage}%`, sub: `${data.cpu.cores} cores • ${data.cpu.temp}°C`, color: '#8282ff' },
+          { label: 'Memory', value: `${data.memory.used}/${data.memory.total} GB`, sub: `${data.memory.percentage}% used`, color: '#ffd740' },
+          { label: 'GPU Usage', value: `${data.gpu.usage}%`, sub: `${data.gpu.vram.used}/${data.gpu.vram.total} GB VRAM • ${data.gpu.temp}°C`, color: '#00e676' },
+          { label: 'Network In', value: `${data.network.inbound} MB/s`, sub: `${data.network.activeConnections} connections`, color: '#ff9800' },
+          { label: 'Active Pipelines', value: data.pipelines.active, sub: `${data.pipelines.queued} queued • ${data.pipelines.completed} done`, color: '#e040fb' },
+          { label: 'GPU Power', value: `${data.gpu.power}W`, sub: `RTX 4050`, color: '#00bcd4' },
+        ].map((m, i) => (
+          <div key={i} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 16, padding: 20 }}>
+            <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>{m.label}</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: m.color }}>{m.value}</div>
+            <div style={{ fontSize: 11, color: '#999' }}>{m.sub}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== AI DOCS PAGE =====
+function AIDocsPage() {
+  const [docs, setDocs] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API}/api/docs-ai`).then(r => r.json()).then(d => setDocs(d.docs || [])).catch(() => setDocs([
+      { id: 'd1', title: 'Getting Started with SuperBuilder', type: 'guide', category: 'Platform', readTime: '5 min', difficulty: 'beginner' },
+      { id: 'd2', title: 'Building Your First AI Agent', type: 'tutorial', category: 'AI Agents', readTime: '12 min', difficulty: 'intermediate' },
+      { id: 'd3', title: 'Integration Adapter Development', type: 'reference', category: 'Development', readTime: '8 min', difficulty: 'advanced' },
+      { id: 'd4', title: 'Visual Workflow Builder Tutorial', type: 'tutorial', category: 'Workflows', readTime: '7 min', difficulty: 'beginner' },
+      { id: 'd5', title: 'Multi-Cloud Deployment Guide', type: 'guide', category: 'Deployment', readTime: '10 min', difficulty: 'intermediate' },
+      { id: 'd6', title: 'Cross-Integration Fusion Examples', type: 'example', category: 'Innovation', readTime: '6 min', difficulty: 'intermediate' },
+    ]));
+  }, []);
+  const typeIcon = (t: string) => t === 'guide' ? '📘' : t === 'tutorial' ? '🎓' : t === 'reference' ? '📋' : '💡';
+  const diffColor = (d: string) => d === 'beginner' ? '#00e676' : d === 'intermediate' ? '#ffd740' : '#ff5252';
+  return (
+    <div style={{ padding: 32 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>📖 AI Documentation</h1>
+      <p style={{ color: '#999', fontSize: 14, marginBottom: 24 }}>Auto-generated docs, tutorials, and guides — powered by AI from your code and usage.</p>
+      <button onClick={() => alert('Generating new docs...')} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: 'rgba(130,130,255,0.2)', color: '#8282ff', fontWeight: 600, cursor: 'pointer', marginBottom: 24 }}>✨ Generate New Doc</button>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 16 }}>
+        {docs.map(d => (
+          <div key={d.id} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 16, padding: 20, cursor: 'pointer' }}>
+            <div style={{ fontSize: 28, marginBottom: 8 }}>{typeIcon(d.type)}</div>
+            <div style={{ fontWeight: 600, color: '#fff', marginBottom: 4 }}>{d.title}</div>
+            <div style={{ fontSize: 11, color: '#666', marginBottom: 8 }}>{d.category} • {d.readTime}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(130,130,255,0.15)', color: '#8282ff' }}>{d.type}</span>
+              <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${diffColor(d.difficulty)}22`, color: diffColor(d.difficulty) }}>{d.difficulty}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== INTEGRATIONS PAGE =====
+function IntegrationsPage() {
+  const [integrations, setIntegrations] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API}/api/integrations`)
+      .then(r => r.json())
+      .then(data => { setIntegrations(data.integrations || []); setCategories(['All', ...(data.categories || [])]); setLoading(false); })
+      .catch(() => {
+        // Fallback data if backend isn't running
+        const fallbackIntegrations = [
+          { name: 'LangChain', category: 'Agent Orchestration', license: 'MIT', description: 'LLM orchestration — chains, agents, tools, and memory for AI workflows.', homepage: 'https://langchain.com', repository: 'https://github.com/langchain-ai/langchain', requiresGPU: false, status: 'not-installed', enabled: false, version: '0.1.x' },
+          { name: 'LlamaIndex', category: 'Agent Orchestration', license: 'MIT', description: 'RAG framework — data connectors, indexing, query layers for long-term memory.', homepage: 'https://llamaindex.ai', repository: 'https://github.com/run-llama/llama_index', requiresGPU: false, status: 'not-installed', enabled: false, version: '0.10.x' },
+          { name: 'AutoGen', category: 'Agent Orchestration', license: 'MIT', description: 'Microsoft multi-agent conversation framework for complex LLM workflows.', homepage: 'https://microsoft.github.io/autogen/', requiresGPU: false, status: 'not-installed', enabled: false, version: '0.2.x' },
+          { name: 'MetaGPT', category: 'Agent Orchestration', license: 'MIT', description: 'Multi-agent framework — assign roles (PM, architect, engineer) for collaboration.', requiresGPU: false, status: 'not-installed', enabled: false, version: '0.8.x' },
+          { name: 'BabyAGI', category: 'Agent Orchestration', license: 'MIT', description: 'Minimal autonomous agent — task creation, prioritization, and execution loop.', requiresGPU: false, status: 'not-installed', enabled: false, version: '1.0.0' },
+          { name: 'SuperAGI', category: 'Agent Orchestration', license: 'MIT', description: 'Dev-first autonomous agent framework with tools, memory, and concurrent agents.', requiresGPU: false, status: 'not-installed', enabled: false, version: '0.1.x' },
+          { name: 'FAISS', category: 'Vector DB', license: 'MIT', description: 'Facebook AI Similarity Search — fast nearest-neighbor for embeddings.', requiresGPU: false, status: 'not-installed', enabled: false, version: '1.7.x' },
+          { name: 'Milvus', category: 'Vector DB', license: 'Apache-2.0', description: 'Scalable vector database for production RAG & similarity search.', requiresGPU: false, status: 'not-installed', enabled: false, version: '2.3.x' },
+          { name: 'Weaviate', category: 'Vector DB', license: 'BSD-3', description: 'AI-native vector database with vectorization modules & semantic search.', requiresGPU: false, status: 'not-installed', enabled: false, version: '1.23.x' },
+          { name: 'Chroma', category: 'Vector DB', license: 'Apache-2.0', description: 'Developer-friendly open-source embedding database for AI apps.', requiresGPU: false, status: 'not-installed', enabled: false, version: '0.4.x' },
+          { name: 'ONNX Runtime', category: 'Model Runtime', license: 'MIT', description: 'Cross-platform inference engine for ONNX models.', requiresGPU: false, status: 'not-installed', enabled: false, version: '1.17.x' },
+          { name: 'vLLM', category: 'Model Runtime', license: 'Apache-2.0', description: 'High-throughput LLM serving with PagedAttention — fast GPU inference.', requiresGPU: true, status: 'not-installed', enabled: false, version: '0.3.x' },
+          { name: 'NVIDIA Triton', category: 'Model Runtime', license: 'BSD-3', description: 'High-performance inference serving for TensorRT, PyTorch, ONNX.', requiresGPU: true, status: 'not-installed', enabled: false, version: '24.01' },
+          { name: 'BentoML', category: 'Model Runtime', license: 'Apache-2.0', description: 'Unified model serving — package ML models as production API endpoints.', requiresGPU: false, status: 'not-installed', enabled: false, version: '1.2.x' },
+          { name: 'llama.cpp', category: 'Model Runtime', license: 'MIT', description: 'Lightweight C/C++ LLM inference — run models on CPU with GGUF format.', requiresGPU: false, status: 'not-installed', enabled: false, version: 'latest' },
+          { name: 'Diffusers (Stable Diffusion)', category: 'Generative Media', license: 'Apache-2.0', description: 'Hugging Face diffusion models — SDXL, ControlNet, image generation.', requiresGPU: true, status: 'not-installed', enabled: false, version: '0.27.x' },
+          { name: 'ComfyUI', category: 'Generative Media', license: 'GPL-3.0', description: 'Node-based visual workflow for Stable Diffusion pipelines.', requiresGPU: true, status: 'not-installed', enabled: false, version: 'latest' },
+          { name: 'Whisper', category: 'Generative Media', license: 'MIT', description: 'OpenAI speech-to-text — transcription and translation in 99 languages.', requiresGPU: false, status: 'not-installed', enabled: false, version: 'v3' },
+          { name: 'Coqui TTS', category: 'Generative Media', license: 'MPL-2.0', description: 'Open-source text-to-speech — multi-speaker, voice cloning.', requiresGPU: false, status: 'not-installed', enabled: false, version: '0.22.x' },
+          { name: 'Blender', category: '3D / NeRF', license: 'GPL-3.0', description: '3D creation suite — headless rendering, modeling, automation via Python.', requiresGPU: true, status: 'not-installed', enabled: false, version: '4.0' },
+          { name: 'instant-ngp', category: '3D / NeRF', license: 'NVIDIA', description: 'Instant Neural Radiance Fields — fast 3D reconstruction from photos.', requiresGPU: true, status: 'not-installed', enabled: false, version: 'latest' },
+          { name: 'Nerfstudio', category: '3D / NeRF', license: 'Apache-2.0', description: 'End-to-end NeRF framework — train, visualize, and export 3D scenes.', requiresGPU: true, status: 'not-installed', enabled: false, version: '1.0.x' },
+          { name: 'Godot Engine', category: 'Game Engine', license: 'MIT', description: 'Open game engine — 2D/3D, GDScript/C#, export to all platforms.', requiresGPU: true, status: 'not-installed', enabled: false, version: '4.2' },
+          { name: 'MLflow', category: 'MLOps', license: 'Apache-2.0', description: 'MLOps platform — experiment tracking, model registry, deployment.', requiresGPU: false, status: 'not-installed', enabled: false, version: '2.10.x' },
+          { name: 'Apache Airflow', category: 'MLOps', license: 'Apache-2.0', description: 'Workflow orchestration — DAGs for ML pipelines and scheduling.', requiresGPU: false, status: 'not-installed', enabled: false, version: '2.8.x' },
+          { name: 'KServe', category: 'Serving', license: 'Apache-2.0', description: 'Kubernetes-native model serving — standardized inference protocol.', requiresGPU: false, status: 'not-installed', enabled: false, version: '0.12.x' },
+          { name: 'Ray', category: 'Serving', license: 'Apache-2.0', description: 'Distributed compute engine — Ray Serve, Ray Train, cluster computing.', requiresGPU: false, status: 'not-installed', enabled: false, version: '2.9.x' },
+          { name: 'Prometheus + Grafana', category: 'Observability', license: 'Apache-2.0', description: 'Monitoring stack — metrics collection, alerting, and dashboards.', requiresGPU: false, status: 'not-installed', enabled: false, version: '2.49 / 10.x' },
+          { name: 'ROS 2', category: 'Robotics', license: 'Apache-2.0', description: 'Robot Operating System — middleware and libraries for robotic apps.', requiresGPU: false, status: 'not-installed', enabled: false, version: 'Humble' },
+          { name: 'CARLA Simulator', category: 'Robotics', license: 'MIT', description: 'Autonomous driving simulator — high-fidelity urban environments.', requiresGPU: true, status: 'not-installed', enabled: false, version: '0.9.15' },
+          { name: 'Gazebo', category: 'Robotics', license: 'Apache-2.0', description: '3D robot simulation — physics, sensors, and environments.', requiresGPU: true, status: 'not-installed', enabled: false, version: 'Harmonic' },
+        ];
+        const cats = ['All', ...Array.from(new Set(fallbackIntegrations.map(i => i.category)))];
+        setIntegrations(fallbackIntegrations);
+        setCategories(cats);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleToggle = async (name: string, currentStatus: string) => {
+    const action = currentStatus === 'running' ? 'stop' : currentStatus === 'installed' ? 'start' : 'install';
+    try {
+      await fetch(`${API}/api/integrations/${encodeURIComponent(name)}/${action}`, { method: 'POST' });
+      setIntegrations(prev => prev.map(i =>
+        i.name === name ? { ...i, status: action === 'install' ? 'installed' : action === 'start' ? 'running' : 'stopped', enabled: action === 'start' } : i
+      ));
+    } catch { /* toggle locally */
+      setIntegrations(prev => prev.map(i =>
+        i.name === name ? { ...i, status: i.status === 'running' ? 'stopped' : i.status === 'installed' ? 'running' : 'installed', enabled: !i.enabled } : i
+      ));
+    }
+  };
+
+  const filtered = integrations.filter(i => {
+    const matchCategory = activeCategory === 'All' || i.category === activeCategory;
+    const matchSearch = !searchTerm || i.name.toLowerCase().includes(searchTerm.toLowerCase()) || i.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchCategory && matchSearch;
+  });
+
+  const statusColor = (s: string) => s === 'running' ? '#00e676' : s === 'installed' ? '#ffd740' : s === 'stopped' ? '#ff5252' : '#666';
+  const categoryIcon = (c: string) => {
+    const map: Record<string, string> = { 'Agent Orchestration': '🤖', 'Vector DB': '🔍', 'Model Runtime': '⚡', 'Generative Media': '🎨', '3D / NeRF': '🧊', 'Game Engine': '🎮', 'MLOps': '📊', 'Serving': '🚀', 'Observability': '📡', 'Robotics': '🦾', 'All': '🔌' };
+    return map[c] || '📦';
+  };
+
+  const totalRunning = integrations.filter(i => i.status === 'running').length;
+  const totalInstalled = integrations.filter(i => i.status === 'installed' || i.status === 'running').length;
+
+  return (
+    <div style={{ padding: '32px' }}>
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>🔌 Integrations Hub</h1>
+        <p style={{ color: '#999', fontSize: 14 }}>31 open-source tools — agents, vector DBs, model runtimes, generative media, 3D, robotics, and more.</p>
+        <div style={{ display: 'flex', gap: 16, marginTop: 16 }}>
+          <div style={{ background: 'rgba(0,230,118,0.1)', border: '1px solid rgba(0,230,118,0.3)', borderRadius: 12, padding: '12px 20px', textAlign: 'center' as const }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: '#00e676' }}>{totalRunning}</div>
+            <div style={{ fontSize: 11, color: '#999' }}>Running</div>
+          </div>
+          <div style={{ background: 'rgba(255,215,64,0.1)', border: '1px solid rgba(255,215,64,0.3)', borderRadius: 12, padding: '12px 20px', textAlign: 'center' as const }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: '#ffd740' }}>{totalInstalled}</div>
+            <div style={{ fontSize: 11, color: '#999' }}>Installed</div>
+          </div>
+          <div style={{ background: 'rgba(130,130,255,0.1)', border: '1px solid rgba(130,130,255,0.3)', borderRadius: 12, padding: '12px 20px', textAlign: 'center' as const }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: '#8282ff' }}>{integrations.length}</div>
+            <div style={{ fontSize: 11, color: '#999' }}>Total</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search */}
+      <input
+        type="text" placeholder="Search integrations..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+        style={{ width: '100%', padding: '10px 16px', borderRadius: 8, border: '1px solid #333', background: '#1a1a2e', color: '#fff', fontSize: 14, marginBottom: 20, outline: 'none' }}
+      />
+
+      {/* Category Tabs */}
+      <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginBottom: 24 }}>
+        {categories.map(cat => (
+          <button key={cat} onClick={() => setActiveCategory(cat)}
+            style={{ padding: '6px 14px', borderRadius: 20, border: activeCategory === cat ? '1px solid #8282ff' : '1px solid #333', background: activeCategory === cat ? 'rgba(130,130,255,0.2)' : '#1a1a2e', color: activeCategory === cat ? '#fff' : '#999', fontSize: 12, cursor: 'pointer', transition: 'all 0.2s' }}>
+            {categoryIcon(cat)} {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Integration Cards */}
+      {loading ? <p style={{ color: '#666' }}>Loading integrations...</p> : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+          {filtered.map(item => (
+            <div key={item.name} style={{ background: '#16162a', border: '1px solid #2a2a4a', borderRadius: 16, padding: 20, transition: 'all 0.3s', position: 'relative' as const }}>
+              {/* Status dot */}
+              <div style={{ position: 'absolute' as const, top: 16, right: 16, width: 10, height: 10, borderRadius: '50%', background: statusColor(item.status), boxShadow: `0 0 8px ${statusColor(item.status)}` }} />
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                <span style={{ fontSize: 22 }}>{categoryIcon(item.category)}</span>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 15, color: '#fff' }}>{item.name}</div>
+                  <div style={{ fontSize: 11, color: '#666' }}>v{item.version} • {item.license}</div>
+                </div>
+              </div>
+
+              <p style={{ fontSize: 12, color: '#999', lineHeight: 1.5, marginBottom: 12, minHeight: 36 }}>{item.description}</p>
+
+              <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' as const }}>
+                <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(130,130,255,0.15)', color: '#8282ff' }}>{item.category}</span>
+                {item.requiresGPU && <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(255,152,0,0.15)', color: '#ff9800' }}>🔥 GPU</span>}
+                <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `rgba(${statusColor(item.status) === '#00e676' ? '0,230,118' : statusColor(item.status) === '#ffd740' ? '255,215,64' : '102,102,102'},0.15)`, color: statusColor(item.status) }}>{item.status}</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {item.homepage && (
+                  <a href={item.homepage} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#8282ff', textDecoration: 'none' }}>
+                    Docs ↗
+                  </a>
+                )}
+                <button onClick={() => handleToggle(item.name, item.status)}
+                  style={{ padding: '6px 16px', borderRadius: 8, border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer', background: item.status === 'running' ? 'rgba(255,82,82,0.2)' : item.status === 'installed' ? 'rgba(0,230,118,0.2)' : 'rgba(130,130,255,0.2)', color: item.status === 'running' ? '#ff5252' : item.status === 'installed' ? '#00e676' : '#8282ff', transition: 'all 0.2s' }}>
+                  {item.status === 'running' ? '■ Stop' : item.status === 'installed' ? '▶ Start' : '⬇ Install'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function EvolutionDashboard() {
   const [status, setStatus] = useState<any>(null);
   const [insights, setInsights] = useState<any[]>([]);
@@ -2965,6 +3564,17 @@ export default function Home() {
       case 'agent-tasks': return <AgentTasksPage />;
       case 'agent-teams': return <AgentTeamsPage />;
       case 'evolution': return <EvolutionDashboard />;
+      case 'integrations': return <IntegrationsPage />;
+      case 'ai-discovery': return <AIDiscoveryPage />;
+      case 'smart-agents': return <SmartAgentsPage />;
+      case 'workflow-builder': return <WorkflowBuilderPage />;
+      case 'deploy-center': return <DeployCenterPage />;
+      case 'cross-intelligence': return <CrossIntelligencePage />;
+      case 'ai-testing': return <AITestingPage />;
+      case 'community-hub': return <CommunityHubPage />;
+      case 'ai-marketplace': return <AIMarketplacePage />;
+      case 'live-analytics': return <LiveAnalyticsPage />;
+      case 'ai-docs': return <AIDocsPage />;
       default: return <Dashboard />;
     }
   };

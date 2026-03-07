@@ -1,4 +1,23 @@
-# SuperBuilder Code Owners
-# These users will be automatically requested for review on PRs
+# CODEOWNERS
+# These users are auto-requested for review when files in their area change.
+# Format: <pattern>  <@github-username>
 
-* @rupac4530-creator
+# Global owner — reviews everything
+*                             @rupac4530-creator
+
+# Integration adapters
+/integrations/                @rupac4530-creator
+
+# Backend API routes
+/backend/                     @rupac4530-creator
+
+# Frontend platform
+/platform/                    @rupac4530-creator
+
+# Docs & community files
+/docs/                        @rupac4530-creator
+*.md                          @rupac4530-creator
+
+# CI/CD and security
+/.github/                     @rupac4530-creator
+SECURITY.md                   @rupac4530-creator

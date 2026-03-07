@@ -27,6 +27,17 @@ import controlCenterRouter from './routes/control-center';
 import innovationRouter from './routes/innovation';
 import agentHubRouter from './routes/agent-hub';
 import agentEvolutionRouter from './routes/agent-evolution';
+import integrationsRouter from './routes/integrations';
+import discoveryRouter from './routes/discovery';
+import smartAgentsRouter from './routes/smart-agents';
+import workflowsRouter from './routes/workflows';
+import deploymentsRouter from './routes/deployments';
+import crossIntelligenceRouter from './routes/cross-intelligence';
+import testingRouter from './routes/testing';
+import communityRouter from './routes/community';
+import marketplaceRouter from './routes/marketplace';
+import analyticsRouter from './routes/analytics';
+import docsAiRouter from './routes/docs-ai';
 import { initDatabase } from './database/init';
 
 dotenv.config();
@@ -69,6 +80,17 @@ app.use('/api/control-center', controlCenterRouter);
 app.use('/api/innovation', innovationRouter);
 app.use('/api/agent-hub', agentHubRouter);
 app.use('/api/evolution', agentEvolutionRouter);
+app.use('/api/integrations', integrationsRouter);
+app.use('/api/discovery', discoveryRouter);
+app.use('/api/smart-agents', smartAgentsRouter);
+app.use('/api/workflows', workflowsRouter);
+app.use('/api/deployments', deploymentsRouter);
+app.use('/api/cross-intelligence', crossIntelligenceRouter);
+app.use('/api/testing', testingRouter);
+app.use('/api/community', communityRouter);
+app.use('/api/marketplace', marketplaceRouter);
+app.use('/api/analytics', analyticsRouter);
+app.use('/api/docs-ai', docsAiRouter);
 
 // Root
 app.get('/', (_req, res) => {

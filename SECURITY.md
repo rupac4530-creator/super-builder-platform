@@ -2,47 +2,31 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in SuperBuilder, **please report it privately** instead of opening a public issue.
+If you discover a security vulnerability in SuperBuilder, **do not open a public GitHub issue**.
 
-### How to Report
+Please report it privately via one of these channels:
 
-1. **GitHub Security Advisories** (preferred): Go to the repository's Security tab and create a new security advisory
-2. **Email**: Contact the maintainer through their GitHub profile
+- **Email:** rupac4530@gmail.com (put `[SECURITY]` in the subject line)
+- **GitHub Private Vulnerability Reporting:** https://github.com/rupac4530-creator/super-builder-platform/security/advisories/new
 
-### What to Include
+We will:
+1. Acknowledge your report within **48 hours**
+2. Assess the severity and scope
+3. Release a fix + security advisory within **7 days** for critical issues
+4. Credit you in the advisory (unless you prefer anonymity)
 
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix (if you have one)
+## Scope
 
-### Response Time
-
-We aim to respond to security reports within 48 hours and provide a fix within 7 days for critical issues.
-
-## Supported Versions
-
-| Version | Supported |
-|---|---|
-| Latest (main branch) | Yes |
-| Older releases | Best effort |
+| In scope | Out of scope |
+|----------|--------------|
+| Remote code execution via API | Issues in third-party adapters (report upstream) |
+| Authentication/authorization bypass | UI-only cosmetic bugs |
+| Secrets/credentials leakage | Theoretical/unproven vulnerabilities |
+| Data exfiltration via integrations | Spam, phishing unrelated to the platform |
 
 ## Security Best Practices for Contributors
 
-- **Never commit API keys, tokens, or secrets** — use `.env` files
-- **Never hardcode credentials** in source code
-- **Validate all user inputs** on both frontend and backend
-- **Use parameterized queries** for database operations
-- **Keep dependencies updated** — run `npm audit` regularly
-- **Follow the principle of least privilege** for agent permissions
-
-## Security Features in SuperBuilder
-
-- Sandboxed agent execution with resource limits
-- Network whitelists for external API calls
-- Dry-run mode by default for agent operations
-- Role-based access control (RBAC)
-- Audit logging for all agent actions
-- Input validation on all API endpoints
-- Helmet.js security headers
-- CORS protection
+- **Never commit secrets**, API keys, or tokens — use `.env` files (which are in `.gitignore`)
+- All integration adapters should run in **sandboxed** processes where possible
+- GPU-only adapters must **not** auto-download model weights without explicit user consent
+- Community Plugin submissions are **reviewed** before being featured; do not auto-execute untrusted code
