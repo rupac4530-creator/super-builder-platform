@@ -5,6 +5,35 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [v0.3.1] — Security Hardening + LLM Studio + Dashboard Refactor (2026-03-08)
+
+### 🔒 Security
+- **Deleted** `do-push.ps1` — contained hardcoded GitHub PAT token (critical security fix)
+- **Replaced** `push-to-github.ps1` with safe interactive version — prompts for email, never hardcodes credentials
+- **Fixed** `SECURITY.md` — removed hardcoded personal email, directs to GitHub Private Vulnerability Reporting
+- **Added** `scripts/README.md` — documents helper scripts with safety rules
+
+### 🔌 Integrations
+- **Added** `integrations/llm-studio/` — LLM Studio adapter for local GGUF model inference
+  - OpenAI-compatible API (`/v1/models`, `/v1/chat/completions`)
+  - Supports `LLMSTUDIO_URL` + `LLMSTUDIO_API_KEY` env vars
+  - Registered in `registry.ts` (32 total adapters)
+  - Documentation at `integrations/llm-studio/README.md`
+
+### 🎨 Dashboard UI/UX
+- **Replaced** all emoji icons with 30+ inline SVG icons (Feather/Lucide style) throughout sidebar
+- **Consolidated** 4 separate stat cards → 1 `SummaryCard` with colored SVG icons and "All Systems Online" badge
+- **Compacted** Quick Actions: 4 full-width buttons → horizontal toolbar in page header
+- **Tightened** spacing: `24px → 12px` gaps, `14px → 10px` padding
+- **Added** `aria-label` to all interactive buttons for accessibility
+- **Version** bumped to `v0.3.1` in sidebar
+
+### 📄 Documentation
+- **Added** `CONTRIBUTING.md` with contribution guide, PR process, issue guidance, and security rules
+- **Updated** `README.md` with LLM Studio in provider table + Scripts safety section
+
+---
+
 ## [v0.3.0] — Next-Level Platform Features (2026-03-07)
 
 ### 🚀 10 Next-Level Features Added
