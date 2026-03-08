@@ -132,6 +132,7 @@ SuperBuilder:
 | Groq | Llama 3.3 70B, GPT OSS 120B | Cloud (fast) |
 | Cloudflare Workers AI | Qwen1.5-14B, Llama 2, OpenChat, Zephyr | Edge |
 | Ollama | Any local model | Local |
+| **LLM Studio** | **Any GGUF model (Llama, Mistral, Phi, Qwen, etc.)** | **Local** |
 | OpenRouter | 600+ models | Cloud |
 | DeepSeek | DeepSeek-R1-0528 | Cloud |
 | Meta | Llama-3.2-90B-Vision | Cloud |
@@ -140,6 +141,14 @@ SuperBuilder:
 - Build custom plugins with the [Plugin SDK](sdk/)
 - Example plugins included (AI provider, web scraper, automation)
 - Share plugins through the marketplace
+
+---
+
+## Scripts
+
+Helper scripts in `scripts/` and the root directory are **local development helpers only**. They are optional, interactive, and will prompt for any input they need.
+
+> **Do not run scripts blindly.** Review them first. Never commit secrets or personal information to any script. See [`scripts/README.md`](scripts/README.md) for details.
 
 ---
 

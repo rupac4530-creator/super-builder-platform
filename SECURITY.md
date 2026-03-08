@@ -4,10 +4,10 @@
 
 If you discover a security vulnerability in SuperBuilder, **do not open a public GitHub issue**.
 
-Please report it privately via one of these channels:
+Please report it privately:
 
-- **Email:** rupac4530@gmail.com (put `[SECURITY]` in the subject line)
 - **GitHub Private Vulnerability Reporting:** https://github.com/rupac4530-creator/super-builder-platform/security/advisories/new
+- **Alternative:** Open a [private security issue](https://github.com/rupac4530-creator/super-builder-platform/security/advisories/new) with `[SECURITY]` in the title
 
 We will:
 1. Acknowledge your report within **48 hours**
@@ -30,3 +30,4 @@ We will:
 - All integration adapters should run in **sandboxed** processes where possible
 - GPU-only adapters must **not** auto-download model weights without explicit user consent
 - Community Plugin submissions are **reviewed** before being featured; do not auto-execute untrusted code
+- Helper scripts in `scripts/` must never contain hardcoded credentials or personal information

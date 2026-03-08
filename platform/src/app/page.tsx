@@ -4,91 +4,131 @@ import React, { useState, useEffect } from 'react';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+/* ── Inline SVG Icon Components (replace emoji with clean SVGs) ── */
+const SvgIcon = ({ d, size = 18, color = 'currentColor' }: { d: string; size?: number; color?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
+);
+const Icons = {
+  home: (p?: any) => <SvgIcon d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" {...p} />,
+  brain: (p?: any) => <SvgIcon d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7zM9 22h6" {...p} />,
+  folder: (p?: any) => <SvgIcon d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2v11z" {...p} />,
+  bot: (p?: any) => <SvgIcon d="M12 2a2 2 0 012 2v1h4a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h4V4a2 2 0 012-2zM9 13h0M15 13h0" {...p} />,
+  zap: (p?: any) => <SvgIcon d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" {...p} />,
+  box: (p?: any) => <SvgIcon d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" {...p} />,
+  gamepad: (p?: any) => <SvgIcon d="M6 12h4m-2-2v4m6-1h.01M18 11h.01M17.32 5H6.68a4 4 0 00-3.978 3.59C2.2 12.18 2 16 2 16a3 3 0 006 0l1-2h6l1 2a3 3 0 006 0s-.2-3.82-.7-7.41A4 4 0 0017.32 5z" {...p} />,
+  film: (p?: any) => <SvgIcon d="M19.82 2H4.18A2.18 2.18 0 002 4.18v15.64A2.18 2.18 0 004.18 22h15.64A2.18 2.18 0 0022 19.82V4.18A2.18 2.18 0 0019.82 2zM7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5" {...p} />,
+  music: (p?: any) => <SvgIcon d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z" {...p} />,
+  cube: (p?: any) => <SvgIcon d="M21 16.5V8l-9-5-9 5v8.5l9 5 9-5zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" {...p} />,
+  palette: (p?: any) => <SvgIcon d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.04-.23-.29-.38-.63-.38-1.02 0-.83.67-1.5 1.5-1.5H16c3.04 0 5.5-2.46 5.5-5.5C21.5 5.81 17.21 2 12 2z" {...p} />,
+  globe: (p?: any) => <SvgIcon d="M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" {...p} />,
+  clipboard: (p?: any) => <SvgIcon d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2M9 2h6a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V3a1 1 0 011-1z" {...p} />,
+  users: (p?: any) => <SvgIcon d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" {...p} />,
+  dna: (p?: any) => <SvgIcon d="M2 15s2-2 6-2 6 4 10 4 6-2 6-2M2 9s2 2 6 2 6-4 10-4 6 2 6 2" {...p} />,
+  lightbulb: (p?: any) => <SvgIcon d="M9 18h6M10 22h4M12 2a7 7 0 014.5 12.36V17a1 1 0 01-1 1h-7a1 1 0 01-1-1v-2.64A7 7 0 0112 2z" {...p} />,
+  search: (p?: any) => <SvgIcon d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35" {...p} />,
+  link: (p?: any) => <SvgIcon d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" {...p} />,
+  cloud: (p?: any) => <SvgIcon d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" {...p} />,
+  flask: (p?: any) => <SvgIcon d="M9 3h6M10 9V3h4v6l5 9.4a1 1 0 01-.9 1.6H5.9a1 1 0 01-.9-1.6L10 9z" {...p} />,
+  store: (p?: any) => <SvgIcon d="M3 9l1-4h16l1 4M3 9v11a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 21V13h6v8" {...p} />,
+  cart: (p?: any) => <SvgIcon d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6M9 22a1 1 0 100-2 1 1 0 000 2zM20 22a1 1 0 100-2 1 1 0 000 2z" {...p} />,
+  barChart: (p?: any) => <SvgIcon d="M12 20V10M18 20V4M6 20v-4" {...p} />,
+  bookOpen: (p?: any) => <SvgIcon d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2V3zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7V3z" {...p} />,
+  plug: (p?: any) => <SvgIcon d="M12 22v-5M7 7V2M17 7V2M5 7h14a2 2 0 012 2v2a7 7 0 01-7 7h-4a7 7 0 01-7-7V9a2 2 0 012-2z" {...p} />,
+  settings: (p?: any) => <SvgIcon d="M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.28.46.73.77 1.24.88H21a2 2 0 010 4h-.09c-.51.11-.96.42-1.24.88z" {...p} />,
+  activity: (p?: any) => <SvgIcon d="M22 12h-4l-3 9L9 3l-3 9H2" {...p} />,
+  refresh: (p?: any) => <SvgIcon d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" {...p} />,
+  monitor: (p?: any) => <SvgIcon d="M2 3h20v14H2V3zM8 21h8M12 17v4" {...p} />,
+  satellite: (p?: any) => <SvgIcon d="M13 17l5-5M6 6l5-5M2 22l10-10" {...p} />,
+  hammer: (p?: any) => <SvgIcon d="M15 12l-8.5 8.5a2.12 2.12 0 01-3-3L12 9M17.64 4.64a2.12 2.12 0 013 3L15 13" {...p} />,
+  save: (p?: any) => <SvgIcon d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2zM17 21v-8H7v8M7 3v5h8" {...p} />,
+  shirt: (p?: any) => <SvgIcon d="M20.38 3.46L16 2 12 5 8 2 3.62 3.46a2 2 0 00-.77 2.73L5 10h3v10h8V10h3l2.15-3.81a2 2 0 00-.77-2.73z" {...p} />,
+};
+
 // ===== SIDEBAR COMPONENT =====
 function Sidebar({ active, onNavigate }: { active: string; onNavigate: (page: string) => void }) {
   const sections = [
     {
       title: 'Platform',
       items: [
-        { id: 'dashboard', icon: '🏠', label: 'Dashboard' },
-        { id: 'control-center', icon: '🧠', label: 'Control Center', badge: 'NEW' },
-        { id: 'projects', icon: '📁', label: 'Projects' },
-        { id: 'ai-chat', icon: '🤖', label: 'AI Assistant' },
+        { id: 'dashboard', icon: Icons.home, label: 'Dashboard' },
+        { id: 'control-center', icon: Icons.brain, label: 'Control Center', badge: 'NEW' },
+        { id: 'projects', icon: Icons.folder, label: 'Projects' },
+        { id: 'ai-chat', icon: Icons.bot, label: 'AI Assistant' },
       ]
     },
     {
       title: 'AI / ML',
       items: [
-        { id: 'training', icon: '🧠', label: 'Training Studio', badge: 'GPU' },
-        { id: 'models', icon: '📦', label: 'Model Registry' },
-        { id: 'inference', icon: '⚡', label: 'Inference' },
+        { id: 'training', icon: Icons.brain, label: 'Training Studio', badge: 'GPU' },
+        { id: 'models', icon: Icons.box, label: 'Model Registry' },
+        { id: 'inference', icon: Icons.zap, label: 'Inference' },
       ]
     },
     {
       title: 'Creator Studios',
       items: [
-        { id: 'game-studio', icon: '🎮', label: 'Game Studio' },
-        { id: 'video-studio', icon: '🎬', label: 'Video Studio' },
-        { id: 'audio-studio', icon: '🎵', label: 'Audio Studio' },
-        { id: '3d-studio', icon: '🧊', label: '3D Studio' },
-        { id: 'fashion-studio', icon: '👗', label: 'Fashion Studio' },
-        { id: 'design-studio', icon: '🎨', label: 'Design Suite' },
-        { id: 'robotics-lab', icon: '🤖', label: 'Robotics Lab' },
+        { id: 'game-studio', icon: Icons.gamepad, label: 'Game Studio' },
+        { id: 'video-studio', icon: Icons.film, label: 'Video Studio' },
+        { id: 'audio-studio', icon: Icons.music, label: 'Audio Studio' },
+        { id: '3d-studio', icon: Icons.cube, label: '3D Studio' },
+        { id: 'fashion-studio', icon: Icons.shirt, label: 'Fashion Studio' },
+        { id: 'design-studio', icon: Icons.palette, label: 'Design Suite' },
+        { id: 'robotics-lab', icon: Icons.bot, label: 'Robotics Lab' },
       ]
     },
     {
       title: 'Agents',
       items: [
-        { id: 'agents', icon: '🌐', label: 'Agent Civilization', badge: '12' },
-        { id: 'workbook', icon: '📋', label: 'Workbook' },
+        { id: 'agents', icon: Icons.globe, label: 'Agent Civilization', badge: '12' },
+        { id: 'workbook', icon: Icons.clipboard, label: 'Workbook' },
       ]
     },
     {
-      title: 'Agent Hub (OpenClaw)',
+      title: 'Agent Hub',
       items: [
-        { id: 'agent-hub', icon: '🤖', label: 'Agent Hub', badge: 'NEW' },
-        { id: 'agent-tasks', icon: '⚡', label: 'Task Monitor', badge: 'NEW' },
-        { id: 'agent-teams', icon: '👥', label: 'Agent Teams', badge: 'NEW' },
-        { id: 'evolution', icon: '🧬', label: 'Evolution Engine', badge: 'NEW' },
+        { id: 'agent-hub', icon: Icons.bot, label: 'Agent Hub', badge: 'NEW' },
+        { id: 'agent-tasks', icon: Icons.zap, label: 'Task Monitor', badge: 'NEW' },
+        { id: 'agent-teams', icon: Icons.users, label: 'Agent Teams', badge: 'NEW' },
+        { id: 'evolution', icon: Icons.dna, label: 'Evolution Engine', badge: 'NEW' },
       ]
     },
     {
       title: 'Innovation Labs',
       items: [
-        { id: 'knowledge-brain', icon: '🌐', label: 'Knowledge Brain', badge: 'NEW' },
-        { id: 'ai-memory', icon: '💾', label: 'AI Memory', badge: 'NEW' },
-        { id: 'idea-lab', icon: '💡', label: 'Idea Lab', badge: 'NEW' },
-        { id: 'code-forge', icon: '🔨', label: 'Code Forge', badge: 'NEW' },
-        { id: 'data-insights', icon: '📈', label: 'Data Insights', badge: 'NEW' },
-        { id: 'learning-hub', icon: '📚', label: 'Learning Hub', badge: 'NEW' },
-        { id: 'trend-radar', icon: '📡', label: 'Trend Radar', badge: 'NEW' },
-        { id: 'collab-space', icon: '👥', label: 'Collab Space', badge: 'NEW' },
-        { id: 'marketplace', icon: '🏪', label: 'AI Marketplace', badge: 'NEW' },
-        { id: 'self-improve', icon: '🔄', label: 'Self-Improve', badge: 'NEW' },
+        { id: 'knowledge-brain', icon: Icons.globe, label: 'Knowledge Brain', badge: 'NEW' },
+        { id: 'ai-memory', icon: Icons.save, label: 'AI Memory', badge: 'NEW' },
+        { id: 'idea-lab', icon: Icons.lightbulb, label: 'Idea Lab', badge: 'NEW' },
+        { id: 'code-forge', icon: Icons.hammer, label: 'Code Forge', badge: 'NEW' },
+        { id: 'data-insights', icon: Icons.barChart, label: 'Data Insights', badge: 'NEW' },
+        { id: 'learning-hub', icon: Icons.bookOpen, label: 'Learning Hub', badge: 'NEW' },
+        { id: 'trend-radar', icon: Icons.satellite, label: 'Trend Radar', badge: 'NEW' },
+        { id: 'collab-space', icon: Icons.users, label: 'Collab Space', badge: 'NEW' },
+        { id: 'marketplace', icon: Icons.store, label: 'AI Marketplace', badge: 'NEW' },
+        { id: 'self-improve', icon: Icons.refresh, label: 'Self-Improve', badge: 'NEW' },
       ]
     },
     {
       title: 'Next-Level',
       items: [
-        { id: 'ai-discovery', icon: '🔎', label: 'AI Discovery', badge: 'NEW' },
-        { id: 'smart-agents', icon: '🧬', label: 'Smart Agents', badge: 'NEW' },
-        { id: 'workflow-builder', icon: '🔗', label: 'Workflow Builder', badge: 'NEW' },
-        { id: 'deploy-center', icon: '☁️', label: 'Deploy Center', badge: 'NEW' },
-        { id: 'cross-intelligence', icon: '🧪', label: 'Cross Intelligence', badge: 'NEW' },
-        { id: 'ai-testing', icon: '🧪', label: 'AI Testing', badge: 'NEW' },
-        { id: 'community-hub', icon: '🌍', label: 'Community Hub', badge: 'NEW' },
-        { id: 'ai-marketplace', icon: '🛒', label: 'AI Marketplace', badge: 'NEW' },
-        { id: 'live-analytics', icon: '📈', label: 'Live Analytics', badge: 'NEW' },
-        { id: 'ai-docs', icon: '📖', label: 'AI Docs', badge: 'NEW' },
+        { id: 'ai-discovery', icon: Icons.search, label: 'AI Discovery', badge: 'NEW' },
+        { id: 'smart-agents', icon: Icons.dna, label: 'Smart Agents', badge: 'NEW' },
+        { id: 'workflow-builder', icon: Icons.link, label: 'Workflow Builder', badge: 'NEW' },
+        { id: 'deploy-center', icon: Icons.cloud, label: 'Deploy Center', badge: 'NEW' },
+        { id: 'cross-intelligence', icon: Icons.flask, label: 'Cross Intelligence', badge: 'NEW' },
+        { id: 'ai-testing', icon: Icons.flask, label: 'AI Testing', badge: 'NEW' },
+        { id: 'community-hub', icon: Icons.globe, label: 'Community Hub', badge: 'NEW' },
+        { id: 'ai-marketplace', icon: Icons.cart, label: 'AI Marketplace', badge: 'NEW' },
+        { id: 'live-analytics', icon: Icons.barChart, label: 'Live Analytics', badge: 'NEW' },
+        { id: 'ai-docs', icon: Icons.bookOpen, label: 'AI Docs', badge: 'NEW' },
       ]
     },
     {
       title: 'System',
       items: [
-        { id: 'integrations', icon: '🔌', label: 'Integrations', badge: '31' },
-        { id: 'jobs', icon: '⚙️', label: 'Job Queue' },
-        { id: 'metrics', icon: '📊', label: 'Metrics' },
-        { id: 'settings', icon: '🔧', label: 'Settings' },
+        { id: 'integrations', icon: Icons.plug, label: 'Integrations', badge: '32' },
+        { id: 'jobs', icon: Icons.settings, label: 'Job Queue' },
+        { id: 'metrics', icon: Icons.barChart, label: 'Metrics' },
+        { id: 'settings', icon: Icons.settings, label: 'Settings' },
       ]
     }
   ];
@@ -96,8 +136,8 @@ function Sidebar({ active, onNavigate }: { active: string; onNavigate: (page: st
   return (
     <nav className="sidebar">
       <div className="sidebar-logo">
-        <h1>⚡ Engine Alto</h1>
-        <div className="version">v0.1.0 — AI-First Creator Platform</div>
+        <h1>{Icons.zap()} Engine Alto</h1>
+        <div className="version">v0.3.1 — AI-First Creator Platform</div>
       </div>
       {sections.map(section => (
         <div key={section.title} className="sidebar-section">
@@ -107,18 +147,19 @@ function Sidebar({ active, onNavigate }: { active: string; onNavigate: (page: st
               key={item.id}
               className={`sidebar-item ${active === item.id ? 'active' : ''}`}
               onClick={() => onNavigate(item.id)}
+              aria-label={item.label}
             >
-              <span className="icon">{item.icon}</span>
+              <span className="icon">{typeof item.icon === 'function' ? item.icon() : item.icon}</span>
               <span>{item.label}</span>
               {(item as any).badge && <span className="sidebar-badge">{(item as any).badge}</span>}
             </button>
           ))}
         </div>
       ))}
-      <div style={{ marginTop: 'auto', padding: '16px 20px', borderTop: '1px solid var(--border)' }}>
-        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-          🟢 System Healthy<br />
-          GPU: RTX 4050 Ready
+      <div style={{ marginTop: 'auto', padding: '12px 20px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }}></span>
+          System Healthy · GPU Ready
         </div>
       </div>
     </nav>
@@ -137,106 +178,117 @@ function Dashboard() {
 
   return (
     <div className="animate-fade-in">
-      <div className="page-header">
-        <h1 className="page-title">🚀 Engine Alto Dashboard</h1>
-        <p className="page-subtitle">Your AI-first creator platform — build anything, train anything</p>
-      </div>
-
-      <div className="grid grid-4 stagger" style={{ marginBottom: 24 }}>
-        <div className="stat-card animate-fade-in">
-          <div className="stat-icon">🧠</div>
-          <div className="stat-value">{stats?.training?.completed || 0}</div>
-          <div className="stat-label">Models Trained</div>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>{Icons.zap({ color: 'var(--accent-primary)' })} Engine Alto Dashboard</h1>
+          <p className="page-subtitle">Your AI-first creator platform — build anything, train anything</p>
         </div>
-        <div className="stat-card animate-fade-in">
-          <div className="stat-icon">🤖</div>
-          <div className="stat-value">{agentStats?.activeAgents || 12}</div>
-          <div className="stat-label">Active Agents</div>
-        </div>
-        <div className="stat-card animate-fade-in">
-          <div className="stat-icon">⚡</div>
-          <div className="stat-value">{stats?.gpu?.utilization || '0%'}</div>
-          <div className="stat-label">GPU Utilization</div>
-        </div>
-        <div className="stat-card animate-fade-in">
-          <div className="stat-icon">📊</div>
-          <div className="stat-value">{stats?.uptime ? `${Math.round(stats.uptime / 60)}m` : '—'}</div>
-          <div className="stat-label">Uptime</div>
+        {/* ── Compact Quick Actions Toolbar ── */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} aria-label="Train a New Model">
+            {Icons.brain({ size: 14 })} Train
+          </button>
+          <button className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} aria-label="Create New Project">
+            {Icons.folder({ size: 14 })} Project
+          </button>
+          <button className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} aria-label="Chat with AI">
+            {Icons.bot({ size: 14 })} Chat
+          </button>
+          <button className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }} aria-label="View Agents">
+            {Icons.globe({ size: 14 })} Agents
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-2" style={{ marginBottom: 24 }}>
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">🎯 Quick Actions</h3>
+      {/* ── Consolidated System Summary Card ── */}
+      <div className="card animate-fade-in" style={{ marginBottom: 16, padding: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={{ fontWeight: 700, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+            {Icons.activity({ size: 16, color: 'var(--accent-primary)' })} System Summary
+          </h3>
+          <span className="status status-active"><span className="status-dot"></span> All Systems Online</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+          <div style={{ padding: 12, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6, color: 'var(--accent-primary)' }}>{Icons.brain({ size: 20 })}</div>
+            <div style={{ fontWeight: 800, fontSize: '1.4rem', lineHeight: 1 }}>{stats?.training?.completed || 0}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>Models Trained</div>
+          </div>
+          <div style={{ padding: 12, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6, color: '#22c55e' }}>{Icons.bot({ size: 20 })}</div>
+            <div style={{ fontWeight: 800, fontSize: '1.4rem', lineHeight: 1 }}>{agentStats?.activeAgents || 12}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>Active Agents</div>
+          </div>
+          <div style={{ padding: 12, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6, color: '#f59e0b' }}>{Icons.zap({ size: 20 })}</div>
+            <div style={{ fontWeight: 800, fontSize: '1.4rem', lineHeight: 1 }}>{stats?.gpu?.utilization || '0%'}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>GPU Utilization</div>
+          </div>
+          <div style={{ padding: 12, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6, color: '#3b82f6' }}>{Icons.monitor({ size: 20 })}</div>
+            <div style={{ fontWeight: 800, fontSize: '1.4rem', lineHeight: 1 }}>{stats?.uptime ? `${Math.round(stats.uptime / 60)}m` : '—'}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>Uptime</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── System Status + Capabilities (side by side) ── */}
+      <div className="grid grid-2" style={{ marginBottom: 16, gap: 12 }}>
+        <div className="card" style={{ padding: 16 }}>
+          <div className="card-header" style={{ marginBottom: 10 }}>
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {Icons.monitor({ size: 16 })} System Status
+            </h3>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <button className="btn btn-primary btn-lg" style={{ justifyContent: 'center' }}>
-              🧠 Train a New Model
-            </button>
-            <button className="btn btn-secondary" style={{ justifyContent: 'center' }}>
-              📁 Create New Project
-            </button>
-            <button className="btn btn-secondary" style={{ justifyContent: 'center' }}>
-              🤖 Chat with AI Assistant
-            </button>
-            <button className="btn btn-secondary" style={{ justifyContent: 'center' }}>
-              🌐 View Agent Civilization
-            </button>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">🖥️ System Status</h3>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem' }}>GPU (RTX 4050)</span>
+              <span style={{ fontSize: '0.82rem' }}>GPU (RTX 4050)</span>
               <span className="status status-active"><span className="status-dot"></span> Ready</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem' }}>GPU Memory</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>{stats?.gpu?.memoryUsed || '0MB'} / 6144MB</span>
+              <span style={{ fontSize: '0.82rem' }}>GPU Memory</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>{stats?.gpu?.memoryUsed || '0MB'} / 6144MB</span>
             </div>
-            <div className="progress-bar">
+            <div className="progress-bar" style={{ height: 6 }}>
               <div className="progress-fill" style={{ width: `${parseInt(stats?.gpu?.utilization || '0')}%` }}></div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem' }}>Backend API</span>
+              <span style={{ fontSize: '0.82rem' }}>Backend API</span>
               <span className="status status-active"><span className="status-dot"></span> Online</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem' }}>Agent System</span>
+              <span style={{ fontSize: '0.82rem' }}>Agent System</span>
               <span className="status status-active"><span className="status-dot"></span> Autonomous</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem' }}>Temperature</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>{stats?.gpu?.temperature || '45°C'}</span>
+              <span style={{ fontSize: '0.82rem' }}>Temperature</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>{stats?.gpu?.temperature || '45°C'}</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">🏗️ Platform Capabilities</h3>
-        </div>
-        <div className="grid grid-3" style={{ gap: 12 }}>
-          {[
-            { icon: '🧠', title: 'AI Training', desc: 'Train CNNs, ResNets, Transformers, GANs, U-Nets on your GPU' },
-            { icon: '🎮', title: 'Game Engine', desc: 'ECS, physics, Vulkan rendering, level editor' },
-            { icon: '🌐', title: 'Browser Runtime', desc: 'HTML/CSS renderer, V8 scripting, web apps' },
-            { icon: '🤖', title: '12 AI Agents', desc: 'Autonomous civilization: debug, heal, deploy, scout' },
-            { icon: '🎨', title: 'Creator Studio', desc: 'Image→3D, video, VFX, audio, fashion' },
-            { icon: '🚀', title: 'One-Click Deploy', desc: 'Docker, K8s, Vercel, AWS — auto-packaged' },
-          ].map(cap => (
-            <div key={cap.title} style={{ padding: 14, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: '1.3rem', marginBottom: 6 }}>{cap.icon}</div>
-              <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: 2 }}>{cap.title}</div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{cap.desc}</div>
-            </div>
-          ))}
+        <div className="card" style={{ padding: 16 }}>
+          <div className="card-header" style={{ marginBottom: 10 }}>
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {Icons.box({ size: 16 })} Platform Capabilities
+            </h3>
+          </div>
+          <div className="grid grid-2" style={{ gap: 8 }}>
+            {[
+              { icon: Icons.brain, title: 'AI Training', desc: 'Train on your GPU' },
+              { icon: Icons.gamepad, title: 'Game Engine', desc: 'ECS, physics, rendering' },
+              { icon: Icons.globe, title: 'Browser Runtime', desc: 'Web apps + V8' },
+              { icon: Icons.bot, title: '12 AI Agents', desc: 'Autonomous agents' },
+              { icon: Icons.palette, title: 'Creator Studio', desc: 'Image, video, 3D' },
+              { icon: Icons.cloud, title: 'One-Click Deploy', desc: 'Docker, K8s, cloud' },
+            ].map(cap => (
+              <div key={cap.title} style={{ padding: 10, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                <div style={{ marginBottom: 4, color: 'var(--accent-primary)' }}>{cap.icon({ size: 16 })}</div>
+                <div style={{ fontWeight: 700, fontSize: '0.8rem', marginBottom: 1 }}>{cap.title}</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{cap.desc}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

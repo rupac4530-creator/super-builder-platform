@@ -37,6 +37,7 @@ import { PrometheusGrafanaAdapter } from './observability/prometheus-grafana';
 import { ROS2Adapter } from './robotics/ros2';
 import { CARLAAdapter } from './robotics/carla';
 import { GazeboAdapter } from './robotics/gazebo';
+import { LLMStudioAdapter } from './llm-studio/llm-studio';
 
 export class IntegrationRegistry {
     private adapters: Map<string, BaseAdapter> = new Map();
@@ -69,6 +70,8 @@ export class IntegrationRegistry {
             new PrometheusGrafanaAdapter(),
             // Robotics
             new ROS2Adapter(), new CARLAAdapter(), new GazeboAdapter(),
+            // Local Model Runtimes
+            new LLMStudioAdapter(),
         ];
 
         for (const adapter of all) {
