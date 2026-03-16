@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Unreleased]
+
+### Sync & cleanup (sync/cleanup branch)
+- **.gitignore:** Ignore local runtime data, caches, temp files, and tools binaries so they are never committed.
+- **SECURITY.md:** Added "Supplying Secrets" section — use env vars or GitHub Secrets; never commit credentials.
+- **Platform (page.tsx):** Design Suite interactive canvas editor, Robotics Lab canvas simulation, Game Studio HUD fix (garbled character removed), and UI label cleanup.
+- **Backend (ai.ts):** AI route hardening with budget guards and mock fallback when OpenAI is not wired.
+
+---
+
 ## [v0.3.1] — Security Hardening + LLM Studio + Dashboard Refactor (2026-03-08)
 
 ### 🔒 Security

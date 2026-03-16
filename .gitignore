@@ -60,3 +60,17 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Local runtime and temp (do not commit)
+backend/data/
+backend/.vitest-cache/
+report/playwright-screenshots/
+tools/python311/
+tools/ffmpeg/
+tools/redis/
+*.secret
+BACKUP_MANIFEST.txt
+verify-*.txt
+issue_body.txt
+walkthrough.md
+/page.tsx

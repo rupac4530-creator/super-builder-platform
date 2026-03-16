@@ -24,6 +24,11 @@ We will:
 | Secrets/credentials leakage | Theoretical/unproven vulnerabilities |
 | Data exfiltration via integrations | Spam, phishing unrelated to the platform |
 
+## Supplying Secrets
+
+- Use **environment variables** (e.g. `OPENAI_API_KEY`, `GITHUB_TOKEN`) or a local `.env` file (never committed).
+- For CI/CD, use **GitHub Secrets** or your provider’s secret store; do not put secrets in workflow files.
+
 ## Security Best Practices for Contributors
 
 - **Never commit secrets**, API keys, or tokens — use `.env` files (which are in `.gitignore`)

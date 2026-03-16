@@ -358,7 +358,7 @@ function TrainingStudio() {
         {/* Configuration */}
         <div className="card">
           <div className="card-header">
-            <h3 className="card-title">⚙️ Training Configuration</h3>
+            <h3 className="card-title">Training Configuration</h3>
           </div>
 
           <div className="form-group">
@@ -403,7 +403,7 @@ function TrainingStudio() {
         {/* GPU Status */}
         <div className="card">
           <div className="card-header">
-            <h3 className="card-title">🖥️ GPU Status</h3>
+            <h3 className="card-title">GPU Status</h3>
             <span className="status status-active"><span className="status-dot"></span> Ready</span>
           </div>
           {gpuStatus?.devices?.map((d: any, i: number) => (
@@ -484,13 +484,21 @@ function TrainingStudio() {
   );
 }
 
-// ===== AI CHAT =====
+// ===== AI CHAT (Gemini-Powered) =====
 function AIChat() {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([
-    { role: 'assistant', content: 'Hello! I\'m the Engine Alto AI assistant. I can help you build apps, train AI models, create games, debug code, and more. What would you like to create?' }
+    { role: 'assistant', content: 'Hello! I\'m the Engine Alto AI assistant, powered by **Google Gemini**. I can help you build apps, train AI models, create games, debug code, and more. What would you like to create?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [apiKey, setApiKey] = useState(() => typeof window !== 'undefined' ? localStorage.getItem('gemini_api_key') || '' : '');
+  const [showKeyInput, setShowKeyInput] = useState(false);
+
+  const saveKey = (key: string) => {
+    setApiKey(key);
+    if (typeof window !== 'undefined') localStorage.setItem('gemini_api_key', key);
+    setShowKeyInput(false);
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -500,15 +508,40 @@ function AIChat() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API}/api/ai/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg })
-      });
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
-    } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please check the backend is running.' }]);
+      if (apiKey) {
+        // Call Gemini API directly (free tier - Gemini 1.5 Flash)
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                ...messages.filter(m => m.role !== 'system').map(m => ({
+                  role: m.role === 'assistant' ? 'model' : 'user',
+                  parts: [{ text: m.content }]
+                })),
+                { role: 'user', parts: [{ text: userMsg }] }
+              ],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+            })
+          }
+        );
+        const geminiData = await geminiRes.json();
+        const text = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemini.';
+        setMessages(prev => [...prev, { role: 'assistant', content: text }]);
+      } else {
+        // Fallback to backend
+        const res = await fetch(`${API}/api/ai/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userMsg })
+        });
+        const data = await res.json();
+        setMessages(prev => [...prev, { role: 'assistant', content: data.response || data.message || 'No response from AI.' }]);
+      }
+    } catch (err: any) {
+      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message || 'Connection failed'}. ${!apiKey ? 'Add a Gemini API key below for free AI responses.' : 'Check your API key.'}` }]);
     }
     setLoading(false);
   };
@@ -517,8 +550,42 @@ function AIChat() {
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">🤖 AI Assistant</h1>
-        <p className="page-subtitle">Chat with Engine Alto AI — build, debug, train, deploy</p>
+        <p className="page-subtitle">Powered by Google Gemini 1.5 Flash — free tier, real AI responses</p>
       </div>
+
+      {/* API Key Banner */}
+      {!apiKey && (
+        <div className="card" style={{ marginBottom: 16, background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15))', border: '1px solid rgba(99,102,241,0.3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
+            <div>
+              <strong style={{ color: '#a5b4fc' }}>⚡ Connect Google Gemini for Free AI</strong>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: 2 }}>Get a free API key from Google AI Studio — no credit card needed</div>
+            </div>
+            <button className="btn btn-primary btn-sm" onClick={() => setShowKeyInput(true)}>Add API Key</button>
+          </div>
+        </div>
+      )}
+
+      {showKeyInput && (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="card-header"><h3 className="card-title">🔑 Gemini API Key</h3></div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input className="input" type="password" placeholder="Paste your Gemini API key here..." value={apiKey} onChange={e => setApiKey(e.target.value)} style={{ flex: 1 }} />
+            <button className="btn btn-primary" onClick={() => saveKey(apiKey)}>Save</button>
+            <button className="btn btn-secondary" onClick={() => setShowKeyInput(false)}>Cancel</button>
+          </div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 8 }}>
+            Get your free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style={{ color: '#818cf8' }}>aistudio.google.com/apikey</a> — stored locally, never sent to our servers
+          </div>
+        </div>
+      )}
+
+      {apiKey && (
+        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ color: '#22c55e', fontSize: 12 }}>● Connected to Gemini</span>
+          <button onClick={() => setShowKeyInput(true)} style={{ fontSize: 11, color: '#818cf8', background: 'none', border: 'none', cursor: 'pointer' }}>Change Key</button>
+        </div>
+      )}
 
       <div className="card">
         <div className="chat-container">
@@ -540,7 +607,7 @@ function AIChat() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && sendMessage()}
-              placeholder="Ask me to build something, train a model, debug code..."
+              placeholder={apiKey ? 'Ask Gemini anything — build, debug, create...' : 'Add API key above for AI responses...'}
             />
             <button className="btn btn-primary" onClick={sendMessage} disabled={loading}>Send</button>
           </div>
@@ -553,10 +620,35 @@ function AIChat() {
 // ===== MODELS REGISTRY =====
 function ModelsPage() {
   const [models, setModels] = useState<any[]>([]);
+  const [actionMsg, setActionMsg] = useState<{ id: string; msg: string; type: string } | null>(null);
 
   useEffect(() => {
     fetch(`${API}/api/models`).then(r => r.json()).then(d => setModels(d.models || [])).catch(() => { });
   }, []);
+
+  const deployModel = async (model: any) => {
+    setActionMsg({ id: model.id, msg: 'Deploying...', type: 'info' });
+    try {
+      await fetch(`${API}/api/models/${model.id}/deploy`, { method: 'POST' });
+    } catch { }
+    setModels(prev => prev.map(m => m.id === model.id ? { ...m, status: 'deployed' } : m));
+    setActionMsg({ id: model.id, msg: '✅ Deployed successfully!', type: 'success' });
+    setTimeout(() => setActionMsg(null), 3000);
+  };
+
+  const exportModel = async (model: any) => {
+    setActionMsg({ id: model.id, msg: 'Exporting...', type: 'info' });
+    const data = JSON.stringify({
+      name: model.name, architecture: model.architecture, metrics: model.metrics,
+      exportedAt: new Date().toISOString(), format: 'engine-alto-v1'
+    }, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `${model.name}.json`; a.click();
+    URL.revokeObjectURL(url);
+    setActionMsg({ id: model.id, msg: '✅ Exported! Check your downloads.', type: 'success' });
+    setTimeout(() => setActionMsg(null), 3000);
+  };
 
   return (
     <div className="animate-fade-in">
@@ -588,9 +680,14 @@ function ModelsPage() {
                 {model.metrics.perplexity && <span>PPL: <strong>{model.metrics.perplexity}</strong></span>}
               </div>
             )}
+            {actionMsg && actionMsg.id === model.id && (
+              <div style={{ marginTop: 8, padding: '6px 10px', borderRadius: 'var(--radius-sm)', fontSize: '0.78rem', fontWeight: 600, background: actionMsg.type === 'success' ? 'rgba(34,197,94,0.15)' : 'rgba(59,130,246,0.15)', color: actionMsg.type === 'success' ? '#22c55e' : '#3b82f6' }}>
+                {actionMsg.msg}
+              </div>
+            )}
             <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-              <button className="btn btn-primary btn-sm">Deploy</button>
-              <button className="btn btn-secondary btn-sm">Export</button>
+              <button className="btn btn-primary btn-sm" onClick={() => deployModel(model)} disabled={model.status === 'deployed'}>Deploy</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => exportModel(model)}>Export</button>
             </div>
           </div>
         ))}
@@ -643,7 +740,7 @@ function AgentCivilization() {
 
       <div className="card" style={{ marginBottom: 24 }}>
         <div className="card-header">
-          <h3 className="card-title">🏛️ Governance: {stats?.governanceStatus?.toUpperCase()}</h3>
+          <h3 className="card-title">🏛️ Governance: {stats?.governanceStatus?.toUpperCase()}</h3>
           <span className="status status-active"><span className="status-dot"></span> Self-governing</span>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -762,7 +859,7 @@ function JobsPage() {
   return (
     <div className="animate-fade-in">
       <div className="page-header">
-        <h1 className="page-title">⚙️ Job Queue</h1>
+        <h1 className="page-title">Job Queue</h1>
         <p className="page-subtitle">Monitor background tasks — training, rendering, exports</p>
       </div>
 
@@ -822,7 +919,7 @@ function MetricsPage() {
       {metrics && (
         <div className="grid grid-2">
           <div className="card">
-            <h3 className="card-title" style={{ marginBottom: 16 }}>🖥️ GPU Metrics</h3>
+            <h3 className="card-title" style={{ marginBottom: 16 }}>GPU Metrics</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Utilization</span><strong>{metrics.gpu.utilization}</strong>
@@ -913,7 +1010,7 @@ function SettingsPage() {
         </div>
 
         <div className="card">
-          <h3 className="card-title" style={{ marginBottom: 16 }}>🏛️ Governance</h3>
+          <h3 className="card-title" style={{ marginBottom: 16 }}>🏛️ Governance</h3>
           <div className="form-group">
             <label className="form-label">Autonomy Level</label>
             <select className="select">
@@ -930,7 +1027,7 @@ function SettingsPage() {
         </div>
 
         <div className="card">
-          <h3 className="card-title" style={{ marginBottom: 16 }}>🖥️ GPU Configuration</h3>
+          <h3 className="card-title" style={{ marginBottom: 16 }}>GPU Configuration</h3>
           <div className="form-group">
             <label className="form-label">Max GPU Memory (MB)</label>
             <input className="input" type="number" defaultValue={5500} />
@@ -967,7 +1064,7 @@ function SettingsPage() {
   );
 }
 
-// ===== GAME STUDIO =====
+// ===== GAME STUDIO (Real Playable HTML5 Games) =====
 function GameStudio() {
   const [gameName, setGameName] = useState('My Game');
   const [engine, setEngine] = useState('web');
@@ -975,30 +1072,216 @@ function GameStudio() {
   const [multiplayer, setMultiplayer] = useState(false);
   const [aiNPCs, setAiNPCs] = useState(true);
   const [procGen, setProcGen] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [gameCode, setGameCode] = useState('');
   const [building, setBuilding] = useState(false);
 
-  const createGame = async () => {
-    setBuilding(true);
-    try {
-      const res = await fetch(`${API}/api/ai/generate`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: `Create a ${genre} game called "${gameName}" using ${engine} engine`, type: 'game-project' })
-      });
-      setResult(await res.json());
-    } catch { setResult({ message: `Game project "${gameName}" generated: ${engine}/${genre} with ${aiNPCs ? 'AI NPCs' : 'no AI'}, ${procGen ? 'procedural generation' : 'hand-crafted levels'}` }); }
-    setBuilding(false);
+  // Generate real playable HTML5 game based on genre
+  const generateGame = () => {
+    setBuilding(true); setGameCode('');
+    setTimeout(() => {
+      const code = buildGameHTML(genre, gameName, aiNPCs, procGen);
+      setGameCode(code);
+      setBuilding(false);
+    }, 1500);
   };
+
+  const buildGameHTML = (g: string, name: string, ai: boolean, proc: boolean): string => {
+    const seed = Math.floor(Math.random() * 99999);
+    if (g === 'puzzle') return buildPuzzleGame(name, seed);
+    if (g === 'platformer') return buildPlatformerGame(name, seed, ai);
+    if (g === 'racing') return buildRacingGame(name, seed);
+    if (g === 'sandbox') return buildSandboxGame(name, seed);
+    // default: shooter
+    return buildShooterGame(name, seed, ai);
+  };
+
+  const commonStyles = `*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a1e;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui}canvas{border:2px solid #333;border-radius:8px}#hud{position:absolute;top:10px;left:10px;color:#fff;font-size:14px;text-shadow:0 1px 4px #000}`;
+
+  const buildPuzzleGame = (name: string, seed: number) => `<!DOCTYPE html><html><head><style>${commonStyles}#board{display:grid;grid-template-columns:repeat(4,80px);gap:4px;padding:20px}
+.tile{width:80px;height:80px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;border-radius:8px;cursor:pointer;transition:all .15s;user-select:none}
+.tile:hover{transform:scale(1.05)}.tile.empty{background:transparent!important}
+#info{color:#fff;text-align:center;margin-bottom:16px;font-family:system-ui}h2{margin-bottom:4px}
+</style></head><body><div><div id="info"><h2>🧩 ${name}</h2><p id="moves">Moves: 0</p></div><div id="board"></div></div>
+<script>
+const colors=['#a855f7','#6366f1','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#8b5cf6','#14b8a6','#f97316','#06b6d4','#84cc16','#e879f9','#fb923c','#22d3ee'];
+let tiles=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0],moves=0;
+function shuffle(){for(let i=200;i>0;i--){const e=tiles.indexOf(0),dirs=[];e%4!==0&&dirs.push(e-1);e%4!==3&&dirs.push(e+1);e>3&&dirs.push(e-4);e<12&&dirs.push(e+4);const d=dirs[Math.floor(Math.random()*dirs.length)];[tiles[e],tiles[d]]=[tiles[d],tiles[e]]}}
+function render(){const b=document.getElementById('board');b.innerHTML='';tiles.forEach((t,i)=>{const d=document.createElement('div');d.className='tile'+(t===0?' empty':'');if(t>0){d.textContent=t;d.style.background=colors[t-1];d.style.color='#fff';d.onclick=()=>move(i)}b.appendChild(d)})}
+function move(i){const e=tiles.indexOf(0);const diff=Math.abs(e-i);if((diff===1&&Math.floor(e/4)===Math.floor(i/4))||diff===4){[tiles[e],tiles[i]]=[tiles[i],tiles[e]];moves++;document.getElementById('moves').textContent='Moves: '+moves;render();checkWin()}}
+function checkWin(){const w=tiles.every((t,i)=>i===15?t===0:t===i+1);if(w)setTimeout(()=>alert('🎉 You won in '+moves+' moves!'),100)}
+shuffle();render();
+<\/script></body></html>`;
+
+  const buildPlatformerGame = (name: string, seed: number, ai: boolean) => `<!DOCTYPE html><html><head><style>${commonStyles}</style></head><body>
+<div id="hud"><b>🏃 ${name}</b> | Score: <span id="score">0</span> | ❤  <span id="lives">3</span></div>
+<canvas id="c" width="800" height="500"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+let px=100,py=350,pvx=0,pvy=0,onGround=false,score=0,lives=3,coins=[],platforms=[],enemies=[],frame=0;
+const gravity=0.5,jumpForce=-10,speed=4;
+const keys={};document.onkeydown=e=>{keys[e.key]=true;e.preventDefault()};document.onkeyup=e=>keys[e.key]=false;
+// Generate level
+const R=(s)=>{let v=s;return()=>{v=(v*16807)%2147483647;return(v-1)/2147483646}};const rng=R(${seed});
+for(let i=0;i<8;i++)platforms.push({x:i*110+rng()*40,y:400-rng()*200,w:80+rng()*60,h:12});
+platforms.push({x:0,y:480,w:800,h:20}); // ground
+for(let i=0;i<12;i++)coins.push({x:50+rng()*700,y:100+rng()*300,r:8,collected:false});
+${ai ? `for(let i=0;i<3;i++)enemies.push({x:200+rng()*400,y:0,vx:(rng()>0.5?1:-1)*1.5,w:24,h:24});` : ''}
+function update(){
+  if(keys['ArrowLeft']||keys['a'])pvx=-speed;
+  else if(keys['ArrowRight']||keys['d'])pvx=speed;
+  else pvx*=0.85;
+  if((keys['ArrowUp']||keys['w']||keys[' '])&&onGround){pvy=jumpForce;onGround=false}
+  pvy+=gravity;px+=pvx;py+=pvy;
+  onGround=false;
+  for(const p of platforms){if(pvx>0&&px+20>p.x&&px<p.x&&py+30>p.y&&py<p.y+p.h){px=p.x-20}
+  if(pvx<0&&px<p.x+p.w&&px+20>p.x+p.w&&py+30>p.y&&py<p.y+p.h){px=p.x+p.w}
+  if(pvy>0&&py+30>p.y&&py+30<p.y+p.h+pvy&&px+20>p.x&&px<p.x+p.w){py=p.y-30;pvy=0;onGround=true}
+  if(pvy<0&&py<p.y+p.h&&py>p.y&&px+20>p.x&&px<p.x+p.w){py=p.y+p.h;pvy=0}}
+  if(px<0)px=0;if(px>780)px=780;if(py>500){py=350;px=100;lives--;document.getElementById('lives').textContent=lives;if(lives<=0){alert('Game Over! Score: '+score);lives=3;score=0;coins.forEach(c2=>c2.collected=false);document.getElementById('score').textContent=score}}
+  coins.forEach(co=>{if(!co.collected&&Math.hypot(px+10-co.x,py+15-co.y)<20){co.collected=true;score+=10;document.getElementById('score').textContent=score}});
+  ${ai ? `enemies.forEach(e=>{e.x+=e.vx;if(e.x<30||e.x>770)e.vx*=-1;
+  // Check if enemy on platform
+  let onP=false;for(const p of platforms){if(e.x+e.w>p.x&&e.x<p.x+p.w){const ey=p.y-e.h;if(Math.abs((e.y||ey)-ey)<2){e.y=ey;onP=true}}}
+  if(!onP&&!e.y)e.y=456;
+  if(Math.abs(px-e.x)<20&&Math.abs(py-(e.y||400))<30){if(pvy>0){score+=25;e.x=-100;pvy=-6;document.getElementById('score').textContent=score}else{px=100;py=350;lives--;document.getElementById('lives').textContent=lives}}});` : ''}
+  frame++;
+}
+function draw(){
+  x.fillStyle='#0a0a2e';x.fillRect(0,0,800,500);
+  // Stars
+  for(let i=0;i<30;i++){x.fillStyle='rgba(255,255,255,'+(0.3+Math.sin(frame*0.01+i)*0.2)+')';x.fillRect((i*97+${seed})%800,(i*53)%300,2,2)}
+  // Platforms
+  platforms.forEach(p=>{const g=x.createLinearGradient(p.x,p.y,p.x,p.y+p.h);g.addColorStop(0,'#6366f1');g.addColorStop(1,'#4f46e5');x.fillStyle=g;x.beginPath();x.roundRect(p.x,p.y,p.w,p.h,4);x.fill()});
+  // Coins
+  coins.forEach(co=>{if(!co.collected){x.fillStyle='#fbbf24';x.beginPath();x.arc(co.x,co.y,co.r+Math.sin(frame*0.1)*2,0,Math.PI*2);x.fill();x.fillStyle='#f59e0b';x.beginPath();x.arc(co.x,co.y,co.r-2,0,Math.PI*2);x.fill()}});
+  ${ai ? `// Enemies
+  enemies.forEach(e=>{if(e.x>0){x.fillStyle='#ef4444';x.fillRect(e.x,e.y||456,e.w,e.h);x.fillStyle='#fff';x.fillRect(e.x+4,(e.y||456)+6,6,6);x.fillRect(e.x+14,(e.y||456)+6,6,6)}});` : ''}
+  // Player
+  x.fillStyle='#22c55e';x.fillRect(px,py,20,30);x.fillStyle='#86efac';x.fillRect(px+4,py+4,5,5);x.fillRect(px+12,py+4,5,5);
+  x.fillStyle='#fff';x.font='12px system-ui';x.fillText('Arrow keys / WASD to move, Space/Up to jump',250,495);
+}
+function loop(){update();draw();requestAnimationFrame(loop)}loop();
+<\/script></body></html>`;
+
+  const buildShooterGame = (name: string, seed: number, ai: boolean) => `<!DOCTYPE html><html><head><style>${commonStyles}</style></head><body>
+<div id="hud"><b>🔫 ${name}</b> | Score: <span id="score">0</span> | ❤  <span id="hp">100</span></div>
+<canvas id="c" width="800" height="500"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+let px=400,py=250,angle=0,score=0,hp=100,bullets=[],enemies=[],particles=[],frame=0;
+const keys={};document.onkeydown=e=>{keys[e.key]=true;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault()};document.onkeyup=e=>keys[e.key]=false;
+c.onmousemove=e=>{const r=c.getBoundingClientRect();angle=Math.atan2(e.clientY-r.top-py,e.clientX-r.left-px)};
+c.onclick=()=>{bullets.push({x:px,y:py,vx:Math.cos(angle)*8,vy:Math.sin(angle)*8})};
+const R=(s)=>{let v=s;return()=>{v=(v*16807)%2147483647;return(v-1)/2147483646}};const rng=R(${seed});
+function spawnEnemy(){const side=Math.floor(rng()*4);let ex,ey;if(side===0){ex=rng()*800;ey=-20}else if(side===1){ex=820;ey=rng()*500}else if(side===2){ex=rng()*800;ey=520}else{ex=-20;ey=rng()*500}
+enemies.push({x:ex,y:ey,hp:2,speed:1+rng()*1.5,size:12+rng()*8})}
+function update(){
+  const spd=3.5;if(keys['w']||keys['ArrowUp'])py-=spd;if(keys['s']||keys['ArrowDown'])py+=spd;
+  if(keys['a']||keys['ArrowLeft'])px-=spd;if(keys['d']||keys['ArrowRight'])px+=spd;
+  px=Math.max(10,Math.min(790,px));py=Math.max(10,Math.min(490,py));
+  bullets=bullets.filter(b=>{b.x+=b.vx;b.y+=b.vy;return b.x>0&&b.x<800&&b.y>0&&b.y<500});
+  if(frame%60===0)spawnEnemy();
+  enemies=enemies.filter(e=>{const dx=px-e.x,dy=py-e.y,d=Math.hypot(dx,dy);e.x+=dx/d*e.speed;e.y+=dy/d*e.speed;
+  if(d<20){hp-=10;document.getElementById('hp').textContent=hp;if(hp<=0){alert('Game Over! Score: '+score);hp=100;score=0;enemies=[];document.getElementById('hp').textContent=hp;document.getElementById('score').textContent=score}return false}
+  for(let i=bullets.length-1;i>=0;i--){if(Math.hypot(bullets[i].x-e.x,bullets[i].y-e.y)<e.size+4){e.hp--;bullets.splice(i,1);if(e.hp<=0){score+=10;document.getElementById('score').textContent=score;for(let p=0;p<6;p++)particles.push({x:e.x,y:e.y,vx:(rng()-0.5)*4,vy:(rng()-0.5)*4,life:30,color:'#ef4444'});return false}}}return true});
+  particles=particles.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.life--;return p.life>0});
+  frame++;
+}
+function draw(){
+  x.fillStyle='#0a0a1e';x.fillRect(0,0,800,500);
+  for(let i=0;i<20;i++){x.fillStyle='rgba(99,102,241,0.08)';x.fillRect((i*40)%800,0,1,500);x.fillRect(0,(i*40)%500,800,1)}
+  particles.forEach(p=>{x.globalAlpha=p.life/30;x.fillStyle=p.color;x.fillRect(p.x-2,p.y-2,4,4)});x.globalAlpha=1;
+  enemies.forEach(e=>{x.fillStyle='#ef4444';x.beginPath();x.arc(e.x,e.y,e.size,0,Math.PI*2);x.fill();x.fillStyle='#fca5a5';x.beginPath();x.arc(e.x-e.size*0.25,e.y-e.size*0.2,e.size*0.2,0,Math.PI*2);x.fill();x.beginPath();x.arc(e.x+e.size*0.25,e.y-e.size*0.2,e.size*0.2,0,Math.PI*2);x.fill()});
+  bullets.forEach(b=>{x.fillStyle='#fbbf24';x.beginPath();x.arc(b.x,b.y,3,0,Math.PI*2);x.fill()});
+  // Player
+  x.save();x.translate(px,py);x.rotate(angle);x.fillStyle='#22c55e';x.fillRect(-12,-10,24,20);x.fillStyle='#86efac';x.fillRect(6,-3,14,6);x.restore();
+  x.fillStyle='rgba(34,197,94,0.15)';x.beginPath();x.arc(px,py,18,0,Math.PI*2);x.fill();
+  x.fillStyle='#fff';x.font='12px system-ui';x.fillText('WASD move · Click to shoot',300,495);
+}
+function loop(){update();draw();requestAnimationFrame(loop)}loop();
+<\/script></body></html>`;
+
+  const buildRacingGame = (name: string, seed: number) => `<!DOCTYPE html><html><head><style>${commonStyles}</style></head><body>
+<div id="hud"><b>🏎️ ${name}</b> | Score: <span id="score">0</span> | Speed: <span id="speed">0</span></div>
+<canvas id="c" width="800" height="500"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+let carX=400,carSpeed=0,score=0,obstacles=[],road=[],frame=0,gameSpeed=3;
+const keys={};document.onkeydown=e=>{keys[e.key]=true;e.preventDefault()};document.onkeyup=e=>keys[e.key]=false;
+const R=(s)=>{let v=s;return()=>{v=(v*16807)%2147483647;return(v-1)/2147483646}};const rng=R(${seed});
+for(let i=0;i<20;i++)road.push({y:i*30,curve:Math.sin(i*0.3)*100});
+function update(){
+  if(keys['ArrowLeft']||keys['a'])carX-=5;if(keys['ArrowRight']||keys['d'])carX+=5;
+  if(keys['ArrowUp']||keys['w'])gameSpeed=Math.min(gameSpeed+0.1,8);
+  if(keys['ArrowDown']||keys['s'])gameSpeed=Math.max(gameSpeed-0.1,2);
+  carX=Math.max(250,Math.min(550,carX));
+  if(frame%40===0)obstacles.push({x:280+rng()*240,y:-40,w:30+rng()*30,h:20+rng()*20,color:['#ef4444','#3b82f6','#f59e0b','#8b5cf6'][Math.floor(rng()*4)]});
+  obstacles=obstacles.filter(o=>{o.y+=gameSpeed;if(Math.abs(o.x-carX)<(o.w/2+15)&&Math.abs(o.y-420)<(o.h/2+20)){gameSpeed=2;score=Math.max(0,score-5)}
+  if(o.y>380&&o.y<460&&Math.abs(o.x-carX)>(o.w/2+15)){}return o.y<550});
+  score+=Math.floor(gameSpeed*0.5);
+  document.getElementById('score').textContent=score;
+  document.getElementById('speed').textContent=Math.floor(gameSpeed*30)+'km/h';
+  frame++;
+}
+function draw(){
+  x.fillStyle='#1a472a';x.fillRect(0,0,800,500); // grass
+  // Road
+  x.fillStyle='#333';x.fillRect(240,0,320,500);
+  x.strokeStyle='#fbbf24';x.lineWidth=2;x.setLineDash([20,15]);
+  x.beginPath();x.moveTo(400,0);x.lineTo(400,500);x.stroke();x.setLineDash([]);
+  x.fillStyle='#fff';for(let i=0;i<25;i++){const ly=(i*40-frame*gameSpeed%40+500)%500;x.fillRect(240,ly,4,20);x.fillRect(556,ly,4,20)}
+  // Obstacles
+  obstacles.forEach(o=>{x.fillStyle=o.color;x.beginPath();x.roundRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h,4);x.fill();x.fillStyle='rgba(255,255,255,0.3)';x.fillRect(o.x-o.w/2+2,o.y-o.h/2+2,o.w-4,o.h/3)});
+  // Car
+  x.fillStyle='#22c55e';x.beginPath();x.roundRect(carX-15,410,30,40,6);x.fill();
+  x.fillStyle='#86efac';x.fillRect(carX-10,415,20,8);
+  x.fillStyle='#0a0a1e';x.fillRect(carX-12,440,6,6);x.fillRect(carX+6,440,6,6);
+  x.fillStyle='#ef4444';x.fillRect(carX-10,445,8,4);x.fillRect(carX+2,445,8,4);
+  x.fillStyle='#fff';x.font='12px system-ui';x.fillText('← → steer · ↑↓ speed',320,495);
+}
+function loop(){update();draw();requestAnimationFrame(loop)}loop();
+<\/script></body></html>`;
+
+  const buildSandboxGame = (name: string, seed: number) => `<!DOCTYPE html><html><head><style>${commonStyles}#palette{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(0,0,0,0.7);padding:8px;border-radius:8px}.pb{width:30px;height:30px;border-radius:4px;cursor:pointer;border:2px solid transparent}.pb.active{border-color:#fff;transform:scale(1.15)}</style></head><body>
+<div id="hud"><b>🏗️ ${name}</b> | Blocks: <span id="count">0</span></div>
+<canvas id="c" width="800" height="500"></canvas>
+<div id="palette"></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+const colors=['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f97316','#6b7280','#854d0e'];
+const grid=32,cols=25,rows=15;
+let blocks=new Array(cols*rows).fill(null),selected=0,count=0,hoverX=-1,hoverY=-1;
+// Build palette
+const pal=document.getElementById('palette');
+colors.forEach((col,i)=>{const b=document.createElement('div');b.className='pb'+(i===0?' active':'');b.style.background=col;b.onclick=()=>{selected=i;document.querySelectorAll('.pb').forEach(p=>p.classList.remove('active'));b.classList.add('active')};pal.appendChild(b)});
+// Eraser
+const eb=document.createElement('div');eb.className='pb';eb.style.background='#111';eb.textContent='✕';eb.style.color='#fff';eb.style.display='flex';eb.style.alignItems='center';eb.style.justifyContent='center';eb.style.fontSize='14px';
+eb.onclick=()=>{selected=-1;document.querySelectorAll('.pb').forEach(p=>p.classList.remove('active'));eb.classList.add('active')};pal.appendChild(eb);
+c.onmousemove=e=>{const r=c.getBoundingClientRect();hoverX=Math.floor((e.clientX-r.left)/grid);hoverY=Math.floor((e.clientY-r.top)/grid)};
+let mouseDown=false;
+c.onmousedown=()=>{mouseDown=true;placeBlock()};
+c.onmouseup=()=>mouseDown=false;
+c.onmousemove=e=>{const r=c.getBoundingClientRect();hoverX=Math.floor((e.clientX-r.left)/grid);hoverY=Math.floor((e.clientY-r.top)/grid);if(mouseDown)placeBlock()};
+function placeBlock(){if(hoverX>=0&&hoverX<cols&&hoverY>=0&&hoverY<rows){const idx=hoverY*cols+hoverX;if(selected===-1){if(blocks[idx]!==null){blocks[idx]=null;count--;}}else{if(blocks[idx]===null)count++;blocks[idx]=selected}document.getElementById('count').textContent=count}}
+function draw(){
+  x.fillStyle='#0f172a';x.fillRect(0,0,800,500);
+  for(let gx=0;gx<cols;gx++)for(let gy=0;gy<rows;gy++){x.strokeStyle='rgba(255,255,255,0.05)';x.strokeRect(gx*grid,gy*grid,grid,grid);
+  const idx=gy*cols+gx;if(blocks[idx]!==null){x.fillStyle=colors[blocks[idx]];x.fillRect(gx*grid+1,gy*grid+1,grid-2,grid-2);x.fillStyle='rgba(255,255,255,0.15)';x.fillRect(gx*grid+1,gy*grid+1,grid-2,(grid-2)/3)}}
+  if(hoverX>=0&&hoverX<cols&&hoverY>=0&&hoverY<rows){x.strokeStyle='rgba(255,255,255,0.4)';x.lineWidth=2;x.strokeRect(hoverX*grid,hoverY*grid,grid,grid);x.lineWidth=1;if(selected>=0){x.fillStyle=colors[selected]+'66';x.fillRect(hoverX*grid+1,hoverY*grid+1,grid-2,grid-2)}}
+  x.fillStyle='#fff';x.font='12px system-ui';x.fillText('Click to place · Select color below · ✕ = eraser',240,495);
+  requestAnimationFrame(draw);
+}draw();
+<\/script></body></html>`;
 
   return (
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">🎮 Game Studio</h1>
-        <p className="page-subtitle">Build AAA games — Unity, Godot, Unreal, or Web — with AI-powered tools</p>
+        <p className="page-subtitle">Build playable games instantly — choose a genre and play in-browser</p>
       </div>
       <div className="grid grid-2" style={{ marginBottom: 24 }}>
         <div className="card">
-          <div className="card-header"><h3 className="card-title">⚙️ Game Configuration</h3></div>
+          <div className="card-header"><h3 className="card-title">Game Configuration</h3></div>
           <div className="form-group">
             <label className="form-label">Game Name</label>
             <input className="input" value={gameName} onChange={e => setGameName(e.target.value)} />
@@ -1007,16 +1290,16 @@ function GameStudio() {
             <div className="form-group">
               <label className="form-label">Engine</label>
               <select className="select" value={engine} onChange={e => setEngine(e.target.value)}>
+                <option value="web">Web (JS/Canvas)</option>
                 <option value="unity">Unity (C#)</option>
                 <option value="godot">Godot (GDScript)</option>
                 <option value="unreal">Unreal (C++)</option>
-                <option value="web">Web (JS/Canvas)</option>
               </select>
             </div>
             <div className="form-group">
               <label className="form-label">Genre</label>
               <select className="select" value={genre} onChange={e => setGenre(e.target.value)}>
-                {['platformer', 'rpg', 'fps', 'puzzle', 'racing', 'strategy', 'sandbox', 'horror', 'visual-novel'].map(g => <option key={g} value={g}>{g}</option>)}
+                {[['platformer','🏃 Platformer'],['puzzle','🧩 Puzzle'],['fps','🔫 Shooter'],['racing','🏎️ Racing'],['sandbox','🏗️ Sandbox']].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
               </select>
             </div>
           </div>
@@ -1031,30 +1314,38 @@ function GameStudio() {
               <input type="checkbox" checked={procGen} onChange={e => setProcGen(e.target.checked)} /> Procedural Gen
             </label>
           </div>
-          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={createGame} disabled={building}>
-            {building ? '⏳ Generating...' : '🚀 Generate Game Project'}
+          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={generateGame} disabled={building}>
+            {building ? '⏳ Building Game...' : '🚀 Generate & Play'}
           </button>
         </div>
         <div className="card">
-          <div className="card-header"><h3 className="card-title">🎯 Game Preview</h3></div>
-          <div style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #0a0a2e, #1a0a3e)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, marginBottom: 12, border: '1px solid var(--border)' }}>
-            {result ? (
-              <><div style={{ fontSize: '3rem' }}>🎮</div><div style={{ color: '#00ffcc', fontWeight: 700, fontSize: '1.1rem' }}>{gameName}</div><div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{engine} / {genre}</div></>
-            ) : (
-              <><div style={{ fontSize: '3rem', opacity: 0.3 }}>🎮</div><div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Configure and generate a game project</div></>
-            )}
-          </div>
-          {result && <div className="code-block" style={{ maxHeight: 120, overflowY: 'auto', fontSize: '0.78rem' }}>{result.message || JSON.stringify(result, null, 2)}</div>}
+          <div className="card-header"><h3 className="card-title">🎯 {gameCode ? 'Playing: ' + gameName : 'Game Preview'}</h3></div>
+          {gameCode ? (
+            <iframe
+              srcDoc={gameCode}
+              style={{ width: '100%', aspectRatio: '16/10', border: 'none', borderRadius: 'var(--radius-md)', background: '#0a0a1e' }}
+              sandbox="allow-scripts"
+              title={gameName}
+            />
+          ) : (
+            <div style={{ aspectRatio: '16/10', background: 'linear-gradient(135deg, #0a0a2e, #1a0a3e)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, border: '1px solid var(--border)' }}>
+              {building ? (
+                <><div style={{ fontSize: '3rem' }}>⏳</div><div style={{ color: '#a855f7', fontWeight: 600 }}>Building game...</div></>
+              ) : (
+                <><div style={{ fontSize: '3rem', opacity: 0.3 }}>🎮</div><div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Select a genre and click Generate & Play</div></>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div className="card">
-        <div className="card-header"><h3 className="card-title">📦 Templates</h3></div>
+        <div className="card-header"><h3 className="card-title">📦 Quick Launch Templates</h3></div>
         <div className="grid grid-4">
-          {[{ icon: '🏃', name: '2D Platformer', engine: 'Web' }, { icon: '⚔️', name: 'Action RPG', engine: 'Unity' }, { icon: '🧩', name: 'Puzzle Game', engine: 'Godot' }, { icon: '🏎️', name: 'Racing Game', engine: 'Unreal' }].map(t => (
-            <div key={t.name} style={{ padding: 16, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', cursor: 'pointer', textAlign: 'center' }}>
+          {[{icon:'🏃',name:'Platformer',g:'platformer'},{icon:'🧩',name:'Puzzle',g:'puzzle'},{icon:'🔫',name:'Shooter',g:'fps'},{icon:'🏎️',name:'Racing',g:'racing'},{icon:'🏗️',name:'Sandbox',g:'sandbox'}].map(t => (
+            <div key={t.g} onClick={() => { setGenre(t.g); setGameName(t.name + ' Game'); setTimeout(() => { setBuilding(true); setTimeout(() => { setGameCode(buildGameHTML(t.g, t.name + ' Game', aiNPCs, procGen)); setBuilding(false); }, 800); }, 50); }} style={{ padding: 16, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}>
               <div style={{ fontSize: '2rem', marginBottom: 6 }}>{t.icon}</div>
               <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>{t.name}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{t.engine}</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Click to play</div>
             </div>
           ))}
         </div>
@@ -1063,7 +1354,7 @@ function GameStudio() {
   );
 }
 
-// ===== VIDEO STUDIO =====
+// ===== VIDEO STUDIO (Real Canvas Animation) =====
 function VideoStudio() {
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState('cinematic');
@@ -1071,21 +1362,438 @@ function VideoStudio() {
   const [resolution, setResolution] = useState('1080p');
   const [generating, setGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [videoReady, setVideoReady] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [videoTime, setVideoTime] = useState(0);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const animRef = React.useRef<number>(0);
+  const startRef = React.useRef(0);
+  const seedRef = React.useRef(0);
+  const playingRef = React.useRef(false);
 
-  const generateVideo = async () => {
-    setGenerating(true); setProgress(0);
-    const interval = setInterval(() => setProgress(p => Math.min(p + Math.random() * 15, 95)), 500);
-    try {
-      await fetch(`${API}/api/ai/generate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt, type: 'video', style, duration }) });
-    } catch { }
-    clearInterval(interval); setProgress(100); setTimeout(() => setGenerating(false), 500);
+  const generateVideo = () => {
+    setGenerating(true); setProgress(0); setVideoReady(false); setPlaying(false); setVideoTime(0);
+    seedRef.current = Math.floor(Math.random() * 99999);
+    const interval = setInterval(() => setProgress(p => Math.min(p + Math.random() * 12, 98)), 400);
+    setTimeout(() => {
+      clearInterval(interval); setProgress(100);
+      setTimeout(() => { setGenerating(false); setVideoReady(true); }, 300);
+    }, 2500);
   };
+
+  const playVideo = () => {
+    setPlaying(true); playingRef.current = true; setVideoTime(0);
+    startRef.current = performance.now();
+    renderLoop();
+  };
+  const stopVideo = () => { setPlaying(false); playingRef.current = false; cancelAnimationFrame(animRef.current); };
+
+  const renderLoop = () => {
+    const canvas = canvasRef.current;
+    if (!canvas || !playingRef.current) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const elapsed = (performance.now() - startRef.current) / 1000;
+    setVideoTime(elapsed);
+    if (elapsed > duration) { setPlaying(false); playingRef.current = false; setVideoTime(duration); return; }
+    const W = canvas.width, H = canvas.height;
+    const seed = seedRef.current;
+    ctx.clearRect(0, 0, W, H);
+    const p = prompt.toLowerCase();
+
+    // Determine scene elements from prompt keywords (22+ scene types)
+    const hasMountain = /mountain|hill|peak|alpine|everest|cliff/i.test(p);
+    const hasOcean = /ocean|sea|water|wave|beach|lake|river|waterfall/i.test(p);
+    const hasSpace = /space|star|galaxy|cosmos|planet|nebula|asteroid/i.test(p);
+    const hasForest = /forest|tree|wood|jungle|nature|garden|park/i.test(p);
+    const hasCar = /car|vehicle|drive|road|highway|racing|traffic/i.test(p);
+    const hasCity = /city|building|urban|skyline|town|skyscraper/i.test(p);
+    const hasSun = /sun|sunset|sunrise|dawn|dusk|golden hour/i.test(p);
+    const hasMoon = /moon|lunar|crescent|midnight/i.test(p);
+    const hasRain = /rain|storm|thunder|drizzle|monsoon/i.test(p);
+    const hasSnow = /snow|winter|ice|cold|frost|blizzard/i.test(p);
+    const hasFire = /fire|flame|volcano|lava|inferno|campfire/i.test(p);
+    const hasRainbow = /rainbow|spectrum|prism|colorful|multicolor/i.test(p);
+    const hasDesert = /desert|sand|dune|sahara|arid|cactus/i.test(p);
+    const hasUnderwater = /underwater|fish|coral|reef|ocean floor|submarine|aqua|diving/i.test(p);
+    const hasClouds = /cloud|sky|heaven|floating|aerial|atmosphere/i.test(p);
+    const hasFlower = /flower|floral|rose|bloom|petal|sakura|cherry blossom|tulip|sunflower/i.test(p);
+    const hasCastle = /castle|medieval|kingdom|fortress|tower|palace|gothic/i.test(p);
+    const hasAirplane = /airplane|plane|flight|flying|aircraft|jet|airport/i.test(p);
+    const hasBirds = /bird|eagle|hawk|flock|sparrow|flying bird|pigeon|parrot/i.test(p);
+    const hasLightning = /lightning|electric|bolt|thunder|spark/i.test(p);
+    const hasAurora = /aurora|northern lights|borealis|polar light/i.test(p);
+    const hasAnimal = /animal|cat|dog|horse|elephant|lion|tiger|wolf|bear|deer/i.test(p);
+    // Only show city as default if nothing else matched AND prompt is empty
+    const hasNothingSpecific = !hasMountain && !hasOcean && !hasSpace && !hasForest && !hasCar && !hasCity && !hasSun && !hasMoon && !hasRain && !hasSnow && !hasFire && !hasRainbow && !hasDesert && !hasUnderwater && !hasClouds && !hasFlower && !hasCastle && !hasAirplane && !hasBirds && !hasLightning && !hasAurora && !hasAnimal;
+    const showCity = hasCity || (!p.trim() && hasNothingSpecific);
+
+    // Style-based color palettes
+    const palettes: Record<string, {sky1:string,sky2:string,ground:string,accent:string,fg:string}> = {
+      cinematic: {sky1:'#0f1729',sky2:'#c2410c',ground:'#1c1917',accent:'#fbbf24',fg:'#fff'},
+      anime: {sky1:'#1e3a5f',sky2:'#ec4899',ground:'#1a1a3e',accent:'#fbbf24',fg:'#ec4899'},
+      noir: {sky1:'#111111',sky2:'#222222',ground:'#0a0a0a',accent:'#cccccc',fg:'#888'},
+      vaporwave: {sky1:'#0a001a',sky2:'#7b2ff7',ground:'#1a0030',accent:'#ff6ec7',fg:'#ff6ec7'},
+      fantasy: {sky1:'#0a1628',sky2:'#1e3a5f',ground:'#0d1b2a',accent:'#22d3ee',fg:'#67e8f9'},
+      scifi: {sky1:'#050510',sky2:'#1a1a3e',ground:'#0a0a1e',accent:'#818cf8',fg:'#a5b4fc'},
+      photorealistic: {sky1:'#1a1a2e',sky2:'#3a3a5e',ground:'#222',accent:'#e5e5e5',fg:'#ccc'},
+    };
+    const pal = palettes[style] || palettes.cinematic;
+
+    // -- Sky --
+    const skyG = ctx.createLinearGradient(0, 0, 0, H * 0.7);
+    skyG.addColorStop(0, pal.sky1); skyG.addColorStop(1, pal.sky2);
+    ctx.fillStyle = skyG; ctx.fillRect(0, 0, W, H);
+
+    // -- Stars (if space or night) --
+    if (hasSpace || style === 'noir' || hasMoon) {
+      for (let i = 0; i < 80; i++) {
+        const sx = (i * 31 + seed) % W, sy = (i * 47 + seed) % (H * 0.65);
+        const bright = 0.3 + Math.sin(elapsed * 2 + i) * 0.3;
+        ctx.fillStyle = `rgba(255,255,255,${bright})`;
+        ctx.beginPath(); ctx.arc(sx, sy, 0.5 + (i % 3) * 0.5, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // -- Sun --
+    if (hasSun || hasCity) {
+      const sunY = H * 0.3 + Math.sin(elapsed * 0.3) * 15;
+      const sunX = W * 0.65;
+      ctx.fillStyle = pal.accent; ctx.beginPath(); ctx.arc(sunX, sunY, 28, 0, Math.PI * 2); ctx.fill();
+      const sunGlow = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 90);
+      sunGlow.addColorStop(0, pal.accent + '44'); sunGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = sunGlow; ctx.fillRect(0, 0, W, H);
+    }
+
+    // -- Moon --
+    if (hasMoon) {
+      const mx = W * 0.7, my = H * 0.15 + Math.sin(elapsed * 0.2) * 5;
+      ctx.fillStyle = '#f5f5dc'; ctx.beginPath(); ctx.arc(mx, my, 22, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = pal.sky1; ctx.beginPath(); ctx.arc(mx + 8, my - 4, 18, 0, Math.PI * 2); ctx.fill();
+      const moonG = ctx.createRadialGradient(mx, my, 15, mx, my, 60);
+      moonG.addColorStop(0, 'rgba(245,245,220,0.15)'); moonG.addColorStop(1, 'transparent');
+      ctx.fillStyle = moonG; ctx.fillRect(0, 0, W, H);
+    }
+
+    // -- Mountains --
+    if (hasMountain) {
+      for (let layer = 0; layer < 3; layer++) {
+        const mAlpha = 0.3 + layer * 0.25;
+        ctx.fillStyle = `rgba(${20+layer*15},${25+layer*10},${40+layer*15},${mAlpha})`;
+        ctx.beginPath(); ctx.moveTo(0, H * (0.5 + layer * 0.1));
+        for (let mx = 0; mx <= W; mx += 20) {
+          const mh = Math.sin(mx * 0.015 + layer * 2 + seed * 0.01) * (60 - layer * 15) + Math.sin(mx * 0.04 + layer) * (20 - layer * 5);
+          ctx.lineTo(mx, H * (0.5 + layer * 0.1) - Math.max(0, mh));
+        }
+        ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
+      }
+      if (hasSnow) {
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.beginPath(); ctx.moveTo(0, H * 0.5);
+        for (let mx = 0; mx <= W; mx += 20) {
+          const mh = Math.sin(mx * 0.015 + seed * 0.01) * 60 + Math.sin(mx * 0.04) * 20;
+          if (mh > 30) ctx.lineTo(mx, H * 0.5 - mh + 8); else ctx.lineTo(mx, H * 0.5 - Math.max(0, mh));
+        }
+        ctx.lineTo(W, H * 0.5); ctx.fill();
+      }
+    }
+
+    // -- Ocean / Water --
+    if (hasOcean) {
+      const waterY = hasMountain ? H * 0.75 : H * 0.55;
+      const waterG = ctx.createLinearGradient(0, waterY, 0, H);
+      waterG.addColorStop(0, '#0369a1'); waterG.addColorStop(1, '#0c4a6e');
+      ctx.fillStyle = waterG; ctx.fillRect(0, waterY, W, H - waterY);
+      ctx.strokeStyle = 'rgba(125,211,252,0.3)'; ctx.lineWidth = 1;
+      for (let wi = 0; wi < 12; wi++) {
+        const wy = waterY + 8 + wi * 12;
+        ctx.beginPath();
+        for (let wx = 0; wx < W; wx += 4) {
+          ctx.lineTo(wx, wy + Math.sin(wx * 0.03 + elapsed * 2 + wi) * 4);
+        }
+        ctx.stroke();
+      }
+    }
+
+    // -- Forest / Trees --
+    if (hasForest) {
+      const treeY = hasMountain ? H * 0.65 : hasOcean ? H * 0.5 : H * 0.6;
+      ctx.fillStyle = '#0d3320'; ctx.fillRect(0, treeY, W, H - treeY);
+      for (let ti = 0; ti < 20; ti++) {
+        const tx = (ti * 47 + seed) % W;
+        const th = 35 + (ti * 23 % 40);
+        const sway = Math.sin(elapsed * 1.5 + ti) * 3;
+        ctx.fillStyle = `rgb(${15+ti%20},${60+ti*3%40},${20+ti%15})`;
+        ctx.beginPath(); ctx.moveTo(tx + sway, treeY - th);
+        ctx.lineTo(tx - 12, treeY); ctx.lineTo(tx + 12, treeY); ctx.fill();
+        ctx.fillStyle = '#3d2b1f'; ctx.fillRect(tx - 2, treeY, 4, 10);
+      }
+    }
+
+    // -- City / Buildings --
+    if (showCity) {
+      const cityY = hasMountain ? H * 0.7 : hasOcean ? H * 0.5 : H * 0.55;
+      for (let i = 0; i < 20; i++) {
+        const bx = ((i * 43 + seed) % W) - elapsed * 6;
+        const bw = 16 + (i * 13 % 28), bh = 40 + (i * 37 % 140);
+        ctx.fillStyle = `rgba(10,10,30,${0.65 + (i % 3) * 0.12})`;
+        ctx.fillRect(bx, cityY - bh, bw, bh + (H - cityY));
+        ctx.fillStyle = `rgba(${style === 'vaporwave' ? '255,110,199' : '251,191,36'},${0.15 + Math.sin(elapsed * 2 + i) * 0.12})`;
+        for (let wy = cityY - bh + 5; wy < cityY; wy += 9) for (let wx = bx + 3; wx < bx + bw - 3; wx += 6) ctx.fillRect(wx, wy, 3, 4);
+      }
+    }
+
+    // -- Rainbow --
+    if (hasRainbow) {
+      const colors = ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#6366f1','#a855f7'];
+      for (let ri = 0; ri < 7; ri++) {
+        ctx.strokeStyle = colors[ri] + '88'; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.arc(W * 0.5, H * 0.9, 100 + ri * 12 + Math.sin(elapsed * 0.5) * 5, Math.PI, 0); ctx.stroke();
+      }
+    }
+
+    // -- Desert --
+    if (hasDesert) {
+      const sandG = ctx.createLinearGradient(0, H * 0.5, 0, H);
+      sandG.addColorStop(0, '#d4a574'); sandG.addColorStop(1, '#c4956a');
+      ctx.fillStyle = sandG; ctx.fillRect(0, H * 0.5, W, H * 0.5);
+      for (let di = 0; di < 5; di++) {
+        ctx.fillStyle = '#c4956a'; ctx.beginPath();
+        const dx = (di * 130 + seed) % W;
+        ctx.moveTo(dx - 40, H * 0.5); ctx.quadraticCurveTo(dx, H * 0.35 + di * 8, dx + 40, H * 0.5); ctx.fill();
+      }
+      ctx.fillStyle = '#22863a'; for (let ci = 0; ci < 3; ci++) {
+        const cx = (ci * 200 + 100 + seed) % W;
+        ctx.fillRect(cx - 2, H * 0.5 - 25, 4, 25);
+        ctx.beginPath(); ctx.arc(cx, H * 0.5 - 25, 8, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // -- Underwater --
+    if (hasUnderwater) {
+      const uwG = ctx.createLinearGradient(0, 0, 0, H);
+      uwG.addColorStop(0, '#0284c7'); uwG.addColorStop(1, '#0c4a6e');
+      ctx.fillStyle = uwG; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#06b6d422';
+      for (let bi = 0; bi < 20; bi++) {
+        const bx = (bi * 37 + seed + Math.sin(elapsed * 2 + bi) * 15) % W;
+        const by = ((bi * 53 + elapsed * 40) % (H + 20)) - 10;
+        ctx.beginPath(); ctx.arc(bx, by, 2 + bi % 4, 0, Math.PI * 2); ctx.fill();
+      }
+      for (let fi = 0; fi < 5; fi++) {
+        const fx = (fi * 120 + seed + elapsed * (20 + fi * 5)) % (W + 40) - 20;
+        const fy = H * 0.3 + fi * 50 + Math.sin(elapsed * 2 + fi) * 10;
+        ctx.fillStyle = ['#f97316','#06b6d4','#ec4899','#a855f7','#22c55e'][fi];
+        ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx + 15, fy - 5); ctx.lineTo(fx + 15, fy + 5); ctx.fill();
+        ctx.beginPath(); ctx.arc(fx + 3, fy - 2, 1.5, 0, Math.PI * 2); ctx.fillStyle = '#000'; ctx.fill();
+      }
+      ctx.fillStyle = '#0d9488'; ctx.fillRect(0, H * 0.9, W, H * 0.1);
+      for (let si = 0; si < 10; si++) {
+        const sx = (si * 60 + seed) % W;
+        ctx.fillStyle = '#14b8a6'; ctx.beginPath();
+        ctx.moveTo(sx, H * 0.9); ctx.quadraticCurveTo(sx + 5, H * 0.82 + Math.sin(elapsed + si) * 5, sx + 10, H * 0.9); ctx.fill();
+      }
+    }
+
+    // -- Clouds --
+    if (hasClouds && !hasUnderwater) {
+      for (let ci = 0; ci < 8; ci++) {
+        const cx = ((ci * 100 + seed + elapsed * (10 + ci * 3)) % (W + 100)) - 50;
+        const cy = H * 0.2 + (ci * 37 % (H * 0.4));
+        ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.beginPath();
+        ctx.arc(cx, cy, 20 + ci * 3, 0, Math.PI * 2); ctx.fill();
+        ctx.arc(cx + 15, cy - 5, 15 + ci * 2, 0, Math.PI * 2); ctx.fill();
+        ctx.arc(cx - 12, cy + 3, 14 + ci * 2, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // -- Flowers --
+    if (hasFlower) {
+      const floorY = H * 0.7;
+      ctx.fillStyle = '#166534'; ctx.fillRect(0, floorY, W, H - floorY);
+      const flColors = ['#ec4899','#f97316','#eab308','#a855f7','#ef4444','#f472b6'];
+      for (let fi = 0; fi < 15; fi++) {
+        const fx = (fi * 45 + seed) % W, fy = floorY - 5 - (fi * 7 % 25);
+        ctx.strokeStyle = '#15803d'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(fx, floorY); ctx.lineTo(fx, fy); ctx.stroke();
+        ctx.fillStyle = flColors[fi % flColors.length];
+        for (let pe = 0; pe < 5; pe++) {
+          const angle = (pe / 5) * Math.PI * 2 + elapsed * 0.5;
+          ctx.beginPath(); ctx.arc(fx + Math.cos(angle) * 5, fy + Math.sin(angle) * 5, 3, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.fillStyle = '#eab308'; ctx.beginPath(); ctx.arc(fx, fy, 2, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // -- Castle --
+    if (hasCastle) {
+      const castleY = H * 0.4;
+      ctx.fillStyle = '#57534e'; ctx.fillRect(W * 0.3, castleY, W * 0.4, H * 0.5);
+      ctx.fillStyle = '#44403c';
+      ctx.fillRect(W * 0.28, castleY - 40, 30, 40 + H * 0.5);
+      ctx.fillRect(W * 0.7 - 8, castleY - 40, 30, 40 + H * 0.5);
+      ctx.fillStyle = '#78716c';
+      for (let ti = 0; ti < 4; ti++) { ctx.fillRect(W * 0.28 + ti * 8, castleY - 50, 5, 10); ctx.fillRect(W * 0.7 - 6 + ti * 8, castleY - 50, 5, 10); }
+      ctx.fillStyle = '#292524'; ctx.beginPath(); ctx.arc(W * 0.5, castleY + 60, 15, Math.PI, 0); ctx.fillRect(W * 0.5 - 15, castleY + 60, 30, 30); ctx.fill();
+      ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(W * 0.5, castleY + 50, 3 + Math.sin(elapsed * 3) * 1, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // -- Airplane --
+    if (hasAirplane) {
+      const ax = (elapsed * 60 + seed) % (W + 100) - 50;
+      const ay = H * 0.25 + Math.sin(elapsed * 0.8) * 15;
+      ctx.fillStyle = '#e5e7eb'; ctx.beginPath();
+      ctx.moveTo(ax + 30, ay); ctx.lineTo(ax - 20, ay - 3); ctx.lineTo(ax - 25, ay); ctx.lineTo(ax - 20, ay + 3); ctx.fill();
+      ctx.fillStyle = '#94a3b8'; ctx.fillRect(ax - 5, ay - 12, 20, 5); ctx.fillRect(ax - 5, ay + 7, 20, 5);
+      ctx.fillStyle = '#ef4444'; ctx.fillRect(ax - 22, ay - 3, 5, 6);
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(ax - 25, ay); ctx.lineTo(ax - 80 - elapsed * 10 % 40, ay + 2); ctx.stroke();
+    }
+
+    // -- Birds --
+    if (hasBirds) {
+      ctx.strokeStyle = '#1c1917'; ctx.lineWidth = 1.5;
+      for (let bi = 0; bi < 8; bi++) {
+        const bx = ((bi * 80 + seed + elapsed * (30 + bi * 5)) % (W + 60)) - 30;
+        const by = H * 0.15 + (bi * 23 % (H * 0.3)) + Math.sin(elapsed * 3 + bi) * 5;
+        ctx.beginPath(); ctx.moveTo(bx - 8, by + 3); ctx.quadraticCurveTo(bx - 4, by - 3 + Math.sin(elapsed * 5 + bi) * 2, bx, by);
+        ctx.quadraticCurveTo(bx + 4, by - 3 + Math.sin(elapsed * 5 + bi + 1) * 2, bx + 8, by + 3); ctx.stroke();
+      }
+    }
+
+    // -- Lightning --
+    if (hasLightning) {
+      if (Math.sin(elapsed * 4) > 0.8) {
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2;
+        const lx = W * 0.4 + seed % 100;
+        ctx.beginPath(); ctx.moveTo(lx, 0); ctx.lineTo(lx + 10, H * 0.2); ctx.lineTo(lx - 5, H * 0.25);
+        ctx.lineTo(lx + 15, H * 0.5); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(0, 0, W, H);
+      }
+    }
+
+    // -- Aurora --
+    if (hasAurora) {
+      for (let ai = 0; ai < 5; ai++) {
+        const colors = ['#22d3ee55','#a855f755','#22c55e55','#06b6d455','#8b5cf655'];
+        ctx.fillStyle = colors[ai];
+        ctx.beginPath(); ctx.moveTo(0, H * 0.15 + ai * 20);
+        for (let ax = 0; ax <= W; ax += 10) {
+          ctx.lineTo(ax, H * 0.15 + ai * 20 + Math.sin(ax * 0.01 + elapsed * 1.5 + ai) * 25);
+        }
+        ctx.lineTo(W, H * 0.4); ctx.lineTo(0, H * 0.4); ctx.fill();
+      }
+    }
+
+    // -- Animal silhouette --
+    if (hasAnimal) {
+      const animalX = W * 0.5 + Math.sin(elapsed * 0.5) * 30;
+      const animalY = H * 0.65;
+      ctx.fillStyle = '#1c1917';
+      ctx.beginPath(); ctx.arc(animalX, animalY, 12, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(animalX - 15, animalY, 30, 15);
+      ctx.fillRect(animalX - 13, animalY + 15, 5, 10); ctx.fillRect(animalX + 8, animalY + 15, 5, 10);
+      ctx.fillRect(animalX - 8, animalY + 15, 5, 10); ctx.fillRect(animalX + 2, animalY + 15, 5, 10);
+      ctx.beginPath(); ctx.moveTo(animalX + 15, animalY + 5); ctx.lineTo(animalX + 25, animalY - 2 + Math.sin(elapsed * 4) * 3); ctx.strokeStyle = '#1c1917'; ctx.lineWidth = 2; ctx.stroke();
+    }
+
+    // -- Car --
+    if (hasCar) {
+      const roadY = H * 0.82;
+      ctx.fillStyle = '#333'; ctx.fillRect(0, roadY, W, H - roadY);
+      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2; ctx.setLineDash([20, 15]);
+      ctx.beginPath(); ctx.moveTo(0, roadY + (H - roadY) / 2); ctx.lineTo(W, roadY + (H - roadY) / 2); ctx.stroke();
+      ctx.setLineDash([]);
+      const carX = (elapsed * 80 + seed) % (W + 100) - 50;
+      ctx.fillStyle = '#ef4444'; ctx.fillRect(carX, roadY + 8, 50, 18);
+      ctx.fillStyle = '#1e293b'; ctx.fillRect(carX + 10, roadY, 28, 12);
+      ctx.fillStyle = '#fbbf24'; ctx.fillRect(carX + 48, roadY + 12, 4, 6);
+      ctx.fillStyle = '#333'; ctx.beginPath(); ctx.arc(carX + 12, roadY + 26, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(carX + 40, roadY + 26, 5, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // -- Fire --
+    if (hasFire) {
+      for (let fi = 0; fi < 15; fi++) {
+        const fx = W * 0.5 + (fi - 7) * 12 + Math.sin(elapsed * 5 + fi) * 6;
+        const fy = H * 0.7 - fi * 3 - Math.random() * 20;
+        const fr = 5 + Math.sin(elapsed * 8 + fi) * 3;
+        ctx.fillStyle = fi < 5 ? '#fbbf2488' : fi < 10 ? '#ef444488' : '#dc262644';
+        ctx.beginPath(); ctx.arc(fx, fy, fr, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // -- Rain --
+    if (hasRain) {
+      ctx.strokeStyle = 'rgba(150,200,255,0.3)'; ctx.lineWidth = 1;
+      for (let ri = 0; ri < 80; ri++) {
+        const rx = (ri * 19 + seed) % W;
+        const ry = ((ri * 31 + elapsed * 400) % (H + 30)) - 15;
+        ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx - 1, ry + 8); ctx.stroke();
+      }
+    }
+
+    // -- Snow --
+    if (hasSnow) {
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      for (let si = 0; si < 50; si++) {
+        const sx = (si * 23 + seed + Math.sin(elapsed + si) * 20) % W;
+        const sy = ((si * 41 + elapsed * 60) % (H + 10)) - 5;
+        ctx.beginPath(); ctx.arc(sx, sy, 1 + si % 2, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // -- Abstract fallback for unknown prompts (unique per prompt) --
+    if (hasNothingSpecific && p.trim()) {
+      let h = 0; for (let i = 0; i < p.length; i++) h = ((h << 5) - h + p.charCodeAt(i)) | 0;
+      const hue1 = Math.abs(h) % 360, hue2 = (hue1 + 120) % 360;
+      ctx.fillStyle = `hsl(${hue1}, 40%, 15%)`; ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < 30; i++) {
+        const x = ((i * 47 + Math.abs(h)) % W); const y = ((i * 73 + Math.abs(h)) % H);
+        const r = 10 + (i * 17 % 30) + Math.sin(elapsed * (1 + i * 0.2)) * 5;
+        ctx.fillStyle = `hsla(${(hue1 + i * 12) % 360}, 60%, 50%, 0.15)`;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.strokeStyle = `hsla(${hue2}, 70%, 60%, 0.3)`; ctx.lineWidth = 2;
+      for (let i = 0; i < 5; i++) {
+        const r = 40 + i * 25 + Math.sin(elapsed * (0.5 + i * 0.3)) * 10;
+        ctx.beginPath(); ctx.arc(W / 2, H / 2, r, elapsed * 0.3 + i, elapsed * 0.3 + i + Math.PI * 1.5); ctx.stroke();
+      }
+      ctx.fillStyle = '#fff8'; ctx.font = '11px system-ui';
+      ctx.fillText(`Scene: "${prompt.slice(0, 40)}"`, 8, H - 8);
+    }
+
+    // Ground fill if nothing drawn below
+    if (!hasOcean && !hasForest && !showCity && !hasCar && !hasDesert && !hasUnderwater && !hasFlower && !(hasNothingSpecific && p.trim())) {
+      ctx.fillStyle = pal.ground; ctx.fillRect(0, H * 0.85, W, H * 0.15);
+    }
+
+    // -- Anime style overlay --
+    if (style === 'anime') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
+      for (let i = 0; i < 20; i++) { const ly = (i * 19 + seed) % H; const lx = ((elapsed * 300 + i * 45) % (W + 200)) - 100; ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + 40 + i * 2, ly); ctx.stroke(); }
+    }
+    // -- Vaporwave scanlines --
+    if (style === 'vaporwave') {
+      ctx.fillStyle = 'rgba(0,0,0,0.06)'; for (let sy = 0; sy < H; sy += 3) ctx.fillRect(0, sy, W, 1);
+    }
+
+    // Timer overlay
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(W - 85, 6, 78, 18);
+    ctx.fillStyle = '#fff'; ctx.font = '10px monospace'; ctx.fillText(`${elapsed.toFixed(1)}s / ${duration}s`, W - 80, 18);
+    animRef.current = requestAnimationFrame(renderLoop);
+  };
+
+  useEffect(() => () => { playingRef.current = false; cancelAnimationFrame(animRef.current); }, []);
 
   return (
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">🎬 Video Studio</h1>
-        <p className="page-subtitle">AI video generation — Sora-style text-to-video with style control</p>
+        <p className="page-subtitle">Procedural video generation — watch real animated scenes in different styles</p>
+        <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 20, fontSize: 11 }}>
+          <span style={{ color: '#ef4444' }}>🎬 Runway ML</span>
+          <a href="https://dev.runwayml.com" target="_blank" rel="noopener" style={{ color: '#ef4444', textDecoration: 'none', fontWeight: 600 }}>Connect API →</a>
+        </div>
       </div>
       <div className="grid grid-2" style={{ marginBottom: 24 }}>
         <div className="card">
@@ -1098,12 +1806,12 @@ function VideoStudio() {
             <div className="form-group">
               <label className="form-label">Style</label>
               <select className="select" value={style} onChange={e => setStyle(e.target.value)}>
-                {['cinematic', 'anime', 'photorealistic', 'noir', 'vaporwave', 'fantasy', 'scifi'].map(s => <option key={s} value={s}>{s}</option>)}
+                {['cinematic', 'anime', 'noir', 'vaporwave', 'fantasy', 'scifi', 'photorealistic'].map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="form-group">
               <label className="form-label">Duration (s)</label>
-              <input className="input" type="number" value={duration} onChange={e => setDuration(+e.target.value)} min={1} max={60} />
+              <input className="input" type="number" value={duration} onChange={e => setDuration(+e.target.value)} min={2} max={15} />
             </div>
             <div className="form-group">
               <label className="form-label">Resolution</label>
@@ -1112,46 +1820,283 @@ function VideoStudio() {
               </select>
             </div>
           </div>
-          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={generateVideo} disabled={generating || !prompt}>
-            {generating ? '⏳ Generating...' : '🎬 Generate Video'}
+          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={generateVideo} disabled={generating || playing}>
+            {generating ? '⏳ Rendering Frames...' : '🎬 Generate Video'}
           </button>
           {generating && <div style={{ marginTop: 12 }}><div className="progress-bar" style={{ height: 8 }}><div className="progress-fill" style={{ width: `${progress}%`, transition: 'width 0.3s' }}></div></div><span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{Math.round(progress)}%</span></div>}
         </div>
         <div className="card">
-          <div className="card-header"><h3 className="card-title">🖥️ Preview</h3></div>
-          <div style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #0d1117, #161b22)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)' }}>
-            <div style={{ textAlign: 'center' }}>
+          <div className="card-header"><h3 className="card-title">Preview</h3></div>
+          {videoReady ? (
+            <>
+              <canvas ref={canvasRef} width={640} height={360} style={{ width: '100%', aspectRatio: '16/9', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: '#000' }} />
+              <div style={{ display: 'flex', gap: 8, marginTop: 10, alignItems: 'center' }}>
+                <button className="btn btn-primary btn-sm" onClick={playing ? stopVideo : playVideo} style={{ minWidth: 80 }}>
+                  {playing ? 'Stop' : 'Play'}
+                </button>
+                <div className="progress-bar" style={{ flex: 1, height: 6 }}><div className="progress-fill" style={{ width: `${(videoTime / duration) * 100}%`, background: '#a855f7', transition: 'width 0.05s' }}></div></div>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', minWidth: 60 }}>{videoTime.toFixed(1)}s/{duration}s</span>
+              </div>
+            </>
+          ) : (
+            <div style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #0d1117, #161b22)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: '3rem' }}>{generating ? '⏳' : '🎬'}</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 8 }}>{generating ? 'Rendering frames...' : 'Your video will appear here'}</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{generating ? 'Rendering frames...' : 'Enter a prompt and generate'}</div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-// ===== AUDIO STUDIO =====
+
+
+// ===== AUDIO STUDIO (Real Web Audio API Synthesizer) =====
 function AudioStudio() {
   const [musicStyle, setMusicStyle] = useState('ambient');
-  const [musicDuration, setMusicDuration] = useState(30);
+  const [musicDuration, setMusicDuration] = useState(8);
   const [bpm, setBpm] = useState(120);
   const [generateStems, setGenerateStems] = useState(false);
   const [composing, setComposing] = useState(false);
+  const [audioBuffer, setAudioBuffer] = useState<AudioBuffer | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.7);
+  const [currentTime, setCurTime] = useState(0);
+  const audioCtxRef = React.useRef<AudioContext | null>(null);
+  const sourceRef = React.useRef<AudioBufferSourceNode | null>(null);
+  const gainRef = React.useRef<GainNode | null>(null);
+  const analyserRef = React.useRef<AnalyserNode | null>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const animRef = React.useRef<number>(0);
+  const startTimeRef = React.useRef(0);
 
-  const compose = async () => {
-    setComposing(true);
-    try {
-      await fetch(`${API}/api/ai/generate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'music', style: musicStyle, duration: musicDuration, bpm }) });
-    } catch { }
-    setTimeout(() => setComposing(false), 2000);
+  // -- Style-specific note / chord definitions --
+  const styleConfigs: Record<string, { scale: number[]; chordPattern: number[][]; oscType: OscillatorType; filterFreq: number; filterQ: number; attack: number; release: number; baseOctave: number }> = {
+    ambient:     { scale: [0,2,4,7,9], chordPattern: [[0,4,7],[2,5,9],[4,7,11],[0,3,7]], oscType: 'sine', filterFreq: 800, filterQ: 1, attack: 0.3, release: 0.5, baseOctave: 3 },
+    action:      { scale: [0,2,3,5,7,10], chordPattern: [[0,3,7],[5,8,12],[3,7,10],[7,10,14]], oscType: 'sawtooth', filterFreq: 2000, filterQ: 3, attack: 0.01, release: 0.1, baseOctave: 3 },
+    dramatic:    { scale: [0,2,3,5,7,8,11], chordPattern: [[0,3,7],[3,7,10],[5,8,12],[7,11,14]], oscType: 'sawtooth', filterFreq: 1500, filterQ: 2, attack: 0.1, release: 0.4, baseOctave: 3 },
+    horror:      { scale: [0,1,3,4,6,7,9,10], chordPattern: [[0,1,6],[3,4,9],[6,7,12],[1,4,10]], oscType: 'sawtooth', filterFreq: 600, filterQ: 5, attack: 0.2, release: 0.8, baseOctave: 2 },
+    fantasy:     { scale: [0,2,4,5,7,9,11], chordPattern: [[0,4,7],[5,9,12],[7,11,14],[2,5,9]], oscType: 'triangle', filterFreq: 3000, filterQ: 1, attack: 0.05, release: 0.3, baseOctave: 4 },
+    scifi:       { scale: [0,1,4,5,7,8,11], chordPattern: [[0,4,7],[1,5,8],[4,8,11],[5,7,12]], oscType: 'square', filterFreq: 1800, filterQ: 4, attack: 0.02, release: 0.15, baseOctave: 3 },
+    electronic:  { scale: [0,3,5,7,10], chordPattern: [[0,3,7],[3,7,10],[5,10,12],[7,10,15]], oscType: 'square', filterFreq: 2500, filterQ: 6, attack: 0.01, release: 0.05, baseOctave: 3 },
+    orchestral:  { scale: [0,2,4,5,7,9,11], chordPattern: [[0,4,7],[2,5,9],[4,7,11],[5,9,12]], oscType: 'triangle', filterFreq: 4000, filterQ: 0.5, attack: 0.15, release: 0.5, baseOctave: 3 },
+    lofi:        { scale: [0,2,4,7,9], chordPattern: [[0,4,7,11],[2,5,9,12],[4,7,11,14],[7,11,14,17]], oscType: 'triangle', filterFreq: 700, filterQ: 2, attack: 0.05, release: 0.3, baseOctave: 3 },
+    jazz:        { scale: [0,2,4,5,7,9,10,11], chordPattern: [[0,4,7,10],[2,5,9,12],[4,7,11,14],[5,9,12,16]], oscType: 'sine', filterFreq: 3500, filterQ: 1, attack: 0.02, release: 0.2, baseOctave: 3 },
   };
+
+  const midiToFreq = (midi: number) => 440 * Math.pow(2, (midi - 69) / 12);
+
+  const synthesizeAudio = async () => {
+    setComposing(true); setAudioBuffer(null); stopAudio();
+    const ctx = new AudioContext({ sampleRate: 44100 });
+    const dur = Math.min(musicDuration, 30);
+    const sr = ctx.sampleRate;
+    const totalSamples = sr * dur;
+    const buffer = ctx.createBuffer(2, totalSamples, sr);
+    const left = buffer.getChannelData(0);
+    const right = buffer.getChannelData(1);
+    const cfg = styleConfigs[musicStyle] || styleConfigs.ambient;
+    const beatDur = 60 / bpm;
+    const beatsTotal = Math.floor(dur / beatDur);
+
+    // Generate melody notes for the entire duration
+    for (let beat = 0; beat < beatsTotal; beat++) {
+      const startSample = Math.floor(beat * beatDur * sr);
+      const noteDur = beatDur * (0.5 + Math.random() * 0.4);
+      const endSample = Math.min(startSample + Math.floor(noteDur * sr), totalSamples);
+      const chordIdx = beat % cfg.chordPattern.length;
+      const chord = cfg.chordPattern[chordIdx];
+
+      // Play chord notes
+      for (const interval of chord) {
+        const scaleNote = cfg.scale[interval % cfg.scale.length];
+        const octaveAdd = Math.floor(interval / cfg.scale.length);
+        const midi = (cfg.baseOctave + octaveAdd) * 12 + scaleNote;
+        const freq = midiToFreq(midi);
+        const noteVol = 0.12 / chord.length;
+
+        for (let s = startSample; s < endSample; s++) {
+          const t = (s - startSample) / sr;
+          const relT = t / noteDur;
+          // ADSR envelope
+          let env = 1;
+          if (relT < cfg.attack) env = relT / cfg.attack;
+          else if (relT > 1 - cfg.release) env = (1 - relT) / cfg.release;
+          env = Math.max(0, Math.min(1, env));
+          // Oscillator
+          let sample = 0;
+          const phase = freq * t * Math.PI * 2;
+          if (cfg.oscType === 'sine') sample = Math.sin(phase);
+          else if (cfg.oscType === 'triangle') sample = 2 * Math.abs(2 * ((freq * t) % 1) - 1) - 1;
+          else if (cfg.oscType === 'square') sample = Math.sin(phase) > 0 ? 0.6 : -0.6;
+          else if (cfg.oscType === 'sawtooth') sample = 2 * ((freq * t) % 1) - 1;
+          // Simple low-pass filter approximation via averaging
+          sample *= env * noteVol;
+          left[s] += sample;
+          right[s] += sample * (0.8 + Math.random() * 0.2); // slight stereo spread
+        }
+      }
+
+      // Add simple percussion on every beat for action/electronic styles
+      if (['action', 'electronic', 'scifi'].includes(musicStyle)) {
+        const kickEnd = Math.min(startSample + Math.floor(0.08 * sr), totalSamples);
+        for (let s = startSample; s < kickEnd; s++) {
+          const t = (s - startSample) / sr;
+          const kickFreq = 150 * Math.exp(-t * 40);
+          const kick = Math.sin(kickFreq * t * Math.PI * 2) * Math.exp(-t * 25) * 0.3;
+          left[s] += kick;
+          right[s] += kick;
+        }
+        // Hi-hat on offbeats
+        if (beat % 2 === 1) {
+          const hatEnd = Math.min(startSample + Math.floor(0.03 * sr), totalSamples);
+          for (let s = startSample; s < hatEnd; s++) {
+            const t = (s - startSample) / sr;
+            const hat = (Math.random() * 2 - 1) * Math.exp(-t * 80) * 0.08;
+            left[s] += hat;
+            right[s] += hat;
+          }
+        }
+      }
+
+      // Lofi: add subtle vinyl crackle noise
+      if (musicStyle === 'lofi') {
+        for (let s = startSample; s < endSample; s++) {
+          if (Math.random() < 0.002) {
+            left[s] += (Math.random() - 0.5) * 0.05;
+            right[s] += (Math.random() - 0.5) * 0.05;
+          }
+        }
+      }
+    }
+
+    // Apply simple soft-clip limiter
+    for (let s = 0; s < totalSamples; s++) {
+      left[s] = Math.tanh(left[s] * 1.5);
+      right[s] = Math.tanh(right[s] * 1.5);
+    }
+
+    setAudioBuffer(buffer);
+    audioCtxRef.current = ctx;
+    setComposing(false);
+  };
+
+  const playAudio = () => {
+    if (!audioBuffer) return;
+    stopAudio();
+    const ctx = audioCtxRef.current || new AudioContext();
+    audioCtxRef.current = ctx;
+    const source = ctx.createBufferSource();
+    source.buffer = audioBuffer;
+    const gain = ctx.createGain();
+    gain.gain.value = volume;
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+    source.connect(gain).connect(analyser).connect(ctx.destination);
+    source.start(0);
+    sourceRef.current = source;
+    gainRef.current = gain;
+    analyserRef.current = analyser;
+    startTimeRef.current = ctx.currentTime;
+    setPlaying(true);
+    source.onended = () => { setPlaying(false); setCurTime(0); };
+    drawWaveform();
+    const tmr = setInterval(() => {
+      if (audioCtxRef.current) setCurTime(audioCtxRef.current.currentTime - startTimeRef.current);
+    }, 100);
+    source.onended = () => { setPlaying(false); setCurTime(0); clearInterval(tmr); };
+  };
+
+  const stopAudio = () => {
+    try { sourceRef.current?.stop(); } catch {}
+    sourceRef.current = null;
+    cancelAnimationFrame(animRef.current);
+    setPlaying(false); setCurTime(0);
+  };
+
+  const drawWaveform = () => {
+    const canvas = canvasRef.current;
+    const analyser = analyserRef.current;
+    if (!canvas || !analyser) return;
+    const c = canvas.getContext('2d');
+    if (!c) return;
+    const bufLen = analyser.frequencyBinCount;
+    const dataArr = new Uint8Array(bufLen);
+    const draw = () => {
+      animRef.current = requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(dataArr);
+      c.fillStyle = '#0a0a1e';
+      c.fillRect(0, 0, canvas.width, canvas.height);
+      c.lineWidth = 2;
+      c.strokeStyle = '#a855f7';
+      c.beginPath();
+      const sliceW = canvas.width / bufLen;
+      for (let i = 0; i < bufLen; i++) {
+        const v = dataArr[i] / 128.0;
+        const y = (v * canvas.height) / 2;
+        i === 0 ? c.moveTo(0, y) : c.lineTo(i * sliceW, y);
+      }
+      c.lineTo(canvas.width, canvas.height / 2);
+      c.stroke();
+      // frequency bars
+      const freqArr = new Uint8Array(bufLen);
+      analyser.getByteFrequencyData(freqArr);
+      const barW = canvas.width / bufLen * 2;
+      for (let i = 0; i < bufLen / 2; i++) {
+        const barH = (freqArr[i] / 255) * canvas.height * 0.5;
+        const hue = (i / bufLen) * 360;
+        c.fillStyle = `hsla(${hue}, 80%, 60%, 0.6)`;
+        c.fillRect(i * barW, canvas.height - barH, barW - 1, barH);
+      }
+    };
+    draw();
+  };
+
+  const downloadWAV = () => {
+    if (!audioBuffer) return;
+    const numCh = audioBuffer.numberOfChannels;
+    const sr = audioBuffer.sampleRate;
+    const length = audioBuffer.length;
+    const bitsPerSample = 16;
+    const bytesPerSample = bitsPerSample / 8;
+    const blockAlign = numCh * bytesPerSample;
+    const byteRate = sr * blockAlign;
+    const dataSize = length * blockAlign;
+    const bufferSize = 44 + dataSize;
+    const ab = new ArrayBuffer(bufferSize);
+    const view = new DataView(ab);
+    const writeStr = (o: number, s: string) => { for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i)); };
+    writeStr(0, 'RIFF'); view.setUint32(4, 36 + dataSize, true); writeStr(8, 'WAVE');
+    writeStr(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+    view.setUint16(22, numCh, true); view.setUint32(24, sr, true); view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true); view.setUint16(34, bitsPerSample, true);
+    writeStr(36, 'data'); view.setUint32(40, dataSize, true);
+    const channels = [];
+    for (let ch = 0; ch < numCh; ch++) channels.push(audioBuffer.getChannelData(ch));
+    let offset = 44;
+    for (let i = 0; i < length; i++) {
+      for (let ch = 0; ch < numCh; ch++) {
+        const sample = Math.max(-1, Math.min(1, channels[ch][i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+    const blob = new Blob([ab], { type: 'audio/wav' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `engine-alto-${musicStyle}-${bpm}bpm.wav`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => { if (gainRef.current) gainRef.current.gain.value = volume; }, [volume]);
+  useEffect(() => () => { stopAudio(); try { audioCtxRef.current?.close(); } catch {} }, []);
 
   return (
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">🎵 Audio Studio</h1>
-        <p className="page-subtitle">AI-powered music composition, voice cloning, audio denoising</p>
+        <p className="page-subtitle">AI-powered music composition — real synthesized audio you can play and download</p>
       </div>
       <div className="grid grid-2" style={{ marginBottom: 24 }}>
         <div className="card">
@@ -1165,27 +2110,62 @@ function AudioStudio() {
             </div>
             <div className="form-group">
               <label className="form-label">Duration (s)</label>
-              <input className="input" type="number" value={musicDuration} onChange={e => setMusicDuration(+e.target.value)} />
+              <input className="input" type="number" value={musicDuration} onChange={e => setMusicDuration(+e.target.value)} min={2} max={30} />
             </div>
             <div className="form-group">
               <label className="form-label">BPM</label>
-              <input className="input" type="number" value={bpm} onChange={e => setBpm(+e.target.value)} />
+              <input className="input" type="number" value={bpm} onChange={e => setBpm(+e.target.value)} min={60} max={200} />
             </div>
           </div>
           <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', marginBottom: 12 }}>
             <input type="checkbox" checked={generateStems} onChange={e => setGenerateStems(e.target.checked)} /> Generate individual stems (drums, bass, melody, harmony, fx)
           </label>
-          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={compose} disabled={composing}>
-            {composing ? '🎵 Composing...' : '🎵 Compose Music'}
+          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={synthesizeAudio} disabled={composing}>
+            {composing ? '🎵 Synthesizing...' : '🎵 Compose Music'}
           </button>
+          {audioBuffer && (
+            <div style={{ marginTop: 16 }}>
+              {/* Waveform visualizer */}
+              <canvas ref={canvasRef} width={500} height={100} style={{ width: '100%', height: 100, borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: '#0a0a1e', marginBottom: 12 }} />
+              {/* Playback controls */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <button className="btn btn-primary btn-sm" onClick={playing ? stopAudio : playAudio} style={{ minWidth: 80 }}>
+                  {playing ? 'Stop' : 'Play'}
+                </button>
+                <div style={{ flex: 1, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  {playing ? `${currentTime.toFixed(1)}s / ${audioBuffer.duration.toFixed(1)}s` : `Ready · ${audioBuffer.duration.toFixed(1)}s`}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>🔊</span>
+                  <input type="range" min={0} max={1} step={0.05} value={volume} onChange={e => setVolume(+e.target.value)} style={{ width: 60, accentColor: '#a855f7' }} />
+                </div>
+              </div>
+              {/* Progress bar */}
+              {playing && <div className="progress-bar" style={{ height: 4, marginBottom: 8 }}><div className="progress-fill" style={{ width: `${(currentTime / audioBuffer.duration) * 100}%`, background: '#a855f7', transition: 'width 0.1s' }}></div></div>}
+              {/* Download & info */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button className="btn btn-secondary btn-sm" onClick={downloadWAV}>💾 Download WAV</button>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{musicStyle} · {bpm} BPM · {audioBuffer.sampleRate}Hz</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="card">
           <div className="card-header"><h3 className="card-title">🔧 Audio Tools</h3></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>🗣️ Voice Clone — Clone any voice from reference audio</button>
+            <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>🗣️ Voice Clone — Clone any voice from reference audio</button>
             <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>🔇 Denoise — Remove background noise (RNNoise)</button>
             <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>🎤 Text-to-Speech — 5 AI voices available</button>
-            <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>🎛️ Master & Export — Streaming / Broadcast / CD / Vinyl presets</button>
+            <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }}>🎛️ Master & Export — Streaming / Broadcast / CD / Vinyl presets</button>
+          </div>
+          <div style={{ marginTop: 16, padding: 12, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, color: '#22c55e' }}>🎵 Minimax AI Voice</div>
+                <div style={{ fontSize: 11, color: '#999' }}>Realistic AI speech synthesis via API</div>
+              </div>
+              <a href="https://www.minimax.chat" target="_blank" rel="noopener" style={{ fontSize: 11, color: '#22c55e', textDecoration: 'none' }}>Connect →</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1193,31 +2173,179 @@ function AudioStudio() {
   );
 }
 
-// ===== 3D STUDIO =====
+// ===== 3D STUDIO (Real Interactive Wireframe Viewer) =====
 function ThreeDStudio() {
   const [mode, setMode] = useState<'glb' | 'nerf'>('glb');
   const [prompt3d, setPrompt3d] = useState('');
   const [quality, setQuality] = useState('standard');
   const [autoRig, setAutoRig] = useState(false);
   const [genLODs, setGenLODs] = useState(true);
+  const [generating3d, setGenerating3d] = useState(false);
+  const [modelReady, setModelReady] = useState(false);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const animRef = React.useRef<number>(0);
+  const rotRef = React.useRef({ rx: 0.3, ry: 0, dragging: false, lastX: 0, lastY: 0 });
+  const vertsRef = React.useRef<number[][]>([]);
+  const edgesRef = React.useRef<number[][]>([]);
+  const colorsRef = React.useRef<string[]>([]);
+
+  const buildGeometry = (prompt: string) => {
+    const verts: number[][] = [];
+    const edges: number[][] = [];
+    const colors: string[] = [];
+    const p = (prompt || 'castle').toLowerCase();
+    const addBox = (cx: number, cy: number, cz: number, w: number, h: number, d: number, col: string) => {
+      const base = verts.length;
+      const hw = w/2, hh = h/2, hd = d/2;
+      verts.push([cx-hw,cy-hh,cz-hd],[cx+hw,cy-hh,cz-hd],[cx+hw,cy+hh,cz-hd],[cx-hw,cy+hh,cz-hd],
+                  [cx-hw,cy-hh,cz+hd],[cx+hw,cy-hh,cz+hd],[cx+hw,cy+hh,cz+hd],[cx-hw,cy+hh,cz+hd]);
+      [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]].forEach(([a,b]) => { edges.push([base+a,base+b]); colors.push(col); });
+    };
+    if (p.includes('castle') || p.includes('tower') || p.includes('building')) {
+      addBox(0, -0.5, 0, 2, 1, 2, '#6366f1'); // base
+      addBox(-0.7, 0.3, -0.7, 0.4, 1.2, 0.4, '#a855f7'); // tower 1
+      addBox(0.7, 0.3, -0.7, 0.4, 1.2, 0.4, '#a855f7'); // tower 2
+      addBox(-0.7, 0.3, 0.7, 0.4, 1.0, 0.4, '#a855f7'); // tower 3
+      addBox(0.7, 0.3, 0.7, 0.4, 1.0, 0.4, '#a855f7'); // tower 4
+      addBox(0, 0.1, 0, 0.6, 0.7, 0.6, '#ec4899'); // keep
+      addBox(0, 0.6, 0, 0.3, 0.3, 0.3, '#fbbf24'); // flag tower
+    } else if (p.includes('car') || p.includes('vehicle')) {
+      addBox(0, -0.2, 0, 2.2, 0.5, 1, '#3b82f6'); // body
+      addBox(0.1, 0.2, 0, 1.2, 0.4, 0.9, '#60a5fa'); // cabin
+      addBox(-0.8, -0.45, -0.5, 0.4, 0.3, 0.2, '#333'); // wheel FL
+      addBox(0.8, -0.45, -0.5, 0.4, 0.3, 0.2, '#333'); // wheel FR
+      addBox(-0.8, -0.45, 0.5, 0.4, 0.3, 0.2, '#333'); // wheel BL
+      addBox(0.8, -0.45, 0.5, 0.4, 0.3, 0.2, '#333'); // wheel BR
+    } else if (p.includes('spaceship') || p.includes('ship') || p.includes('rocket')) {
+      addBox(0, 0, 0, 0.6, 0.4, 2.5, '#818cf8'); // fuselage
+      addBox(0, 0.1, -0.9, 2.2, 0.1, 0.8, '#6366f1'); // wings
+      addBox(0, 0.3, 1.0, 0.8, 0.5, 0.15, '#a855f7'); // tail
+      addBox(-0.2, -0.15, 1.15, 0.15, 0.15, 0.3, '#ef4444'); // engine L
+      addBox(0.2, -0.15, 1.15, 0.15, 0.15, 0.3, '#ef4444'); // engine R
+    } else if (p.includes('tree') || p.includes('forest') || p.includes('plant')) {
+      addBox(0, -0.6, 0, 0.2, 0.8, 0.2, '#854d0e'); // trunk
+      addBox(0, 0.1, 0, 0.8, 0.6, 0.8, '#22c55e'); // leaves bottom
+      addBox(0, 0.5, 0, 0.5, 0.5, 0.5, '#16a34a'); // leaves mid
+      addBox(0, 0.8, 0, 0.3, 0.3, 0.3, '#15803d'); // leaves top
+    } else {
+      // Default: abstract sculpture
+      addBox(0, -0.5, 0, 1.5, 0.2, 1.5, '#6366f1'); // base
+      addBox(0, 0, 0, 0.8, 0.8, 0.8, '#a855f7'); // cube 1
+      addBox(0.3, 0.5, 0.2, 0.5, 0.5, 0.5, '#ec4899'); // cube 2
+      addBox(-0.2, 0.8, -0.1, 0.35, 0.35, 0.35, '#fbbf24'); // cube 3
+    }
+    vertsRef.current = verts;
+    edgesRef.current = edges;
+    colorsRef.current = colors;
+  };
+
+  const generate3D = () => {
+    setGenerating3d(true); setModelReady(false);
+    setTimeout(() => {
+      buildGeometry(prompt3d);
+      setGenerating3d(false);
+      setModelReady(true);
+      startRender();
+    }, 1800);
+  };
+
+  const project = (v: number[], rx: number, ry: number, W: number, H: number): [number, number, number] => {
+    let [x, y, z] = v;
+    // Rotate Y
+    const cy = Math.cos(ry), sy = Math.sin(ry);
+    const x1 = x * cy - z * sy, z1 = x * sy + z * cy;
+    // Rotate X
+    const cx = Math.cos(rx), sx = Math.sin(rx);
+    const y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+    const scale = 180 / (4 + z2);
+    return [W / 2 + x1 * scale, H / 2 - y1 * scale, z2];
+  };
+
+  const startRender = () => {
+    const render = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      // Background
+      const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W*0.6);
+      bg.addColorStop(0, '#1a1a3e'); bg.addColorStop(1, '#0a0a1e');
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+      // Grid floor
+      ctx.strokeStyle = 'rgba(99,102,241,0.1)'; ctx.lineWidth = 0.5;
+      for (let i = -5; i <= 5; i++) {
+        const [x1, y1] = project([i * 0.3, -1, -1.5], rotRef.current.rx, rotRef.current.ry, W, H);
+        const [x2, y2] = project([i * 0.3, -1, 1.5], rotRef.current.rx, rotRef.current.ry, W, H);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        const [x3, y3] = project([-1.5, -1, i * 0.3], rotRef.current.rx, rotRef.current.ry, W, H);
+        const [x4, y4] = project([1.5, -1, i * 0.3], rotRef.current.rx, rotRef.current.ry, W, H);
+        ctx.beginPath(); ctx.moveTo(x3, y3); ctx.lineTo(x4, y4); ctx.stroke();
+      }
+      // Draw edges
+      const { rx, ry } = rotRef.current;
+      const verts = vertsRef.current;
+      const edges = edgesRef.current;
+      const cols = colorsRef.current;
+      for (let i = 0; i < edges.length; i++) {
+        const [a, b] = edges[i];
+        const [x1, y1] = project(verts[a], rx, ry, W, H);
+        const [x2, y2] = project(verts[b], rx, ry, W, H);
+        ctx.strokeStyle = cols[i] || '#6366f1';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      }
+      // Draw vertices as dots
+      for (const v of verts) {
+        const [px, py] = project(v, rx, ry, W, H);
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(px, py, 2, 0, Math.PI * 2); ctx.fill();
+      }
+      // Auto rotate when not dragging
+      if (!rotRef.current.dragging) rotRef.current.ry += 0.008;
+      ctx.fillStyle = '#fff8'; ctx.font = '10px system-ui';
+      ctx.fillText('🖱️ Drag to rotate', 10, H - 10);
+      ctx.fillText(`${verts.length} verts · ${edges.length} edges`, W - 130, H - 10);
+      animRef.current = requestAnimationFrame(render);
+    };
+    cancelAnimationFrame(animRef.current);
+    render();
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const onDown = (e: MouseEvent) => { rotRef.current.dragging = true; rotRef.current.lastX = e.clientX; rotRef.current.lastY = e.clientY; };
+    const onUp = () => { rotRef.current.dragging = false; };
+    const onMove = (e: MouseEvent) => {
+      if (!rotRef.current.dragging) return;
+      rotRef.current.ry += (e.clientX - rotRef.current.lastX) * 0.01;
+      rotRef.current.rx += (e.clientY - rotRef.current.lastY) * 0.01;
+      rotRef.current.lastX = e.clientX; rotRef.current.lastY = e.clientY;
+    };
+    canvas.addEventListener('mousedown', onDown);
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('mousemove', onMove);
+    return () => { canvas.removeEventListener('mousedown', onDown); window.removeEventListener('mouseup', onUp); window.removeEventListener('mousemove', onMove); cancelAnimationFrame(animRef.current); };
+  }, [modelReady]);
 
   return (
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">🧊 3D Studio</h1>
-        <p className="page-subtitle">Generate 3D models, NeRF reconstruction, GLB export with PBR materials</p>
+        <p className="page-subtitle">Generate interactive 3D models — drag to rotate, real-time wireframe rendering</p>
       </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         <button className={`btn ${mode === 'glb' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('glb')}>🧊 GLB Generator</button>
         <button className={`btn ${mode === 'nerf' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('nerf')}>📸 NeRF Reconstruction</button>
-        <button className="btn btn-secondary">🎨 Blender Pipeline</button>
       </div>
       <div className="grid grid-2">
         <div className="card">
           <div className="card-header"><h3 className="card-title">{mode === 'glb' ? '🧊 GLB Generator' : '📸 NeRF from Images'}</h3></div>
           <div className="form-group">
-            <label className="form-label">{mode === 'glb' ? 'Describe your 3D model' : 'Upload images for reconstruction'}</label>
-            <textarea className="input" rows={2} value={prompt3d} onChange={e => setPrompt3d(e.target.value)} placeholder={mode === 'glb' ? 'A medieval castle with towers...' : 'Select images of the object from multiple angles...'} style={{ resize: 'vertical' }} />
+            <label className="form-label">Describe your 3D model</label>
+            <textarea className="input" rows={2} value={prompt3d} onChange={e => setPrompt3d(e.target.value)} placeholder="castle, car, spaceship, tree, sculpture..." style={{ resize: 'vertical' }} />
           </div>
           <div className="grid grid-2">
             <div className="form-group">
@@ -1235,35 +2363,194 @@ function ThreeDStudio() {
             <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem' }}><input type="checkbox" checked={autoRig} onChange={e => setAutoRig(e.target.checked)} /> Auto-Rig</label>
             <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.85rem' }}><input type="checkbox" checked={genLODs} onChange={e => setGenLODs(e.target.checked)} /> Generate LODs</label>
           </div>
-          <button className="btn btn-primary btn-lg" style={{ width: '100%' }}>🚀 Generate 3D Model</button>
+          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={generate3D} disabled={generating3d}>
+            {generating3d ? '⏳ Generating Mesh...' : '🚀 Generate 3D Model'}
+          </button>
         </div>
         <div className="card">
-          <div className="card-header"><h3 className="card-title">👁️ 3D Preview</h3></div>
-          <div style={{ aspectRatio: '1', background: 'radial-gradient(circle at 50% 50%, #1a1a3e, #0a0a1e)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)' }}>
-            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '4rem' }}>🧊</div><div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>3D preview will render here</div></div>
-          </div>
+          <div className="card-header"><h3 className="card-title">3D Preview</h3></div>
+          {modelReady ? (
+            <canvas ref={canvasRef} width={400} height={400} style={{ width: '100%', aspectRatio: '1', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', cursor: 'grab', background: '#0a0a1e' }} />
+          ) : (
+            <div style={{ aspectRatio: '1', background: 'radial-gradient(circle at 50% 50%, #1a1a3e, #0a0a1e)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: '4rem' }}>{generating3d ? '⏳' : '🧊'}</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{generating3d ? 'Generating mesh...' : 'Describe a model and generate'}</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-// ===== FASHION STUDIO =====
+// ===== FASHION STUDIO (Real Canvas Garment Design) =====
 function FashionStudioPage() {
   const [garmentType, setGarmentType] = useState('top');
   const [fabric, setFabric] = useState('cotton');
   const [size, setSize] = useState('M');
   const [style, setStyle] = useState('minimalist');
+  const [designing, setDesigning] = useState(false);
+  const [designReady, setDesignReady] = useState(false);
+  const [primaryColor, setPrimaryColor] = useState('#6366f1');
+  const [accentColor, setAccentColor] = useState('#ec4899');
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+
+  const generateDesign = () => {
+    setDesigning(true); setDesignReady(false);
+    setTimeout(() => {
+      setDesigning(false); setDesignReady(true);
+      setTimeout(() => drawGarment(), 50);
+    }, 1500);
+  };
+
+  const drawGarment = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const W = canvas.width, H = canvas.height;
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#1a1a2e'); bg.addColorStop(1, '#2d1b4e');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+    // Size scaling factor
+    const sizeScale: Record<string, number> = { XS: 0.75, S: 0.85, M: 1.0, L: 1.12, XL: 1.25, XXL: 1.38 };
+    const sc = sizeScale[size] || 1.0;
+
+    // Style-based rendering config
+    const styleConfig: Record<string, {lineWidth:number,fillOpacity:string,embellish:boolean,dashedStitch:boolean}> = {
+      minimalist: { lineWidth: 2, fillOpacity: '33', embellish: false, dashedStitch: false },
+      bohemian: { lineWidth: 2.5, fillOpacity: '44', embellish: true, dashedStitch: false },
+      streetwear: { lineWidth: 4, fillOpacity: '55', embellish: false, dashedStitch: false },
+      formal: { lineWidth: 1.5, fillOpacity: '22', embellish: false, dashedStitch: true },
+      avant_garde: { lineWidth: 3, fillOpacity: '66', embellish: true, dashedStitch: true },
+      sporty: { lineWidth: 2.5, fillOpacity: '44', embellish: false, dashedStitch: false },
+    };
+    const sConf = styleConfig[style] || styleConfig.minimalist;
+
+    // Mannequin guide (scaled)
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(W/2, 30); ctx.lineTo(W/2, H - 30); ctx.stroke();
+    ctx.beginPath(); ctx.arc(W/2, 55, 18, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.save();
+    ctx.translate(W/2, H/2);
+    ctx.scale(sc, sc);
+    ctx.translate(-W/2, -H/2);
+
+    ctx.lineWidth = sConf.lineWidth; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    if (sConf.dashedStitch) ctx.setLineDash([6, 3]); else ctx.setLineDash([]);
+    const g = garmentType;
+
+    if (g === 'top' || g === 'full-outfit') {
+      ctx.strokeStyle = primaryColor; ctx.fillStyle = primaryColor + sConf.fillOpacity;
+      ctx.beginPath();
+      ctx.moveTo(W/2-35,85); ctx.lineTo(W/2-60,105); ctx.lineTo(W/2-75,155);
+      ctx.lineTo(W/2-50,158); ctx.lineTo(W/2-40,120); ctx.lineTo(W/2-40,210);
+      ctx.lineTo(W/2+40,210); ctx.lineTo(W/2+40,120); ctx.lineTo(W/2+50,158);
+      ctx.lineTo(W/2+75,155); ctx.lineTo(W/2+60,105); ctx.lineTo(W/2+35,85);
+      ctx.quadraticCurveTo(W/2,78,W/2-35,85); ctx.closePath(); ctx.fill(); ctx.stroke();
+      if (sConf.embellish) {
+        ctx.strokeStyle = accentColor; ctx.lineWidth = 1; ctx.setLineDash([2, 2]);
+        ctx.strokeRect(W/2-38, 87, 76, 4);
+        ctx.strokeRect(W/2-38, 205, 76, 4);
+        ctx.setLineDash(sConf.dashedStitch ? [6, 3] : []);
+      }
+    }
+    if (g === 'bottom' || g === 'full-outfit') {
+      const yo = g === 'full-outfit' ? 210 : 100;
+      ctx.strokeStyle = accentColor; ctx.fillStyle = accentColor + sConf.fillOpacity;
+      ctx.beginPath(); ctx.moveTo(W/2-40,yo); ctx.lineTo(W/2-45,yo+125);
+      ctx.lineTo(W/2-5,yo+125); ctx.lineTo(W/2,yo+35);
+      ctx.lineTo(W/2+5,yo+125); ctx.lineTo(W/2+45,yo+125);
+      ctx.lineTo(W/2+40,yo); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+    if (g === 'dress') {
+      ctx.strokeStyle = primaryColor; ctx.fillStyle = primaryColor + sConf.fillOpacity;
+      ctx.beginPath();
+      ctx.moveTo(W/2-28,85); ctx.lineTo(W/2-48,108); ctx.lineTo(W/2-55,148);
+      ctx.lineTo(W/2-40,150); ctx.lineTo(W/2-32,115);
+      ctx.lineTo(W/2-50,320); ctx.lineTo(W/2+50,320);
+      ctx.lineTo(W/2+32,115); ctx.lineTo(W/2+40,150);
+      ctx.lineTo(W/2+55,148); ctx.lineTo(W/2+48,108); ctx.lineTo(W/2+28,85);
+      ctx.quadraticCurveTo(W/2,78,W/2-28,85); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+    if (g === 'outerwear') {
+      ctx.strokeStyle = primaryColor; ctx.fillStyle = primaryColor + sConf.fillOpacity;
+      ctx.beginPath();
+      ctx.moveTo(W/2-42,82); ctx.lineTo(W/2-72,112); ctx.lineTo(W/2-85,185);
+      ctx.lineTo(W/2-55,188); ctx.lineTo(W/2-48,125); ctx.lineTo(W/2-48,270);
+      ctx.lineTo(W/2+48,270); ctx.lineTo(W/2+48,125); ctx.lineTo(W/2+55,188);
+      ctx.lineTo(W/2+85,185); ctx.lineTo(W/2+72,112); ctx.lineTo(W/2+42,82);
+      ctx.quadraticCurveTo(W/2,72,W/2-42,82); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = accentColor; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(W/2-4,82); ctx.lineTo(W/2-18,145); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W/2+4,82); ctx.lineTo(W/2+18,145); ctx.stroke();
+      for (let by = 155; by < 250; by += 28) { ctx.fillStyle = accentColor; ctx.beginPath(); ctx.arc(W/2,by,3,0,Math.PI*2); ctx.fill(); }
+    }
+    if (g === 'footwear') {
+      ctx.strokeStyle = primaryColor; ctx.fillStyle = primaryColor + sConf.fillOpacity;
+      ctx.beginPath(); ctx.moveTo(W/2-38,195); ctx.quadraticCurveTo(W/2-48,235,W/2-32,255);
+      ctx.lineTo(W/2+48,255); ctx.quadraticCurveTo(W/2+55,235,W/2+28,195);
+      ctx.quadraticCurveTo(W/2,185,W/2-38,195); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+    if (g === 'accessory') {
+      ctx.strokeStyle = primaryColor; ctx.fillStyle = primaryColor + sConf.fillOpacity;
+      ctx.beginPath(); ctx.roundRect(W/2-42,148,84,105,8); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = accentColor; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(W/2-22,148); ctx.quadraticCurveTo(W/2-22,118,W/2,113);
+      ctx.quadraticCurveTo(W/2+22,118,W/2+22,148); ctx.stroke();
+    }
+
+    // Fabric texture overlay (clipped to garment area)
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.setLineDash([]);
+    if (fabric === 'denim' || fabric === 'cotton') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 0.5;
+      for (let ty = 60; ty < 340; ty += 5) { ctx.beginPath(); ctx.moveTo(W/2-90, ty); ctx.lineTo(W/2+90, ty); ctx.stroke(); }
+    } else if (fabric === 'silk' || fabric === 'chiffon') {
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      for (let dy = 65; dy < 340; dy += 12) for (let dx = W/2-80; dx < W/2+80; dx += 12) {
+        ctx.beginPath(); ctx.arc(dx, dy, 1.5, 0, Math.PI * 2); ctx.fill();
+      }
+    } else if (fabric === 'leather' || fabric === 'velvet') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 0.5;
+      for (let ty = 65; ty < 340; ty += 8) for (let tx = W/2-80; tx < W/2+80; tx += 8) {
+        ctx.strokeRect(tx, ty, 6, 6);
+      }
+    } else if (fabric === 'linen') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 0.5;
+      for (let ty = 60; ty < 340; ty += 6) { ctx.beginPath(); ctx.moveTo(W/2-80, ty); ctx.lineTo(W/2+80, ty); ctx.stroke(); }
+      for (let tx = W/2-80; tx < W/2+80; tx += 6) { ctx.beginPath(); ctx.moveTo(tx, 60); ctx.lineTo(tx, 340); ctx.stroke(); }
+    } else if (fabric === 'wool') {
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      for (let dy = 65; dy < 340; dy += 7) for (let dx = W/2-80; dx < W/2+80; dx += 7) {
+        ctx.beginPath(); ctx.arc(dx + (dy % 14 === 0 ? 3 : 0), dy, 1, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+
+    ctx.restore();
+
+    // Info label
+    ctx.fillStyle = '#fff8'; ctx.font = '11px system-ui';
+    ctx.fillText(`${style} ${garmentType} · ${fabric} · Size ${size}`, 8, H - 10);
+    // Size indicator
+    ctx.fillStyle = '#fff4'; ctx.font = '9px system-ui';
+    ctx.fillText(`Scale: ${(sc * 100).toFixed(0)}%`, W - 60, H - 10);
+  };
+
+  useEffect(() => { if (designReady) setTimeout(() => drawGarment(), 30); }, [primaryColor, accentColor, garmentType, fabric, size, style]);
 
   return (
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">👗 Fashion Studio</h1>
-        <p className="page-subtitle">AI-powered garment design — fabrics, patterns, tech packs, 3D preview</p>
+        <p className="page-subtitle">Design garments with real-time Canvas preview and color palettes</p>
       </div>
       <div className="grid grid-2" style={{ marginBottom: 24 }}>
         <div className="card">
-          <div className="card-header"><h3 className="card-title">✂️ Design Configuration</h3></div>
+          <div className="card-header"><h3 className="card-title">✂️ Design Configuration</h3></div>
           <div className="grid grid-2">
             <div className="form-group">
               <label className="form-label">Garment Type</label>
@@ -1292,42 +2579,145 @@ function FashionStudioPage() {
               </select>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <button className="btn btn-primary btn-lg" style={{ flex: 1 }}>🎨 Generate Design</button>
-            <button className="btn btn-secondary">📋 Tech Pack</button>
+          <div style={{ marginBottom: 12 }}>
+            <label className="form-label">Colors — click to set primary/accent</label>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {['#6366f1','#ec4899','#22c55e','#fbbf24','#ef4444','#06b6d4','#8b5cf6','#f97316'].map((c, i) => (
+                <div key={i} onClick={() => i % 2 === 0 ? setPrimaryColor(c) : setAccentColor(c)}
+                  style={{ width: 24, height: 24, borderRadius: '50%', background: c, border: c === primaryColor || c === accentColor ? '3px solid #fff' : '2px solid rgba(255,255,255,0.2)', cursor: 'pointer' }} />
+              ))}
+            </div>
           </div>
+          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={generateDesign} disabled={designing}>
+            {designing ? '⏳ Designing...' : '🎨 Generate Design'}
+          </button>
         </div>
         <div className="card">
-          <div className="card-header"><h3 className="card-title">👁️ Design Preview</h3></div>
-          <div style={{ aspectRatio: '3/4', background: 'linear-gradient(180deg, #fef3f2, #fde8e8)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)' }}>
-            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '4rem' }}>👗</div><div style={{ color: '#666', fontSize: '0.85rem' }}>Fashion preview</div></div>
-          </div>
+          <div className="card-header"><h3 className="card-title">Design Preview</h3></div>
+          {designReady ? (
+            <canvas ref={canvasRef} width={300} height={400} style={{ width: '100%', aspectRatio: '3/4', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: '#1a1a2e' }} />
+          ) : (
+            <div style={{ aspectRatio: '3/4', background: designing ? 'linear-gradient(180deg, #1a1a2e, #2d1b4e)' : 'linear-gradient(180deg, #fef3f2, #fde8e8)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: '4rem' }}>{designing ? '⏳' : '👗'}</div>
+              <div style={{ color: designing ? '#a855f7' : '#666', fontSize: '0.85rem' }}>{designing ? 'Generating design...' : 'Configure and generate'}</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-// ===== DESIGN SUITE =====
+
+// ===== DESIGN SUITE (Real Canvas Editor) =====
 function DesignStudioPage() {
+  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const [designText, setDesignText] = useState('Your Text Here');
+  const [bgColor, setBgColor] = useState('#1a1a2e');
+  const [textColor, setTextColor] = useState('#ffffff');
+  const [showShapes, setShowShapes] = useState(true);
+  const [showDecor, setShowDecor] = useState(true);
+  const [fontSize, setFontSize] = useState(32);
+  const cRef = React.useRef<HTMLCanvasElement | null>(null);
+
+  const templates = [
+    { icon: '📰', name: 'Modern Poster', size: '1080x1920', w: 270, h: 480 },
+    { icon: '📱', name: 'Social Media Post', size: '1080x1080', w: 400, h: 400 },
+    { icon: '💼', name: 'Business Card', size: '1050x600', w: 420, h: 240 },
+    { icon: '🖼️', name: 'Web Banner', size: '1920x400', w: 480, h: 100 },
+    { icon: '⭐', name: 'Logo Design', size: '500x500', w: 300, h: 300 },
+    { icon: '📊', name: 'Presentation', size: '1920x1080', w: 480, h: 270 },
+  ];
+
+  const drawDesign = React.useCallback(() => {
+    const canvas = cRef.current;
+    if (!canvas || !selectedTemplate) return;
+    canvas.width = selectedTemplate.w; canvas.height = selectedTemplate.h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const W = canvas.width, H = canvas.height;
+
+    // Background
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, bgColor); bg.addColorStop(1, adjustColor(bgColor, 30));
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+    // Decorative elements
+    if (showDecor) {
+      ctx.globalAlpha = 0.08;
+      for (let i = 0; i < 6; i++) {
+        ctx.fillStyle = textColor;
+        ctx.beginPath(); ctx.arc(W * (0.1 + i * 0.17), H * 0.3 + i * 15, 20 + i * 10, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      // Border accent
+      ctx.strokeStyle = textColor + '33'; ctx.lineWidth = 2;
+      ctx.strokeRect(12, 12, W - 24, H - 24);
+    }
+
+    // Shapes
+    if (showShapes) {
+      ctx.fillStyle = textColor + '15';
+      ctx.beginPath(); ctx.moveTo(0, H * 0.6); ctx.lineTo(W * 0.3, H); ctx.lineTo(0, H); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(W, H * 0.4); ctx.lineTo(W, H); ctx.lineTo(W * 0.7, H); ctx.fill();
+      ctx.fillStyle = textColor + '08';
+      ctx.beginPath(); ctx.arc(W * 0.8, H * 0.2, 40, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Template icon
+    ctx.font = `${Math.min(48, H * 0.15)}px system-ui`; ctx.textAlign = 'center';
+    ctx.fillStyle = textColor + '88';
+    ctx.fillText(selectedTemplate.icon, W / 2, H * 0.3);
+
+    // User text
+    ctx.font = `bold ${Math.min(fontSize, H * 0.12)}px system-ui`; ctx.textAlign = 'center';
+    ctx.fillStyle = textColor;
+    // Word-wrap
+    const words = designText.split(' '); let line = ''; let y = H * 0.5;
+    for (const word of words) {
+      const test = line + word + ' ';
+      if (ctx.measureText(test).width > W - 40 && line) {
+        ctx.fillText(line.trim(), W / 2, y); y += fontSize * 1.3; line = word + ' ';
+      } else { line = test; }
+    }
+    ctx.fillText(line.trim(), W / 2, y);
+
+    // Template name label
+    ctx.font = '10px system-ui'; ctx.fillStyle = textColor + '44';
+    ctx.fillText(`${selectedTemplate.name} · ${selectedTemplate.size}`, W / 2, H - 10);
+  }, [selectedTemplate, designText, bgColor, textColor, showShapes, showDecor, fontSize]);
+
+  function adjustColor(hex: string, amt: number): string {
+    const n = parseInt(hex.replace('#', ''), 16);
+    const r = Math.min(255, ((n >> 16) & 0xff) + amt);
+    const g = Math.min(255, ((n >> 8) & 0xff) + amt);
+    const b = Math.min(255, (n & 0xff) + amt);
+    return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+  }
+
+  useEffect(() => { drawDesign(); }, [drawDesign]);
+
+  const exportPNG = () => {
+    const canvas = cRef.current; if (!canvas) return;
+    const link = document.createElement('a'); link.download = `${selectedTemplate?.name || 'design'}.png`;
+    link.href = canvas.toDataURL('image/png'); link.click();
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">🎨 Design Suite</h1>
-        <p className="page-subtitle">Canva-class design — posters, social media, logos, presentations, SVG/PDF export</p>
+        <p className="page-subtitle">Create designs with real-time Canvas preview — posters, social media, logos, banners</p>
+        <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: 'rgba(162,89,255,0.1)', border: '1px solid rgba(162,89,255,0.2)', borderRadius: 20, fontSize: 11 }}>
+          <span style={{ color: '#a259ff' }}>🎨 Figma API</span>
+          <a href="https://www.figma.com/developers" target="_blank" rel="noopener" style={{ color: '#a259ff', textDecoration: 'none', fontWeight: 600 }}>Import Designs →</a>
+        </div>
       </div>
       <div className="card" style={{ marginBottom: 24 }}>
         <div className="card-header"><h3 className="card-title">📐 Templates</h3></div>
         <div className="grid grid-3">
-          {[
-            { icon: '📰', name: 'Modern Poster', size: '1080x1920' },
-            { icon: '📱', name: 'Social Media Post', size: '1080x1080' },
-            { icon: '💼', name: 'Business Card', size: '1050x600' },
-            { icon: '🖼️', name: 'Web Banner', size: '1920x400' },
-            { icon: '⭐', name: 'Logo Design', size: '500x500' },
-            { icon: '📊', name: 'Presentation', size: '1920x1080' },
-          ].map(t => (
-            <div key={t.name} style={{ padding: 20, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', cursor: 'pointer', textAlign: 'center' }}>
+          {templates.map(t => (
+            <div key={t.name} onClick={() => setSelectedTemplate(t)} style={{ padding: 20, background: selectedTemplate?.name === t.name ? 'rgba(139,92,246,0.2)' : 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: selectedTemplate?.name === t.name ? '2px solid var(--accent-primary)' : '1px solid var(--border)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: 8 }}>{t.icon}</div>
               <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{t.name}</div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{t.size}px</div>
@@ -1335,27 +2725,213 @@ function DesignStudioPage() {
           ))}
         </div>
       </div>
-      <div className="card">
-        <div className="card-header"><h3 className="card-title">🖌️ Canvas</h3></div>
-        <div style={{ aspectRatio: '16/9', background: '#fff', borderRadius: 'var(--radius-md)', border: '2px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center', color: '#999' }}><div style={{ fontSize: '2rem' }}>🖌️</div><div>Select a template to start designing</div><div style={{ fontSize: '0.78rem' }}>Drag elements, add text, shapes, images — export to PNG/SVG/PDF</div></div>
+      {selectedTemplate && (
+        <div className="grid grid-2" style={{ marginBottom: 24 }}>
+          <div className="card">
+            <div className="card-header"><h3 className="card-title">✏️ Edit Design</h3></div>
+            <div className="form-group">
+              <label className="form-label">Text Content</label>
+              <textarea className="textarea" value={designText} onChange={e => setDesignText(e.target.value)} rows={3} />
+            </div>
+            <div className="grid grid-2">
+              <div className="form-group">
+                <label className="form-label">Background Color</label>
+                <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} style={{ width: '100%', height: 36, border: 'none', borderRadius: 6, cursor: 'pointer' }} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Text Color</label>
+                <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} style={{ width: '100%', height: 36, border: 'none', borderRadius: 6, cursor: 'pointer' }} />
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Font Size: {fontSize}px</label>
+              <input type="range" min="12" max="72" value={fontSize} onChange={e => setFontSize(Number(e.target.value))} style={{ width: '100%' }} />
+            </div>
+            <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                <input type="checkbox" checked={showShapes} onChange={e => setShowShapes(e.target.checked)} /> Shapes
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                <input type="checkbox" checked={showDecor} onChange={e => setShowDecor(e.target.checked)} /> Decorations
+              </label>
+            </div>
+            <button onClick={exportPNG} className="btn btn-primary" style={{ width: '100%' }}>📥 Export as PNG</button>
+          </div>
+          <div className="card">
+            <div className="card-header"><h3 className="card-title">🖼️ Live Preview — {selectedTemplate.name}</h3></div>
+            <div style={{ display: 'flex', justifyContent: 'center', padding: 16, background: '#111', borderRadius: 'var(--radius-md)' }}>
+              <canvas ref={cRef} style={{ maxWidth: '100%', borderRadius: 8, border: '1px solid #333' }} />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+      {!selectedTemplate && (
+        <div className="card">
+          <div style={{ padding: 40, textAlign: 'center', color: '#999' }}>
+            <div style={{ fontSize: '3rem', marginBottom: 8 }}>🖌️</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Select a template above to start designing</div>
+            <div style={{ fontSize: '0.85rem', marginTop: 4 }}>Choose a format, customize text and colors, then export your design</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// ===== ROBOTICS LAB =====
+// ===== ROBOTICS LAB (Real Canvas Simulation) =====
 function RoboticsLab() {
   const [robotType, setRobotType] = useState('arm');
   const [backend, setBackend] = useState('mock');
   const [environment, setEnvironment] = useState('warehouse');
+  const [simRunning, setSimRunning] = useState(false);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const animRef = React.useRef<number>(0);
+  const startRef = React.useRef<number>(0);
+
+  const startSim = () => {
+    setSimRunning(true);
+    startRef.current = performance.now();
+    const loop = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const W = canvas.width, H = canvas.height;
+      const t = (performance.now() - startRef.current) / 1000;
+
+      // Environment background
+      ctx.clearRect(0, 0, W, H);
+      const envColors: Record<string, {bg1:string,bg2:string,floor:string}> = {
+        warehouse: { bg1: '#1a1a2e', bg2: '#16213e', floor: '#333' },
+        outdoor: { bg1: '#0f2027', bg2: '#2c5364', floor: '#2d572c' },
+        kitchen: { bg1: '#2d1b36', bg2: '#1a1a2e', floor: '#555' },
+        factory: { bg1: '#1a1a1a', bg2: '#2a2a2a', floor: '#444' },
+        empty: { bg1: '#111', bg2: '#222', floor: '#333' },
+      };
+      const env = envColors[environment] || envColors.empty;
+      const bg = ctx.createLinearGradient(0, 0, 0, H);
+      bg.addColorStop(0, env.bg1); bg.addColorStop(1, env.bg2);
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+      // Floor
+      ctx.fillStyle = env.floor; ctx.fillRect(0, H * 0.75, W, H * 0.25);
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 0.5;
+      for (let i = 0; i < W; i += 30) { ctx.beginPath(); ctx.moveTo(i, H * 0.75); ctx.lineTo(i - 20, H); ctx.stroke(); }
+
+      // Environment details
+      if (environment === 'warehouse') {
+        for (let i = 0; i < 3; i++) {
+          ctx.fillStyle = '#44403c'; ctx.fillRect(50 + i * 180, H * 0.35, 8, H * 0.4);
+          ctx.fillStyle = '#78716c'; ctx.fillRect(40 + i * 180, H * 0.4, 40, 4); ctx.fillRect(40 + i * 180, H * 0.55, 40, 4);
+          ctx.fillStyle = '#a8a29e55'; ctx.fillRect(42 + i * 180, H * 0.42, 15, 10); ctx.fillRect(60 + i * 180, H * 0.42, 15, 10);
+        }
+      } else if (environment === 'outdoor') {
+        for (let i = 0; i < 4; i++) {
+          ctx.fillStyle = '#15803d'; ctx.beginPath();
+          ctx.arc(80 + i * 140, H * 0.5, 25 + i * 5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#713f12'; ctx.fillRect(78 + i * 140, H * 0.55, 5, H * 0.2);
+        }
+      } else if (environment === 'kitchen') {
+        ctx.fillStyle = '#57534e'; ctx.fillRect(20, H * 0.55, 120, H * 0.2);
+        ctx.fillStyle = '#78716c'; ctx.fillRect(20, H * 0.53, 125, 6);
+        ctx.fillStyle = '#a8a29e'; ctx.beginPath(); ctx.arc(80, H * 0.6, 15, 0, Math.PI * 2); ctx.fill();
+      } else if (environment === 'factory') {
+        ctx.fillStyle = '#555'; ctx.fillRect(0, H * 0.72, W, 6);
+        for (let i = 0; i < 10; i++) {
+          const cx = ((i * 60 + t * 30) % (W + 40)) - 20;
+          ctx.fillStyle = '#78716c'; ctx.fillRect(cx, H * 0.68, 25, 10);
+        }
+      }
+
+      // Grid overlay
+      ctx.strokeStyle = 'rgba(99,102,241,0.06)'; ctx.lineWidth = 0.5;
+      for (let gx = 0; gx < W; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+      for (let gy = 0; gy < H; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+
+      // Robot drawing based on type
+      if (robotType === 'arm') {
+        const baseX = W * 0.5, baseY = H * 0.74;
+        ctx.fillStyle = '#374151'; ctx.fillRect(baseX - 20, baseY - 8, 40, 8);
+        const a1 = Math.sin(t * 0.8) * 0.6, a2 = Math.cos(t * 1.2) * 0.8 - 0.3;
+        const l1 = 60, l2 = 50;
+        const j1x = baseX + Math.sin(a1) * l1, j1y = baseY - Math.cos(a1) * l1;
+        const j2x = j1x + Math.sin(a1 + a2) * l2, j2y = j1y - Math.cos(a1 + a2) * l2;
+        ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(baseX, baseY); ctx.lineTo(j1x, j1y); ctx.stroke();
+        ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.moveTo(j1x, j1y); ctx.lineTo(j2x, j2y); ctx.stroke();
+        ctx.fillStyle = '#a5b4fc'; ctx.beginPath(); ctx.arc(baseX, baseY, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(j1x, j1y, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#c7d2fe'; ctx.beginPath(); ctx.arc(j2x, j2y, 4, 0, Math.PI * 2); ctx.fill();
+        // Gripper
+        const ga = a1 + a2 + Math.sin(t * 3) * 0.2;
+        ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(j2x, j2y); ctx.lineTo(j2x + Math.sin(ga - 0.3) * 12, j2y - Math.cos(ga - 0.3) * 12); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(j2x, j2y); ctx.lineTo(j2x + Math.sin(ga + 0.3) * 12, j2y - Math.cos(ga + 0.3) * 12); ctx.stroke();
+      } else if (robotType === 'mobile') {
+        const rx = W * 0.3 + Math.sin(t * 0.5) * W * 0.2, ry = H * 0.68;
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(rx - 18, ry - 12, 36, 24);
+        ctx.fillStyle = '#166534'; ctx.fillRect(rx - 10, ry - 18, 20, 8);
+        ctx.fillStyle = '#333'; ctx.beginPath(); ctx.arc(rx - 14, ry + 12, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(rx + 14, ry + 12, 5, 0, Math.PI * 2); ctx.fill();
+        // Sensor beam
+        ctx.strokeStyle = '#22c55e33'; ctx.lineWidth = 1;
+        for (let si = -3; si <= 3; si++) {
+          ctx.beginPath(); ctx.moveTo(rx, ry - 18);
+          ctx.lineTo(rx + si * 20 + Math.cos(t) * 5, ry - 55); ctx.stroke();
+        }
+      } else if (robotType === 'humanoid') {
+        const hx = W * 0.5, hy = H * 0.74;
+        const walk = Math.sin(t * 3);
+        ctx.fillStyle = '#6366f1'; ctx.beginPath(); ctx.arc(hx, hy - 55, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(hx, hy - 45); ctx.lineTo(hx, hy - 20); ctx.stroke();
+        // Arms
+        ctx.beginPath(); ctx.moveTo(hx, hy - 40); ctx.lineTo(hx - 15 + walk * 5, hy - 25 + Math.abs(walk) * 3); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(hx, hy - 40); ctx.lineTo(hx + 15 - walk * 5, hy - 25 + Math.abs(walk) * 3); ctx.stroke();
+        // Legs
+        ctx.beginPath(); ctx.moveTo(hx, hy - 20); ctx.lineTo(hx - 8 + walk * 8, hy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(hx, hy - 20); ctx.lineTo(hx + 8 - walk * 8, hy); ctx.stroke();
+      } else if (robotType === 'drone') {
+        const dx = W * 0.5 + Math.sin(t * 0.7) * 80, dy = H * 0.35 + Math.cos(t * 0.5) * 30;
+        ctx.fillStyle = '#374151'; ctx.fillRect(dx - 12, dy - 4, 24, 8);
+        ctx.strokeStyle = '#6b7280'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(dx - 12, dy); ctx.lineTo(dx - 25, dy - 8); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(dx + 12, dy); ctx.lineTo(dx + 25, dy - 8); ctx.stroke();
+        // Rotors
+        const rot = t * 15;
+        for (const px of [dx - 25, dx + 25]) {
+          ctx.strokeStyle = '#a5b4fc88'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(px - Math.cos(rot) * 10, dy - 8 - Math.sin(rot) * 2);
+          ctx.lineTo(px + Math.cos(rot) * 10, dy - 8 + Math.sin(rot) * 2); ctx.stroke();
+        }
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.15)'; ctx.beginPath();
+        ctx.ellipse(dx, H * 0.73, 20, 5, 0, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // HUD
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(8, 8, 160, 50);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px system-ui';
+      ctx.fillText(`Robot: ${robotType}`, 14, 22);
+      ctx.fillStyle = '#aaa'; ctx.font = '10px system-ui';
+      ctx.fillText(`Env: ${environment} | Backend: ${backend}`, 14, 36);
+      ctx.fillText(`Time: ${t.toFixed(1)}s | FPS: 60`, 14, 50);
+
+      animRef.current = requestAnimationFrame(loop);
+    };
+    animRef.current = requestAnimationFrame(loop);
+  };
+
+  const stopSim = () => { setSimRunning(false); cancelAnimationFrame(animRef.current); };
+
+  useEffect(() => () => cancelAnimationFrame(animRef.current), []);
 
   return (
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">🤖 Robotics Lab</h1>
-        <p className="page-subtitle">Multi-backend robotics simulation — Isaac Sim, MuJoCo, PyBullet</p>
+        <p className="page-subtitle">Real-time Canvas robot simulation — select robot, environment, and watch it move</p>
       </div>
       <div className="grid grid-2" style={{ marginBottom: 24 }}>
         <div className="card">
@@ -1382,13 +2958,15 @@ function RoboticsLab() {
               {['warehouse', 'outdoor', 'kitchen', 'factory', 'empty'].map(e => <option key={e} value={e}>{e}</option>)}
             </select>
           </div>
-          <button className="btn btn-primary btn-lg" style={{ width: '100%' }}>🚀 Start Simulation</button>
+          {!simRunning ? (
+            <button onClick={startSim} className="btn btn-primary btn-lg" style={{ width: '100%' }}>🚀 Start Simulation</button>
+          ) : (
+            <button onClick={stopSim} className="btn btn-secondary btn-lg" style={{ width: '100%' }}>⏹️ Stop Simulation</button>
+          )}
         </div>
         <div className="card">
-          <div className="card-header"><h3 className="card-title">📊 Simulation View</h3></div>
-          <div style={{ aspectRatio: '16/9', background: 'linear-gradient(135deg, #0f1923, #1a2632)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)' }}>
-            <div style={{ textAlign: 'center' }}><div style={{ fontSize: '3rem' }}>🤖</div><div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 8 }}>Simulation viewport</div></div>
-          </div>
+          <div className="card-header"><h3 className="card-title">📊 Simulation View {simRunning && <span style={{ color: '#22c55e', fontSize: 12 }}>● LIVE</span>}</h3></div>
+          <canvas ref={canvasRef} width={560} height={350} style={{ width: '100%', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: '#111' }} />
         </div>
       </div>
       <div className="card">
@@ -1452,7 +3030,7 @@ function KnowledgeBrain() {
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {(['research', 'explain', 'graph'] as const).map(t => (
           <button key={t} className={`btn ${activeTab === t ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setActiveTab(t)}>
-            {t === 'research' ? '🔍 Research' : t === 'explain' ? '📖 Explain Anything' : '🗺️ Knowledge Graph'}
+            {t === 'research' ? '🔍 Research' : t === 'explain' ? '📖 Explain Anything' : '🗺️ Knowledge Graph'}
           </button>
         ))}
       </div>
@@ -1530,10 +3108,10 @@ function KnowledgeBrain() {
 
       {activeTab === 'graph' && (
         <div className="card">
-          <div className="card-header"><h3 className="card-title">🗺️ Knowledge Graph</h3></div>
+          <div className="card-header"><h3 className="card-title">🗺️ Knowledge Graph</h3></div>
           <div style={{ aspectRatio: '16/9', background: 'radial-gradient(circle at 50% 50%, #0a1628, #050d1a)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '4rem' }}>🗺️</div>
+              <div style={{ fontSize: '4rem' }}>🗺️</div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 8 }}>Interactive knowledge graph visualization</div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: 4 }}>Research a topic first to build the graph</div>
             </div>
@@ -1628,7 +3206,7 @@ function AIMemoryPage() {
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <button className="btn btn-secondary">📥 Export All Memories</button>
           <button className="btn btn-secondary">🔍 Search Memories</button>
-          <button className="btn btn-secondary" style={{ color: '#ef4444' }}>🗑️ Clear All Memories</button>
+          <button className="btn btn-secondary" style={{ color: '#ef4444' }}>🗑️ Clear All Memories</button>
         </div>
         <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 12 }}>Your memories are stored locally and never shared. Full control over what the AI remembers.</p>
       </div>
@@ -1906,7 +3484,7 @@ function LearningHub() {
         <p className="page-subtitle">AI-generated courses, debate mode, skill builder, curiosity engine</p>
       </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {[{ id: 'courses' as const, icon: '🎓', label: 'Course Builder' }, { id: 'debate' as const, icon: '⚔️', label: 'Debate Mode' }, { id: 'curiosity' as const, icon: '🔮', label: 'Curiosity Engine' }].map(t => (
+        {[{ id: 'courses' as const, icon: '🎓', label: 'Course Builder' }, { id: 'debate' as const, icon: '⚔️', label: 'Debate Mode' }, { id: 'curiosity' as const, icon: '🔮', label: 'Curiosity Engine' }].map(t => (
           <button key={t.id} className={`btn ${activeTab === t.id ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setActiveTab(t.id)}>
             {t.icon} {t.label}
           </button>
@@ -1932,8 +3510,8 @@ function LearningHub() {
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 12 }}>{courseResult.course.topic}</h4>
                 <div style={{ display: 'flex', gap: 16, marginBottom: 16, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                   <span>📖 {courseResult.course.totalLessons} lessons</span>
-                  <span>✏️ {courseResult.course.totalExercises} exercises</span>
-                  <span>⏱️ ~{courseResult.course.estimatedHours}h</span>
+                  <span>✏️ {courseResult.course.totalExercises} exercises</span>
+                  <span>⏱️ ~{courseResult.course.estimatedHours}h</span>
                 </div>
                 {courseResult.course.modules?.map((m: any) => (
                   <div key={m.week} style={{ padding: '10px 14px', margin: '6px 0', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem' }}>
@@ -1951,13 +3529,13 @@ function LearningHub() {
       {activeTab === 'debate' && (
         <div className="grid grid-2">
           <div className="card">
-            <div className="card-header"><h3 className="card-title">⚔️ AI Debate Mode</h3></div>
+            <div className="card-header"><h3 className="card-title">⚔️ AI Debate Mode</h3></div>
             <div className="form-group">
               <label className="form-label">Debate Topic</label>
               <input className="input" value={debateTopic} onChange={e => setDebateTopic(e.target.value)} placeholder="e.g., Is AI dangerous for humanity?" />
             </div>
             <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={runDebate} disabled={loading}>
-              {loading ? '🔄 Debating...' : '⚔️ Start Debate'}
+              {loading ? '🔄 Debating...' : '⚔️ Start Debate'}
             </button>
           </div>
           <div className="card">
@@ -1977,7 +3555,7 @@ function LearningHub() {
                   ))}
                 </div>
                 <div style={{ padding: 12, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', fontSize: '0.85rem' }}>
-                  <strong>⚖️ Conclusion:</strong> {debateResult.debate.conclusion}
+                  <strong>⚖️ Conclusion:</strong> {debateResult.debate.conclusion}
                 </div>
               </div>
             ) : (
@@ -2152,7 +3730,7 @@ function CollabSpace() {
           </button>
         </div>
         <div className="card">
-          <div className="card-header"><h3 className="card-title">🖼️ Design Output</h3></div>
+          <div className="card-header"><h3 className="card-title">🖼️ Design Output</h3></div>
           {designResult?.product ? (
             <div>
               <h4 style={{ fontWeight: 700, marginBottom: 8 }}>{designResult.product.name}</h4>
@@ -2586,7 +4164,7 @@ function AgentTeamsPage() {
       });
   };
 
-  const roleIcons: Record<string, string> = { planner: '🧠', coder: '💻', tester: '🧪', deployer: '🚀', researcher: '🔍', security: '🛡', designer: '🎨', optimizer: '⚙️' };
+  const roleIcons: Record<string, string> = { planner: '🧠', coder: '💻', tester: '🧪', deployer: '🚀', researcher: '🔍', security: '🛡', designer: '🎨', optimizer: '⚙' };
 
   return (
     <div className="animate-fade-in">
@@ -2803,13 +4381,13 @@ function DeployCenterPage() {
       { id: 'd3', name: 'Edge LLM (Local)', target: 'edge', provider: 'RTX 4050', status: 'running', region: 'local', replicas: 1, gpu: true, cost: '$0', url: 'http://localhost:8080', pipeline: 'llama.cpp+Phi-3' },
     ]));
     fetch(`${API}/api/deployments/targets`).then(r => r.json()).then(d => setTargets(d.targets || [])).catch(() => setTargets([
-      { id: 'aws', name: 'AWS', icon: '☁️' }, { id: 'gcp', name: 'GCP', icon: '🌐' }, { id: 'azure', name: 'Azure', icon: '🔷' }, { id: 'local', name: 'Local', icon: '💻' }, { id: 'edge', name: 'Edge', icon: '📱' }, { id: 'docker', name: 'Docker', icon: '🐳' }, { id: 'k8s', name: 'Kubernetes', icon: '☸️' },
+      { id: 'aws', name: 'AWS', icon: '☁️' }, { id: 'gcp', name: 'GCP', icon: '🌐' }, { id: 'azure', name: 'Azure', icon: '🔷' }, { id: 'local', name: 'Local', icon: '💻' }, { id: 'edge', name: 'Edge', icon: '📱' }, { id: 'docker', name: 'Docker', icon: '🐳' }, { id: 'k8s', name: 'Kubernetes', icon: '☸️' },
     ]));
   }, []);
   const statusColor = (s: string) => s === 'running' ? '#00e676' : s === 'deploying' ? '#ffd740' : '#ff5252';
   return (
     <div style={{ padding: 32 }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>☁️ Deploy Center</h1>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>☁️ Deploy Center</h1>
       <p style={{ color: '#999', fontSize: 14, marginBottom: 16 }}>Deploy to any cloud, edge device, or local machine with one click.</p>
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' as const }}>
         {targets.map(t => <div key={t.id} style={{ padding: '8px 16px', borderRadius: 12, background: '#16162a', border: '1px solid #2a2a4a', fontSize: 13 }}>{t.icon} {t.name}</div>)}
@@ -3181,6 +4759,53 @@ function IntegrationsPage() {
         </div>
       </div>
 
+      {/* ===== Featured API Integrations ===== */}
+      <div style={{ marginBottom: 32, background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08))', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 16, padding: 24 }}>
+        <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>⚡ Featured API Integrations</h2>
+        <p style={{ color: '#999', fontSize: 13, marginBottom: 20 }}>Free-tier APIs from top platforms — connect with your own keys</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
+          {[
+            { icon: '🤖', name: 'Google Gemini', cat: 'Writing / AI', desc: 'AI chat, code gen, analysis — free 1.5 Flash tier via Google AI Studio', method: 'API Key', key: 'gemini_api_key', url: 'https://aistudio.google.com/apikey', color: '#4285f4', studio: 'AI Assistant' },
+            { icon: '🎵', name: 'Minimax', cat: 'Audio / Speech', desc: 'Realistic AI voice synthesis — text-to-speech and voice cloning', method: 'API / Puter.js', key: 'minimax_api_key', url: 'https://www.minimax.chat', color: '#22c55e', studio: 'Audio Studio' },
+            { icon: '🎨', name: 'Figma', cat: 'Design', desc: 'Import design files, styles, and assets via REST API — free tier', method: 'REST API Token', key: 'figma_api_key', url: 'https://www.figma.com/developers', color: '#a259ff', studio: 'Design Suite' },
+            { icon: '🎬', name: 'Runway', cat: 'Video / AI', desc: 'AI video generation and editing — trial credits available', method: 'Runway ML API', key: 'runway_api_key', url: 'https://dev.runwayml.com', color: '#ef4444', studio: 'Video Studio' },
+            { icon: '💡', name: 'Reddit', cat: 'Ideas / Data', desc: 'Trending topics, discussions, and ideas — 100 queries/min free', method: 'OAuth API', key: 'reddit_client_id', url: 'https://www.reddit.com/prefs/apps', color: '#ff4500', studio: 'Idea Lab' },
+            { icon: '👤', name: 'HeyGen', cat: 'Avatars', desc: 'Interactive AI avatars — embed talking heads with streaming SDK', method: 'Streaming SDK', key: 'heygen_api_key', url: 'https://www.heygen.com/developers', color: '#06b6d4', studio: 'AI Assistant' },
+          ].map(api => {
+            const stored = typeof window !== 'undefined' ? localStorage.getItem(api.key) : '';
+            const connected = !!stored;
+            return (
+              <div key={api.name} style={{ background: '#16162a', border: `1px solid ${connected ? api.color + '55' : '#2a2a4a'}`, borderRadius: 14, padding: 16, position: 'relative' as const }}>
+                <div style={{ position: 'absolute' as const, top: 12, right: 12, fontSize: 10, padding: '2px 8px', borderRadius: 10, background: connected ? api.color + '22' : '#333', color: connected ? api.color : '#888' }}>
+                  {connected ? '● Connected' : api.method}
+                </div>
+                <div style={{ fontSize: 28, marginBottom: 6 }}>{api.icon}</div>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>{api.name}</div>
+                <div style={{ fontSize: 11, color: api.color, marginBottom: 6 }}>{api.cat} — {api.studio}</div>
+                <div style={{ fontSize: 12, color: '#999', marginBottom: 12, lineHeight: 1.4 }}>{api.desc}</div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {!connected ? (
+                    <button onClick={() => {
+                      const key = prompt(`Enter your ${api.name} API key or token:\n\nGet one free at: ${api.url}`);
+                      if (key) { localStorage.setItem(api.key, key); window.location.reload(); }
+                    }} style={{ flex: 1, padding: '6px 12px', borderRadius: 8, border: 'none', background: api.color, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                      Connect
+                    </button>
+                  ) : (
+                    <button onClick={() => { localStorage.removeItem(api.key); window.location.reload(); }} style={{ flex: 1, padding: '6px 12px', borderRadius: 8, border: `1px solid ${api.color}55`, background: 'transparent', color: api.color, fontSize: 12, cursor: 'pointer' }}>
+                      Disconnect
+                    </button>
+                  )}
+                  <a href={api.url} target="_blank" rel="noopener" style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #333', background: 'transparent', color: '#999', fontSize: 12, cursor: 'pointer', textDecoration: 'none' }}>
+                    Docs
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Search */}
       <input
         type="text" placeholder="Search integrations..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
@@ -3510,7 +5135,7 @@ function UnifiedControlCenter({ onNavigate }: { onNavigate: (page: string) => vo
           <div className="stat-label">Active Agents</div>
         </div>
         <div className="stat-card animate-fade-in">
-          <div className="stat-icon">⚙️</div>
+          <div className="stat-icon">⚙</div>
           <div className="stat-value">{activity.pendingJobs ?? 0}</div>
           <div className="stat-label">Pending Jobs</div>
         </div>

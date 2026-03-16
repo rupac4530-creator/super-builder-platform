@@ -193,16 +193,28 @@ function generateMockResponse(message: string): string {
   if (lower.includes('hello') || lower.includes('hi')) {
     return 'Hello! I\'m the Engine Alto AI assistant. I can help you build apps, train AI models, create games, and more. What would you like to create today?';
   }
+  if (lower.includes('debug') || lower.includes('error') || lower.includes('fix') || lower.includes('bug') || lower.includes('typeerror') || lower.includes('crash')) {
+    return 'I\'ve analyzed the issue. The error likely occurs due to a variable being accessed before initialization or a type mismatch. Here\'s my approach:\n\n1. Check the stack trace for the exact line\n2. Verify variable declarations and types\n3. Add null checks and error boundaries\n4. Ensure proper initialization order\n\nWould you like me to generate a fix? Paste your code and I\'ll diagnose it in detail.';
+  }
   if (lower.includes('game')) {
     return 'Great choice! I can help you build a game. Would you like to create a 2D platformer, 3D FPS, puzzle game, or something else? I\'ll set up the project with ECS architecture, physics, and rendering.';
   }
   if (lower.includes('train') || lower.includes('model')) {
     return 'I can help you train an AI model! What type? Options: image classifier, text generator, object detector, or custom architecture. I\'ll configure the training pipeline for your RTX 4050 GPU with mixed precision.';
   }
-  if (lower.includes('website') || lower.includes('app')) {
+  if (lower.includes('website') || lower.includes('app') || lower.includes('web')) {
     return 'Let\'s build it! I\'ll create a modern web application with Next.js, responsive design, and dark mode. Tell me more about what features you need.';
   }
-  return `I understand you want to: "${message}". Let me break this down into actionable steps and generate the code for you. Engine Alto can handle apps, games, AI models, videos, 3D assets, and more.`;
+  if (lower.includes('video') || lower.includes('generate')) {
+    return 'I\'ll set up the generation pipeline for you. Head to the Video Studio for text-to-video generation, or tell me what you want to generate — I can handle video, images, 3D models, music, and code.';
+  }
+  if (lower.includes('code') || lower.includes('component') || lower.includes('function') || lower.includes('react') || lower.includes('button')) {
+    return 'I\'ll generate that for you! Here\'s the approach:\n\n1. Create the component/function structure\n2. Add TypeScript types for safety\n3. Include proper error handling\n4. Add responsive styling\n\nI\'ve sent the generation request. You can also use the Code Forge for more advanced code generation with templates.';
+  }
+  if (lower.includes('deploy') || lower.includes('docker') || lower.includes('cloud')) {
+    return 'I\'ll help you deploy! Engine Alto supports:\n\n• Docker containerization (auto-generated Dockerfile)\n• Kubernetes deployment with scaling\n• Cloud hosting (AWS, GCP, Azure)\n• One-click deploy from the Deploy Center\n\nWhich deployment target would you like?';
+  }
+  return `I understand your request: "${message}". Let me break this down into actionable steps and generate a solution for you. Engine Alto can handle apps, games, AI models, videos, 3D assets, and more. What specific aspect would you like me to focus on?`;
 }
 
 function generateCodeFromPrompt(prompt: string, language: string, framework: string): string {
