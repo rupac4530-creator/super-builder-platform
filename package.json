@@ -1,0 +1,41 @@
+{
+  "name": "engine-alto",
+  "version": "0.1.0",
+  "description": "Engine Alto — AI-first creator platform with integrated model training, game engine, browser runtime, and autonomous agent civilization",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "platform"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:platform\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:platform": "cd platform && npm run dev",
+    "build": "npm run build:backend && npm run build:platform",
+    "build:backend": "cd backend && npm run build",
+    "build:platform": "cd platform && npm run build",
+    "test": "npm run test:backend && npm run test:platform",
+    "test:backend": "cd backend && npm test",
+    "test:platform": "cd platform && npm test",
+    "lint": "npm run lint:backend && npm run lint:platform",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:platform": "cd platform && npm run lint",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "train": "cd ai-training && python trainer.py",
+    "inference": "cd ai-training && python inference_server.py",
+    "start:worker": "cd backend && npx ts-node worker/index.ts",
+    "verify-host": "powershell -ExecutionPolicy Bypass -File scripts/verify-host.ps1",
+    "verify-host:unix": "bash scripts/verify-host.sh",
+    "test:e2e": "npx playwright test",
+    "test:e2e:headed": "npx playwright test --headed",
+    "benchmark": "node scripts/run-benchmarks.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "concurrently": "^8.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
