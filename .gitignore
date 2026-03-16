@@ -13,18 +13,8 @@ build/
 .env.local
 .env.*.local
 
-# Artifact vault heavy data (use LFS or external storage)
-data/models/**/*.pt
-data/models/**/*.safetensors
-data/models/**/*.onnx
-data/models/**/*.ckpt
-data/models/**/*.h5
-data/models/**/*.pth
-data/datasets/synthetic/
-data/renders/
-data/checkpoints/
-data/backups/*.tar.zst
-data/backups/*.zip
+# Runtime data (models, datasets, previews — large files, never commit)
+data/
 
 # OS files
 .DS_Store
@@ -50,6 +40,7 @@ out/
 
 # Backups (generated locally)
 superbuilder-backups/
+FULL_BACKUP_*
 
 # Agent Hub data (generated at runtime)
 .agent_hub/
@@ -64,7 +55,7 @@ venv/
 # Local runtime and temp (do not commit)
 backend/data/
 backend/.vitest-cache/
-report/playwright-screenshots/
+report/
 tools/python311/
 tools/ffmpeg/
 tools/redis/
